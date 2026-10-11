@@ -1,0 +1,30 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+TestResults/
+publish/
+
+# Naršyklės dalis (Node)
+node_modules/
+dist/
+coverage/
+*.log
+
+# Vietinė konfigūracija ir paslaptys
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+*.pfx
+
+# IDE ir sistemos failai
+.vs/
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
