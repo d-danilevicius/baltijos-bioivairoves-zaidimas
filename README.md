@@ -27,12 +27,13 @@ Kas neįeina į pirmą versiją: mokytojo rolė ir klasės, mobilioji programėl
 
 ## Techniniai sprendimai
 
-| Dalis | Būsena |
+| Dalis | Technologija |
 |---|---|
-| Serverio dalis (angl. backend) | Dar nepasirinkta. Reikalavimas: žiniatinklio programa su reliacine duomenų baze, rolių patikra serveryje ir HTTPS. |
-| Naršyklės dalis (angl. frontend) | Dar nepasirinkta. Reikalavimas: veikia kompiuterio ir telefono ekrane (nuo 360 px pločio), lietuvių kalba. |
-
-Pasirinkus technologijas, ši lentelė bus atnaujinta.
+| Serverio dalis (angl. backend) | C# su .NET 10, ASP.NET Core Web API, ASP.NET Core Identity (paskyros ir rolės) |
+| Duomenų bazė | PostgreSQL 17, prieiga per Entity Framework Core, pakeitimai tik per migracijas |
+| Naršyklės dalis (angl. frontend) | React, TypeScript, Vite, React Router |
+| Testavimas | xUnit (serveris), Vitest ir React Testing Library (naršyklė) |
+| Aplinka | Docker (PostgreSQL), HTTPS |
 
 ## Projekto dokumentacija
 
