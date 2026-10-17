@@ -41,7 +41,7 @@ Schema changes are EF Core migrations stored in `backend/src/Project.Api/Migrati
 - Create a migration: `dotnet ef migrations add <DescriptiveName> --project backend/src/Project.Api`
 - Apply migrations: `dotnet ef database update --project backend/src/Project.Api`
 
-There are no migrations yet. The first one is added by the first feature that needs a table.
+The first migration CreateIdentityTables exists (ASP.NET Core Identity tables and the seeded roles Student, Teacher, Administrator) and is applied with `dotnet ef database update --project backend/src/Project.Api`.
 
 ## Run
 
@@ -60,6 +60,8 @@ cd frontend
 npm install
 npm run dev
 ```
+
+The registration page is at http://localhost:5173/register and the endpoint is POST /api/auth/register.
 
 ## Tests
 
