@@ -7,6 +7,8 @@ namespace Project.Api.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
+    public DbSet<ActionLog> ActionLogs { get; set; } = null!;
+
     // Fixed role Ids and ConcurrencyStamps to allow deterministic migrations
     private const string StudentRoleId = "11111111-1111-1111-1111-111111111111";
     private const string TeacherRoleId = "22222222-2222-2222-2222-222222222222";
@@ -53,5 +55,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 ConcurrencyStamp = AdministratorConcurrencyStamp
             }
         );
+
+        // ActionLog entity configuration
+        builder.Entity<ActionLog>(e =>
+        {
+            e.Property(a => a.Action).HasMaxLength(50).IsRequired();
+            e.HasIndex(a => a.OccurredAtUtc);
+
+            // Nullable FK to AspNetUsers; when a user is deleted the UserId is set to null
+            e.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
     }
 }
