@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project.Api.Data;
 using Project.Api.Middleware;
+using Project.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+// Identity and application services
+builder.Services.AddProjectIdentity(builder.Configuration);
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 builder.Services.AddCors(options =>
