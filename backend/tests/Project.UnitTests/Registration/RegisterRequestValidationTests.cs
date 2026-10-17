@@ -60,5 +60,31 @@ namespace Project.UnitTests.Registration
             Assert.NotEmpty(Validate(reqMissing));
             Assert.NotEmpty(Validate(reqAdmin));
         }
+
+        [Fact]
+        public void RegisterRequest_Attributes_HaveExpectedErrorMessages()
+        {
+            var t = typeof(Project.Api.DTOs.Requests.RegisterRequest);
+            var emailProp = t.GetProperty("Email")!;
+            var emailAttrs = emailProp.GetCustomAttributes(true);
+            Assert.Contains(emailAttrs, a => a is System.ComponentModel.DataAnnotations.RequiredAttribute req && req.ErrorMessage == "Required");
+            Assert.Contains(emailAttrs, a => a is System.ComponentModel.DataAnnotations.EmailAddressAttribute em && em.ErrorMessage == "InvalidFormat");
+            Assert.Contains(emailAttrs, a => a is System.ComponentModel.DataAnnotations.StringLengthAttribute sl && sl.ErrorMessage == "TooLong");
+
+            var userProp = t.GetProperty("UserName")!;
+            var userAttrs = userProp.GetCustomAttributes(true);
+            Assert.Contains(userAttrs, a => a is System.ComponentModel.DataAnnotations.RequiredAttribute req2 && req2.ErrorMessage == "Required");
+            Assert.Contains(userAttrs, a => a is System.ComponentModel.DataAnnotations.RegularExpressionAttribute re && re.ErrorMessage == "InvalidFormat");
+
+            var passProp = t.GetProperty("Password")!;
+            var passAttrs = passProp.GetCustomAttributes(true);
+            Assert.Contains(passAttrs, a => a is System.ComponentModel.DataAnnotations.RequiredAttribute req3 && req3.ErrorMessage == "Required");
+            Assert.Contains(passAttrs, a => a is System.ComponentModel.DataAnnotations.StringLengthAttribute sl2 && sl2.ErrorMessage == "InvalidLength");
+
+            var roleProp = t.GetProperty("Role")!;
+            var roleAttrs = roleProp.GetCustomAttributes(true);
+            Assert.Contains(roleAttrs, a => a is System.ComponentModel.DataAnnotations.RequiredAttribute req4 && req4.ErrorMessage == "Required");
+            Assert.Contains(roleAttrs, a => a is System.ComponentModel.DataAnnotations.RegularExpressionAttribute re2 && re2.ErrorMessage == "NotAllowed");
+        }
     }
 }
