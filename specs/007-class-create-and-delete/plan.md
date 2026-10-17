@@ -42,13 +42,14 @@ The plan describes how the feature “Class creation and deletion” is implemen
 ## Technical Notes
 
 - Business rules are placed in the services listed above; controllers only translate HTTP.
+- How the related data of a deleted class are removed (explicit deletion in the service inside one transaction, or cascade constraints) is decided in this feature’s `data-model.md` before implementation; the students’ points remain (VT-009, VT-027).
 
 ## Constitution Check
 
 - **1. Code quality:** complies. Each class has one responsibility and stays below 200 lines; React file names follow the naming rules.
 - **2. Architecture:** complies. ClassesController only calls services; the rules are in the services; `ApplicationDbContext` is used directly (no Repository); DTOs are used at the API boundary and AutoMapper for non-trivial mappings; the schema is changed by the migration `CreateClassesTable`.
 - **3. Testing:** complies. The requirements FR-013, FR-014, FR-015, FR-023 are covered by the tests in the testing plan.
-- **4. Security:** complies. Role and ownership are checked on the server for: GET /api/classes, POST /api/classes, DELETE /api/classes/{id}; all input is validated on the server; no secret is stored in Git.
+- **4. Security:** complies. Authentication, role and ownership are checked on the server for the protected requests: GET /api/classes, POST /api/classes, DELETE /api/classes/{id}. All input is validated on the server; no secret is stored in Git.
 - **5. Version control:** complies. The work is done in branch `007-class-create-and-delete`, created from an updated `main`, and enters through a Pull Request.
 - **6. Documentation:** complies. The specification is written before the code; README and `docs/` are updated if the behaviour changes.
 - **7. AI assistance:** complies. The code is reviewed and tested by the student; the Pull Request gets a separate AI review.

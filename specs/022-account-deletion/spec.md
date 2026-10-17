@@ -42,6 +42,12 @@
 - **VT-008:** When an account is deleted, all of its results, answers and photos are deleted with it.
 - **VT-009:** When a teacher account is deleted, the teacher’s classes and their tasks are deleted, but student results remain. When a student account is deleted, the student is removed from the class and class averages are recalculated.
 
+### Requirements verified here and implemented in other features
+
+- **FR-059** (implemented in `003-access-control`): The system MUST prevent a student or a teacher from accessing administrator functions.
+- **FR-053** (implemented in `006-confirmation-dialog`): The system MUST ask the user for confirmation before the actions listed in VT-029.
+- **VT-029** (implemented in `006-confirmation-dialog`): The user is asked for confirmation before these actions: deleting a class, deleting a teacher’s task, removing a student from a class, changing a student’s class, blocking an account, deleting an account, leaving an unfinished task.
+
 ### Key Entities
 
 - All related data.
