@@ -18,21 +18,23 @@ Do the tasks in order. Each phase depends on the previous one. Tests are written
 - [ ] T004 [US1] Test case: incorrect data – `backend/tests/Project.UnitTests/Login/LoginServiceTests.cs`
 - [ ] T005 [US1] Test case: blocked account – `backend/tests/Project.UnitTests/Login/LoginServiceTests.cs`
 - [ ] T006 [US1] Test case: the session ends after 30 min – `backend/tests/Project.UnitTests/Login/LoginServiceTests.cs`
-- [ ] T007 [US1] Test for NFR-004: integration test with a replaceable clock – `backend/tests/Project.IntegrationTests/Login/LoginEndpointTests.cs`
-- [ ] T008 [US1] Test for NFR-023: integration test – `backend/tests/Project.IntegrationTests/Login/LoginEndpointTests.cs`
-- [ ] T009 [US1] Test for NFR-024: the log has no password – `backend/tests/Project.IntegrationTests/Login/LoginEndpointTests.cs`
-- [ ] T010 [US1] Frontend test: the screens of this feature (E03 Login, E18 Profile (logout)) show the loading, empty, error and success states – `frontend/src/tests/LoginPage.test.tsx`
+- [ ] T007 [US1] Integration test: the session cookie has the HttpOnly, Secure and SameSite flags, and a request that changes data without a valid CSRF token is rejected – `backend/tests/Project.IntegrationTests/Login/LoginEndpointTests.cs`
+- [ ] T008 [US1] Test for NFR-004: integration test with a replaceable clock – `backend/tests/Project.IntegrationTests/Login/LoginEndpointTests.cs`
+- [ ] T009 [US1] Test for NFR-023: integration test – `backend/tests/Project.IntegrationTests/Login/LoginEndpointTests.cs`
+- [ ] T010 [US1] Test for NFR-024: the log has no password – `backend/tests/Project.IntegrationTests/Login/LoginEndpointTests.cs`
+- [ ] T011 [US1] Frontend test: the screens of this feature (E03 Login, E18 Profile (logout)) show the loading, empty, error and success states – `frontend/src/tests/LoginPage.test.tsx`
 
 ## Implementation (depends on: Tests)
 
-- [ ] T011 [US1] Create the request and response DTOs and the validation attributes for: POST /api/auth/login, POST /api/auth/logout – `backend/src/Project.Api/DTOs/`
-- [ ] T012 [US1] Implement the business rules and server components: AuthController (login, logout), LoginService – `backend/src/Project.Api/Services/`
-- [ ] T013 [US1] Add the endpoints: POST /api/auth/login, POST /api/auth/logout – `backend/src/Project.Api/Controllers/`
-- [ ] T014 [US1] Build the screens: LoginPage – `frontend/src/pages/, frontend/src/components/`
-- [ ] T015 [US1] Add the API calls and types for the screens – `frontend/src/api/, frontend/src/types/`
+- [ ] T012 [US1] Configure the session cookie (HttpOnly, Secure, SameSite, 30-minute inactivity) and CSRF protection – `backend/src/Project.Api/Program.cs`
+- [ ] T013 [US1] Create the request and response DTOs and the validation attributes for: POST /api/auth/login, POST /api/auth/logout – `backend/src/Project.Api/DTOs/`
+- [ ] T014 [US1] Implement the business rules and server components: AuthController (login, logout), LoginService – `backend/src/Project.Api/Services/`
+- [ ] T015 [US1] Add the endpoints: POST /api/auth/login, POST /api/auth/logout – `backend/src/Project.Api/Controllers/`
+- [ ] T016 [US1] Build the screens: LoginPage – `frontend/src/pages/, frontend/src/components/`
+- [ ] T017 [US1] Add the API calls and types for the screens – `frontend/src/api/, frontend/src/types/`
 
 ## Verification (depends on: Implementation)
 
-- [ ] T016 Run `dotnet build`, `dotnet test`, `npm run lint`, `npm test` and `npm run build`
-- [ ] T017 Update README and `docs/` if the behaviour, setup or configuration changed
-- [ ] T018 Review `git diff` and open the Pull Request with the separate AI review evidence
+- [ ] T018 Run `dotnet build`, `dotnet test`, `npm run lint`, `npm test` and `npm run build`
+- [ ] T019 Update README and `docs/` if the behaviour, setup or configuration changed
+- [ ] T020 Review `git diff` and open the Pull Request with the separate AI review evidence

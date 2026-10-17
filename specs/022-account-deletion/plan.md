@@ -41,13 +41,15 @@ The plan describes how the feature “Account deletion” is implemented accordi
 ## Technical Notes
 
 - Business rules are placed in the services listed above; controllers only translate HTTP.
+- How the related data of a deleted account are removed (explicit deletion in the service inside one transaction, or cascade constraints in the migrations of features 007, 008, 010, 014 and 015) is decided in this feature’s `data-model.md` before implementation (VT-008, VT-009).
+- The rule that the last administrator cannot be deleted (VT-007) is checked in the service, because a database constraint cannot enforce it.
 
 ## Constitution Check
 
 - **1. Code quality:** complies. Each class has one responsibility and stays below 200 lines; React file names follow the naming rules.
 - **2. Architecture:** complies. AdminAccountsController (delete) only calls services; the rules are in the services; `ApplicationDbContext` is used directly (no Repository); DTOs are used at the API boundary and AutoMapper for non-trivial mappings; there is no schema change.
 - **3. Testing:** complies. The requirements FR-057 are covered by the tests in the testing plan.
-- **4. Security:** complies. Role and ownership are checked on the server for: DELETE /api/admin/accounts/{id}; all input is validated on the server; no secret is stored in Git.
+- **4. Security:** complies. Authentication, role and ownership are checked on the server for the protected requests: DELETE /api/admin/accounts/{id}. All input is validated on the server; no secret is stored in Git.
 - **5. Version control:** complies. The work is done in branch `022-account-deletion`, created from an updated `main`, and enters through a Pull Request.
 - **6. Documentation:** complies. The specification is written before the code; README and `docs/` are updated if the behaviour changes.
 - **7. AI assistance:** complies. The code is reviewed and tested by the student; the Pull Request gets a separate AI review.

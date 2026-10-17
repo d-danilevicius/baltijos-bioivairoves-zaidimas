@@ -41,6 +41,12 @@
 - **VT-027:** When a student is removed from a class or a class is deleted, the student’s results are not deleted, and the teacher no longer sees them.
 - **VT-030:** Email – up to 254 characters. Username – 3–30 characters (letters, digits, “\_”). Class name – 1–50 characters. Class code – 6 uppercase letters (A–Z) or digits; when entered, lowercase letters are converted to uppercase and spaces are removed. Evidence text – up to 500 characters. Photo – JPEG or PNG format, up to 5 MB, at most 3 per answer.
 
+### Requirements verified here and implemented in other features
+
+- **FR-024** (implemented in `003-access-control`): The system MUST prevent a teacher from viewing other teachers’ classes and the results of their students.
+- **FR-053** (implemented in `006-confirmation-dialog`): The system MUST ask the user for confirmation before the actions listed in VT-029.
+- **VT-029** (implemented in `006-confirmation-dialog`): The user is asked for confirmation before these actions: deleting a class, deleting a teacher’s task, removing a student from a class, changing a student’s class, blocking an account, deleting an account, leaving an unfinished task.
+
 ### Key Entities
 
 - Class (Name, Code, OwnerId).
