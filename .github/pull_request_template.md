@@ -1,17 +1,32 @@
-## Kas įgyvendinta
+## Summary
 
-## Specifikacija
-- specs/<funkcija>/spec.md
+## Specification
+- specs/NNN-name/spec.md
 
-## Pagrindiniai techniniai sprendimai
+## Key technical decisions
 
-## Atlikti testai
+## Tests performed
 - dotnet test:
 - npm test:
 
-## Ekrano nuotraukos
+## Migrations
+- None / migration name:
 
-## Žinomi apribojimai
+## Screenshots (UI changes)
 
-## Priėmimo kriterijai
-- [ ]
+## Known limitations
+
+## AI review
+Tool:
+Date:
+Findings:
+-
+Changes made:
+-
+Not applied (with reason):
+-
+
+## Checklist
+- [ ] git diff reviewed, no debug code or secrets
+- [ ] CI checks pass
+- [ ] Documentation updated
