@@ -15,7 +15,7 @@
 
 ## Database
 
-Identity tables (`AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, …) created by the migration `CreateIdentityTables`. Unique indexes on the normalized email and username are provided by Identity.
+Identity tables (`AspNetUsers`, `AspNetRoles`, `AspNetUserRoles`, …) created by the migration `CreateIdentityTables`. The unique index `UserNameIndex` on the normalized username is created by Identity. The unique index on the normalized email is added in the migration, because Identity creates only a non-unique email index. The Identity email normalization matches this index.
 
 ## Not stored
 

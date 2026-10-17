@@ -34,15 +34,15 @@ Do the tasks in order. Each phase depends on the previous one. Tests are written
 - [ ] T017 [US1] Create `RegisterRequest` with the field limits and `RegisteredUserResponse` – `backend/src/Project.Api/DTOs/`
 - [ ] T018 [US1] Create `RegistrationResult` and `IRegistrationService` – `backend/src/Project.Api/Services/`
 - [ ] T019 [US1] Create `RegistrationService` with the registration rules – `backend/src/Project.Api/Services/RegistrationService.cs`
-- [ ] T020 [US1] Configure Identity and register the service – `backend/src/Project.Api/Services/ServiceCollectionExtensions.cs`, `backend/src/Project.Api/Program.cs`
+- [ ] T020 [US1] Configure Identity (the email normalization matches the unique index on `NormalizedEmail`) and register the service – `backend/src/Project.Api/Services/ServiceCollectionExtensions.cs`, `backend/src/Project.Api/Program.cs`
 - [ ] T021 [US1] Add `POST /api/auth/register` – `backend/src/Project.Api/Controllers/AuthController.cs`
 - [ ] T022 [US1] Create the migration `CreateIdentityTables` – `backend/src/Project.Api/Migrations/`
 - [ ] T023 [US1] Create the registration page with the form and the error display – `frontend/src/pages/RegisterPage.tsx`
 - [ ] T024 [US1] Create the form components, the API call, the validation and the message helpers – `frontend/src/components/`, `frontend/src/api/`, `frontend/src/helpers/`, `frontend/src/types/`
-- [ ] T025 [US1] Add the routes `/register` and `/login` and the temporary login page – `frontend/src/app.tsx`, `frontend/src/pages/LoginPage.tsx`
+- [ ] T025 [US1] Add the routes `/register` and `/login` and the temporary login page (replaced when feature 002 is implemented) – `frontend/src/app.tsx`, `frontend/src/pages/LoginPage.tsx`
 
 ## Verification (depends on: Implementation)
 
 - [ ] T026 Run `dotnet build`, `dotnet test`, `npm run lint`, `npm test` and `npm run build`
-- [ ] T027 Check the feature by hand according to `quickstart.md`
+- [ ] T027 Check the feature by hand according to `quickstart.md`, including SC-001 (a new user registers in no more than 1 minute, measured by hand)
 - [ ] T028 Review `git diff` and open the Pull Request with the separate AI review evidence

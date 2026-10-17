@@ -34,13 +34,13 @@ The plan describes how the feature “Registration” is implemented according t
 
 ## Data Model Changes
 
-- Identity tables and the seeded roles `Student`, `Teacher`, `Administrator`; unique index on the normalized email. See `data-model.md`.
+- Identity tables and the seeded roles `Student`, `Teacher`, `Administrator`; the unique index `UserNameIndex` on the normalized username is created by Identity; the unique index on the normalized email is added in the migration. See `data-model.md`.
 - Migration `CreateIdentityTables`.
 
 ## Testing Plan
 
 - **Unit (xUnit):** successful registration of a student and of a teacher; repeated email (different letter case) and repeated username; administrator and unknown role rejected; password stored only as a hash; password not written to logs; limits of the request DTO (email, username, password, role).
-- **Integration (xUnit, Testcontainers):** 201 and a stored hash; 409 for a repeated email and for a repeated username; 400 for the administrator role and for a short password.
+- **Integration (xUnit, Testcontainers):** unique indexes of the email and the username are checked here, because the EF Core InMemory provider used in the unit tests does not enforce indexes; 201 and a stored hash; 409 for a repeated email and for a repeated username; 400 for the administrator role and for a short password.
 - **Frontend (Vitest):** errors next to empty fields and no server call; password length message; the login page with the notice after success; the server message for a registered email; the server failure message.
 - **Authorization tests:** not applicable, the endpoint is public by specification.
 

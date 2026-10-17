@@ -62,7 +62,7 @@
 
 ## Success Criteria
 
-- **SC-001:** A new user completes the registration in no more than 1 minute.
+- **SC-001:** A new user completes the registration in no more than 1 minute (checked by hand, see T027 in `tasks.md`).
 - **SC-002:** 100 % of attempts to register with an email or a username that is already used are rejected.
 - **SC-003:** A password cannot be read from the stored data.
 
