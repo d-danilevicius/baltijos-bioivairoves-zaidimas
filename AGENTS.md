@@ -1,60 +1,48 @@
 # AGENTS.md
 
-Praktinės instrukcijos DI pagalbininkui, dirbančiam šioje saugykloje. Principus žr. konstitucijoje.
+Practical instructions for the AI assistant in this repository. The principles are in the constitution: `.specify/memory/constitution.md`. They are not repeated here.
 
-## Privalomos nuorodos
-- Projekto konstitucija: `.specify/memory/constitution.md`. Laikykis jos visuose pakeitimuose.
-- Reikalavimai: `docs/requirements.md`.
-- Ekranai ir naudotojo eigos: `docs/ux.md`.
+## References
+- Constitution: `.specify/memory/constitution.md`
+- Requirements (FR, NFR, VT): `docs/requirements.md`
+- Screens and flows: `docs/ux.md`
+- Architecture and feature list: `docs/architecture.md`
+- Feature specifications: `specs/NNN-name/`
 
-## Saugyklos žemėlapis
-- `backend/Api/` – užklausų priėmimas, prisijungimas, rolių patikra.
-- `backend/Application/` – programos logika ir verslo taisyklės.
-- `backend/Infrastructure/` – duomenų prieiga ir migracijos.
-- `frontend/` – naršyklės dalis (React).
-- `tests/backend/`, `tests/frontend/` – automatiniai testai.
-- `docs/` – dokumentai.
-- `specs/` – funkcijų specifikacijos (po vieną aplanką kiekvienai funkcijai).
-- `.specify/` – Spec Kit failai ir konstitucija.
-- `.github/` – automatinės patikros.
+## Repository map
+- `backend/src/Project.Api/` – server (Controllers, Services, Integrations/Gbif, DTOs, Mapping, Entities, Data, Migrations, Middleware).
+- `backend/tests/Project.UnitTests/`, `backend/tests/Project.IntegrationTests/` – server tests.
+- `frontend/src/` – frontend (pages, components, hooks, helpers, api, types, tests).
+- `specs/`, `docs/`, `.specify/`, `.github/workflows/`.
 
-## Dažnos komandos
-Serveris:
-- `dotnet restore`
-- `dotnet build`
-- `dotnet test`
-- `dotnet format`
+## Commands
+Backend (in the repository root):
+- `dotnet restore backend/Project.slnx`
+- `dotnet build backend/Project.slnx`
+- `dotnet test backend/Project.slnx`
+- `dotnet format backend/Project.slnx --verify-no-changes`
+- `dotnet ef migrations add <NameDescribingTheChange> --project backend/src/Project.Api`
 
-Naršyklės dalis (aplanke `frontend/`):
-- `npm install`
-- `npm run dev`
-- `npm run lint`
-- `npm test`
-- `npm run build`
+Frontend (in the `frontend/` folder):
+- `npm ci`, `npm run lint`, `npm test`, `npm run build`, `npm run dev`
 
-## Funkcijos darbo eiga
-1. Pradėk nuo atnaujinto `main`.
-2. Sukurk funkcijos šaką.
-3. Naudok Spec Kit eigą: specifikacija → planas → užduotys → įgyvendinimas.
-4. Specifikaciją, planą ir užduotis laikyk `specs/<funkcijos-aplankas>/`.
-5. Dirbk tik pagal aktyvią specifikaciją. Nieko neįtrauk nuo savęs.
-6. Naujas verslo taisykles dėk į `backend/Application/`.
+Local database: `docker compose up -d` (a `.env` file based on `.env.example` is required).
 
-## Kaip patikrinti pakeitimus
-Prieš siūlydamas commit:
-1. Paleisk `dotnet build` ir `dotnet test`.
-2. Paleisk `npm run lint`, `npm test`, `npm run build`, jei keitėsi `frontend/`.
-3. Peržiūrėk `git diff` ir įsitikink, kad pakeitimai atitinka specifikaciją.
-4. Jei pakeitėsi elgsena, atnaujink specifikaciją ir `docs/requirements.md`.
+## Workflow
+Feature workflow according to the general project rules: updated `main` → branch → specification → Clarify → plan → Checklist and tasks → Analyze → implementation → tests → verification → Pull Request → separate AI review → merge → branch deletion. The documents of each feature are in `specs/NNN-name/`.
 
-## Ko negalima keisti ar įrašyti
-- Negalima įrašyti slaptažodžių, raktų ar `.env` failų.
-- Negalima redaguoti `bin/`, `obj/`, `node_modules/`, `dist/`.
-- Negalima keisti jau pritaikytų migracijų. Daryk naują migraciją.
-- Negalima keisti `.specify/memory/constitution.md` be aiškaus nurodymo.
-- Negalima rašyti tiesiai į `main`.
+## Verification before finishing
+- Review `git diff` and remove debug code.
+- Run the backend build and tests; if `frontend/` changed, run lint, tests and build.
+- Check that the specification and tasks are fulfilled; update README and `docs/` if the behaviour changed.
 
-## Saugyklos taisyklės
-- Visi tekstai naudotojui ir dokumentai rašomi lietuvių kalba.
-- Commit pranešimai: `tipas(sritis): trumpas aprašas`.
-- Reikalavimus žymėk numeriais: FR-xxx, NFR-xxx, VT-xxx. Nenaudok naujų, kol jie nepridėti į `docs/requirements.md`.
+## Do not touch
+- `.env`, secrets, `bin/`, `obj/`, `node_modules/`, `dist/`.
+- Migrations that are already merged (create a new migration instead) and `*.Designer.cs`, `*ModelSnapshot.cs` by hand.
+- `.specify/memory/constitution.md` without an explicit instruction.
+
+## The AI must not
+- Create Repository, GenericRepository or UnitOfWork.
+- Write directly to `main`.
+- Disable or skip tests, or change CI so that a failing command is hidden.
+- Create a feature without an approved specification, or add requirements that are not in `docs/requirements.md`.
