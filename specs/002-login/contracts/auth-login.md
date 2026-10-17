@@ -20,12 +20,27 @@ Notes:
 - The 401 response MUST not indicate whether the email or the password was incorrect (FR-006).
 - The server records `Login.Success` and `Login.Failed` in `ActionLog` (NFR-023) but MUST NOT log the password or its hash (NFR-024).
 
+## GET /api/auth/csrf
+
+- **Who can call:** everyone (public).
+- **Request:** empty.
+- **200 OK:** `{ "token": "..." }` — returns the antiforgery token in the response body and sets the antiforgery cookie.
+
+Notes:
+- Frontend should call this endpoint and send the token value in the `X-CSRF-TOKEN` header for subsequent state-changing requests.
+
+Rules for CSRF protection:
+- Every POST, PUT, PATCH and DELETE endpoint that requires a logged-in user (for example `POST /api/auth/logout`) requires the request header `X-CSRF-TOKEN` with the token obtained from `GET /api/auth/csrf`.
+- Without a valid token the server returns `400 Bad Request` with a ProblemDetails body and the code `InvalidCsrfToken` in the `errors` collection.
+- Public endpoints that do not require a logged-in user — currently `POST /api/auth/register` and `POST /api/auth/login` — are exempt from the CSRF token requirement in the first version.
+
 ## POST /api/auth/logout
 
 - **Who can call:** authenticated users.
 - **Request:** empty body.
 - **204 No Content:** success; the authentication cookie is removed.
 - **401 Unauthorized:** when the request is not authenticated.
+- **400 Bad Request** (ProblemDetails) when the `X-CSRF-TOKEN` header is missing or invalid with `errors` containing `InvalidCsrfToken`.
 
 Notes:
 - Logout is a state-changing request and must respect antiforgery protection when called from the browser (cookie + header) as described in research.md.
