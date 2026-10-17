@@ -11,7 +11,7 @@ public class RegisterRequest
 
     [Required]
     [RegularExpression("^[A-Za-z0-9_]{3,30}$", ErrorMessage = "InvalidFormat")]
-    public string Username { get; set; } = null!;
+    public string UserName { get; set; } = null!;
 
     [Required]
     [StringLength(128, MinimumLength = 8, ErrorMessage = "InvalidLength")]

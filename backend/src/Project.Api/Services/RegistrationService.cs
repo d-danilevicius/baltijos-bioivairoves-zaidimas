@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 using Project.Api.DTOs.Requests;
 using Project.Api.DTOs.Responses;
 using Project.Api.Entities;
+using System.Collections.Generic;
 
 namespace Project.Api.Services;
 
@@ -21,54 +21,46 @@ public class RegistrationService : IRegistrationService
 
     public async Task<RegistrationResult> RegisterAsync(RegisterRequest request)
     {
-        // Validate allowed role
+        // Guard: allowed roles only
         if (request.Role != RoleNames.Student && request.Role != RoleNames.Teacher)
         {
-            return new RegistrationResult
+            return RegistrationResult.Invalid(new Dictionary<string, string[]>
             {
-                Success = false,
-                Errors = new[] { "role:NotAllowed" }
-            };
+                ["role"] = new[] { "NotAllowed" }
+            });
         }
 
-        // Check existing email (ignore case) using UserManager which normalizes the email
+        // Existing email
         var existingByEmail = await _userManager.FindByEmailAsync(request.Email);
         if (existingByEmail != null)
         {
-            return new RegistrationResult
+            return RegistrationResult.Conflict(new Dictionary<string, string[]>
             {
-                Success = false,
-                Errors = new[] { "email:AlreadyRegistered" }
-            };
+                ["email"] = new[] { "AlreadyRegistered" }
+            });
         }
 
-        // Check existing username
-        var existingByName = await _userManager.FindByNameAsync(request.Username);
+        // Existing username
+        var existingByName = await _userManager.FindByNameAsync(request.UserName);
         if (existingByName != null)
         {
-            return new RegistrationResult
+            return RegistrationResult.Conflict(new Dictionary<string, string[]>
             {
-                Success = false,
-                Errors = new[] { "userName:AlreadyInUse" }
-            };
+                ["userName"] = new[] { "AlreadyInUse" }
+            });
         }
 
         var user = new ApplicationUser
         {
-            UserName = request.Username,
+            UserName = request.UserName,
             Email = request.Email,
         };
 
         var createResult = await _userManager.CreateAsync(user, request.Password);
         if (!createResult.Succeeded)
         {
-            // Map identity errors to contract error codes where possible
-            var errors = createResult.Errors.Select(e => e.Code).ToArray();
-            return new RegistrationResult
-            {
-                Success = false,
-                Errors = errors
-            };
+            // Map identity errors to contract errors or throw on unknown
+            return IdentityErrorMapper.Map(createResult.Errors, _logger);
         }
 
         // Assign role
@@ -77,12 +69,9 @@ public class RegistrationService : IRegistrationService
         {
             // rollback: delete the created user
             await _userManager.DeleteAsync(user);
-            var errors = roleResult.Errors.Select(e => e.Code).ToArray();
-            return new RegistrationResult
-            {
-                Success = false,
-                Errors = errors
-            };
+
+            var errors = new Dictionary<string, string[]> { ["role"] = new[] { "NotAllowed" } };
+            return RegistrationResult.Invalid(errors);
         }
 
         var created = new RegisteredUserResponse
@@ -92,10 +81,6 @@ public class RegistrationService : IRegistrationService
             Role = request.Role
         };
 
-        return new RegistrationResult
-        {
-            Success = true,
-            CreatedUser = created
-        };
+        return RegistrationResult.Created(created);
     }
 }

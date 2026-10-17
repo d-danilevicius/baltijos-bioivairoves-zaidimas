@@ -23,7 +23,7 @@ namespace Project.UnitTests.Registration
             var request = new RegisterRequest
             {
                 Email = "student@example.com",
-                Username = "student_user",
+                UserName = "student_user",
                 Password = "StrongPassword123",
                 Role = RoleNames.Student
             };
@@ -32,7 +32,7 @@ namespace Project.UnitTests.Registration
 
             Assert.True(result.Success);
             Assert.NotNull(result.CreatedUser);
-            Assert.Equal(request.Username, result.CreatedUser.UserName);
+            Assert.Equal(request.UserName, result.CreatedUser.UserName);
             Assert.Equal(RoleNames.Student, result.CreatedUser.Role);
 
             var stored = await userManager.FindByIdAsync(result.CreatedUser.Id);
@@ -55,7 +55,7 @@ namespace Project.UnitTests.Registration
             var request = new RegisterRequest
             {
                 Email = "teacher@example.com",
-                Username = "teacher_user",
+                UserName = "teacher_user",
                 Password = "TeacherPass123",
                 Role = RoleNames.Teacher
             };
@@ -64,7 +64,7 @@ namespace Project.UnitTests.Registration
 
             Assert.True(result.Success);
             Assert.NotNull(result.CreatedUser);
-            Assert.Equal(request.Username, result.CreatedUser.UserName);
+            Assert.Equal(request.UserName, result.CreatedUser.UserName);
             Assert.Equal(RoleNames.Teacher, result.CreatedUser.Role);
 
             var stored = await userManager.FindByIdAsync(result.CreatedUser.Id);
@@ -86,7 +86,7 @@ namespace Project.UnitTests.Registration
             var first = new RegisterRequest
             {
                 Email = "user@example.com",
-                Username = "user1",
+                UserName = "user1",
                 Password = "Password123",
                 Role = RoleNames.Student
             };
@@ -94,7 +94,7 @@ namespace Project.UnitTests.Registration
             var second = new RegisterRequest
             {
                 Email = "User@Example.com",
-                Username = "user2",
+                UserName = "user2",
                 Password = "Password123",
                 Role = RoleNames.Student
             };
@@ -105,7 +105,7 @@ namespace Project.UnitTests.Registration
             Assert.True(r1.Success);
             Assert.False(r2.Success);
             Assert.NotNull(r2.Errors);
-            Assert.Contains("email:AlreadyRegistered", r2.Errors);
+            Assert.True(r2.Errors.ContainsKey("email") && r2.Errors["email"].Contains("AlreadyRegistered"));
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace Project.UnitTests.Registration
             var first = new RegisterRequest
             {
                 Email = "a1@example.com",
-                Username = "duplicate_user",
+                UserName = "duplicate_user",
                 Password = "Password123",
                 Role = RoleNames.Student
             };
@@ -127,7 +127,7 @@ namespace Project.UnitTests.Registration
             var second = new RegisterRequest
             {
                 Email = "a2@example.com",
-                Username = "duplicate_user",
+                UserName = "duplicate_user",
                 Password = "Password123",
                 Role = RoleNames.Student
             };
@@ -138,7 +138,7 @@ namespace Project.UnitTests.Registration
             Assert.True(r1.Success);
             Assert.False(r2.Success);
             Assert.NotNull(r2.Errors);
-            Assert.Contains("userName:AlreadyInUse", r2.Errors);
+            Assert.True(r2.Errors.ContainsKey("userName") && r2.Errors["userName"].Contains("AlreadyInUse"));
         }
 
         [Fact]
@@ -152,7 +152,7 @@ namespace Project.UnitTests.Registration
             var adminReq = new RegisterRequest
             {
                 Email = "admin@example.com",
-                Username = "admin_user",
+                UserName = "admin_user",
                 Password = "Password123",
                 Role = RoleNames.Administrator
             };
@@ -160,7 +160,7 @@ namespace Project.UnitTests.Registration
             var unknownReq = new RegisterRequest
             {
                 Email = "unknown@example.com",
-                Username = "unknown_user",
+                UserName = "unknown_user",
                 Password = "Password123",
                 Role = "SuperUser"
             };
@@ -172,8 +172,8 @@ namespace Project.UnitTests.Registration
             Assert.False(rUnknown.Success);
             Assert.NotNull(rAdmin.Errors);
             Assert.NotNull(rUnknown.Errors);
-            Assert.Contains("role:NotAllowed", rAdmin.Errors);
-            Assert.Contains("role:NotAllowed", rUnknown.Errors);
+            Assert.True(rAdmin.Errors.ContainsKey("role") && rAdmin.Errors["role"].Contains("NotAllowed"));
+            Assert.True(rUnknown.Errors.ContainsKey("role") && rUnknown.Errors["role"].Contains("NotAllowed"));
         }
 
         [Fact]
@@ -188,7 +188,7 @@ namespace Project.UnitTests.Registration
             var request = new RegisterRequest
             {
                 Email = "hash2@example.com",
-                Username = "hash_user2",
+                UserName = "hash_user2",
                 Password = "SuperSecret123",
                 Role = RoleNames.Student
             };
@@ -213,7 +213,7 @@ namespace Project.UnitTests.Registration
             var request = new RegisterRequest
             {
                 Email = "nolog2@example.com",
-                Username = "nolog_user2",
+                UserName = "nolog_user2",
                 Password = "DoNotLogThis123",
                 Role = RoleNames.Student
             };

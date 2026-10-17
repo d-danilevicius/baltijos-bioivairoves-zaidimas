@@ -19,8 +19,8 @@ namespace Project.UnitTests.Registration
         [Fact]
         public void RegisterRequest_EmailRequiredAndLengthAndFormat_InvalidWhenEmptyOrTooLong()
         {
-            var reqEmpty = new RegisterRequest { Email = "", Username = "u1", Password = "Password123", Role = "Student" };
-            var reqTooLong = new RegisterRequest { Email = new string('a', 255) + "@x.com", Username = "u2", Password = "Password123", Role = "Student" };
+            var reqEmpty = new RegisterRequest { Email = "", UserName = "u1", Password = "Password123", Role = "Student" };
+            var reqTooLong = new RegisterRequest { Email = new string('a', 255) + "@x.com", UserName = "u2", Password = "Password123", Role = "Student" };
 
             var resEmpty = Validate(reqEmpty);
             var resTooLong = Validate(reqTooLong);
@@ -32,9 +32,9 @@ namespace Project.UnitTests.Registration
         [Fact]
         public void RegisterRequest_UsernameLimits_InvalidWhenTooShortOrTooLongOrBadCharacters()
         {
-            var reqShort = new RegisterRequest { Email = "a@b.com", Username = "ab", Password = "Password123", Role = "Student" };
-            var reqLong = new RegisterRequest { Email = "a@b.com", Username = new string('x', 31), Password = "Password123", Role = "Student" };
-            var reqBad = new RegisterRequest { Email = "a@b.com", Username = "bad$name", Password = "Password123", Role = "Student" };
+            var reqShort = new RegisterRequest { Email = "a@b.com", UserName = "ab", Password = "Password123", Role = "Student" };
+            var reqLong = new RegisterRequest { Email = "a@b.com", UserName = new string('x', 31), Password = "Password123", Role = "Student" };
+            var reqBad = new RegisterRequest { Email = "a@b.com", UserName = "bad$name", Password = "Password123", Role = "Student" };
 
             Assert.NotEmpty(Validate(reqShort));
             Assert.NotEmpty(Validate(reqLong));
@@ -44,8 +44,8 @@ namespace Project.UnitTests.Registration
         [Fact]
         public void RegisterRequest_PasswordLimits_InvalidWhenTooShortOrTooLong()
         {
-            var reqShort = new RegisterRequest { Email = "a@b.com", Username = "validuser", Password = "short", Role = "Student" };
-            var reqLong = new RegisterRequest { Email = "a@b.com", Username = "validuser2", Password = new string('p', 129), Role = "Student" };
+            var reqShort = new RegisterRequest { Email = "a@b.com", UserName = "validuser", Password = "short", Role = "Student" };
+            var reqLong = new RegisterRequest { Email = "a@b.com", UserName = "validuser2", Password = new string('p', 129), Role = "Student" };
 
             Assert.NotEmpty(Validate(reqShort));
             Assert.NotEmpty(Validate(reqLong));
@@ -54,8 +54,8 @@ namespace Project.UnitTests.Registration
         [Fact]
         public void RegisterRequest_RoleRequiredAndAllowed_InvalidWhenMissingOrAdministrator()
         {
-            var reqMissing = new RegisterRequest { Email = "a@b.com", Username = "user1", Password = "Password123", Role = "" };
-            var reqAdmin = new RegisterRequest { Email = "a@b.com", Username = "user2", Password = "Password123", Role = "Administrator" };
+            var reqMissing = new RegisterRequest { Email = "a@b.com", UserName = "user1", Password = "Password123", Role = "" };
+            var reqAdmin = new RegisterRequest { Email = "a@b.com", UserName = "user2", Password = "Password123", Role = "Administrator" };
 
             Assert.NotEmpty(Validate(reqMissing));
             Assert.NotEmpty(Validate(reqAdmin));
