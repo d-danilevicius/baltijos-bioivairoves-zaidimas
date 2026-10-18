@@ -75,6 +75,18 @@ No new migration and no new configuration in this feature.
 
 Apply the new migration with: dotnet ef database update --project backend/src/Project.Api
 
+## API documentation
+
+The backend generates the OpenAPI document from the code (controllers and `ProducesResponseType` attributes).
+It is available only in the Development environment and is not served in Production.
+
+With the backend running (http://localhost:5080, from `launchSettings.json`):
+
+- OpenAPI document: http://localhost:5080/openapi/v1.json
+- Interactive page (Scalar): http://localhost:5080/scalar
+
+Every new endpoint must declare its status codes and DTO types with `ProducesResponseType` so that the documentation stays correct.
+
 ## Tests
 
 ```
