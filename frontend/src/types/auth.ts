@@ -22,6 +22,12 @@ export interface LoggedInUser {
   role: 'Student' | 'Teacher' | 'Administrator'
 }
 
+export interface CurrentUser {
+  id: string
+  userName: string
+  role: LoggedInUser['role']
+}
+
 export interface ProblemDetailsWithErrors {
   type?: string
   title?: string
