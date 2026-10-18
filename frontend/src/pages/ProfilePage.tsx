@@ -40,7 +40,7 @@ export default function ProfilePage() {
           </div>
         )}
 
-        <p className="mb-2">
+        <p className="mb-2 break-all">
           <strong>Naudotojo vardas:</strong> {user.userName}
         </p>
         <p className="mb-4">

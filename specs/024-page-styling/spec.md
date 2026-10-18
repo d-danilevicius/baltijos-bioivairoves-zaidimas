@@ -29,6 +29,7 @@
 ## Edge Cases
 
 - A long error text or a long field label wraps to the next line and does not overflow the card.
+- A long username on the profile screen wraps inside the card and does not cause horizontal scrolling.
 - The loading state and the error state of the home page and of protected pages use the same layout as the other screens.
 
 ## Requirements
