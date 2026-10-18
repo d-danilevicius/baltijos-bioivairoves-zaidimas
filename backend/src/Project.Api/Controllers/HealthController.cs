@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Project.Api.DTOs.Responses;
 
 namespace Project.Api.Controllers;
 
@@ -7,6 +8,6 @@ namespace Project.Api.Controllers;
 public class HealthController : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Get() => Ok(new { status = "ok" });
+    [ProducesResponseType(typeof(HealthResponse), StatusCodes.Status200OK)]
+    public IActionResult Get() => Ok(new HealthResponse { Status = "ok" });
 }

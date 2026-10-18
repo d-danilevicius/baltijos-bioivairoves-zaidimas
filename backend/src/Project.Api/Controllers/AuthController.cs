@@ -77,7 +77,7 @@ public class AuthController : ControllerBase
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Logout()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -118,11 +118,11 @@ public class AuthController : ControllerBase
     [HttpGet("csrf")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CsrfTokenResponse), StatusCodes.Status200OK)]
     public IActionResult Csrf()
     {
         var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
-        return Ok(new { token = tokens.RequestToken });
+        return Ok(new CsrfTokenResponse { Token = tokens.RequestToken! });
     }
 
     private IActionResult MapLoginResult(LoginResult result)
