@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Project.Api.Authorization;
 using Project.Api.Data;
 using Project.Api.Entities;
 
@@ -31,6 +32,9 @@ public static class ServiceCollectionExtensions
 
         // Configure authentication cookie and TimeProvider for tests
         services.AddAuthenticationCookieConfiguration();
+
+        // Role policies: Student, Teacher, Administrator
+        services.AddRolePolicies();
 
         // Register application services
         services.AddScoped<IRegistrationService, RegistrationService>();

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Project.Api.Authorization;
 
 namespace Project.Api.Services;
 
@@ -42,8 +43,7 @@ public static class AuthenticationCookieExtensions
                 {
                     if (IsApiRequest(ctx.Request))
                     {
-                        ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
-                        return System.Threading.Tasks.Task.CompletedTask;
+                        return AccessDeniedResponse.WriteAsync(ctx.Response);
                     }
 
                     ctx.Response.Redirect(ctx.RedirectUri);

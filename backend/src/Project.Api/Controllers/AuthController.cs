@@ -80,6 +80,20 @@ public class AuthController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("me")]
+    [Authorize]
+    public IActionResult Me()
+    {
+        var response = new CurrentUserResponse
+        {
+            Id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty,
+            UserName = User.FindFirstValue(ClaimTypes.Name) ?? string.Empty,
+            Role = User.FindFirstValue(ClaimTypes.Role) ?? string.Empty
+        };
+
+        return Ok(response);
+    }
+
     [HttpGet("csrf")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
