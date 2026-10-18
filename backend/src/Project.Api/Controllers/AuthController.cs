@@ -28,6 +28,9 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
+    [ProducesResponseType(typeof(RegisteredUserResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         var result = await _registrationService.RegisterAsync(request);
@@ -60,6 +63,10 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
+    [ProducesResponseType(typeof(LoggedInUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var result = await _loginService.LoginAsync(request, HttpContext.RequestAborted);
@@ -68,6 +75,9 @@ public class AuthController : ControllerBase
 
     [HttpPost("logout")]
     [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Logout()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -82,6 +92,8 @@ public class AuthController : ControllerBase
 
     [HttpGet("me")]
     [Authorize]
+    [ProducesResponseType(typeof(CurrentUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public IActionResult Me()
     {
         var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -106,10 +118,11 @@ public class AuthController : ControllerBase
     [HttpGet("csrf")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
+    [ProducesResponseType(typeof(CsrfTokenResponse), StatusCodes.Status200OK)]
     public IActionResult Csrf()
     {
         var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
-        return Ok(new { token = tokens.RequestToken });
+        return Ok(new CsrfTokenResponse { Token = tokens.RequestToken! });
     }
 
     private IActionResult MapLoginResult(LoginResult result)
