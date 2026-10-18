@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Project.Api.Data;
 using Project.Api.Middleware;
 using Project.Api.Services;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddControllers()
     .AddJsonOptions(opts => opts.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase);
+builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -41,6 +43,12 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
 
 app.Run();
 
