@@ -14,7 +14,7 @@ Educational field game for schools, nature centres and regional parks. A teacher
 
 ## Technology
 
-.NET 10 and ASP.NET Core Web API, Entity Framework Core with PostgreSQL 17, React with TypeScript and Vite, xUnit, Vitest and React Testing Library. See [docs/architecture.md](docs/architecture.md) for the reasons.
+.NET 10 and ASP.NET Core Web API, Entity Framework Core with PostgreSQL 17, React with TypeScript, Vite and Tailwind CSS, xUnit, Vitest and React Testing Library. See [docs/architecture.md](docs/architecture.md) for the reasons.
 
 ## Prerequisites
 
@@ -110,6 +110,10 @@ Secrets are never committed. `.env` and `appsettings.Development.json` are ignor
 ## Continuous integration
 
 GitHub Actions run on pull requests to `main`: backend (restore, build, test) and frontend (install, lint, test, production build).
+
+## Image credits
+
+The background image of the frontend (`frontend/src/assets/background-muted.jpg`) is a photo from Pexels (Pexels License), changed to muted colours.
 
 ## Deployment
 
