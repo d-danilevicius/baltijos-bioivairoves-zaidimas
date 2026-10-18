@@ -11,6 +11,17 @@ export interface RegisterResponse201 {
   role: 'Student' | 'Teacher'
 }
 
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+export interface LoggedInUser {
+  id: string
+  userName: string
+  role: 'Student' | 'Teacher' | 'Administrator'
+}
+
 export interface ProblemDetailsWithErrors {
   type?: string
   title?: string
