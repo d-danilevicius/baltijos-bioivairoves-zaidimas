@@ -6,9 +6,9 @@ type Props = {
 
 export default function RoleChoice({ value, onChange, error }: Props) {
   return (
-    <fieldset style={{ marginBottom: '1rem' }} aria-describedby={error ? 'role-error' : undefined}>
-      <legend style={{ fontWeight: 600 }}>Rolė</legend>
-      <label style={{ marginRight: '1rem' }}>
+    <fieldset className="mb-4" aria-describedby={error ? 'role-error' : undefined}>
+      <legend className="font-semibold">Rolė</legend>
+      <label className="mr-4">
         <input
           type="radio"
           name="role"
@@ -28,7 +28,7 @@ export default function RoleChoice({ value, onChange, error }: Props) {
         />{' '}
         Mokytojas
       </label>
-      {error && <div id="role-error" role="alert" className="error-text" style={{ marginTop: '0.25rem' }}>{error}</div>}
+      {error && <div id="role-error" role="alert" className="mt-1 text-error">{error}</div>}
     </fieldset>
   )
 }
