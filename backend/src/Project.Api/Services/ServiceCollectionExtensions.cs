@@ -34,6 +34,8 @@ public static class ServiceCollectionExtensions
 
         // Register application services
         services.AddScoped<IRegistrationService, RegistrationService>();
+        services.AddScoped<IActionLogWriter, ActionLogWriter>();
+        services.AddScoped<ILoginService, LoginService>();
 
         return services;
     }
