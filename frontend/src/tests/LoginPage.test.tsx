@@ -3,16 +3,20 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import LoginPage from '../pages/LoginPage'
 import { loginUser } from '../api/authApi'
+import { markSessionStarted } from '../helpers/sessionMarker'
 import { accountBlocked, invalidCredentials, loginFailedLater } from '../helpers/loginMessages'
 
 vi.mock('../api/authApi', () => ({
   loginUser: vi.fn(),
 }))
 
+vi.mock('../helpers/sessionMarker', () => ({
+  markSessionStarted: vi.fn(),
+}))
+
 function ProfilePageStub() {
   const location = useLocation()
-  const state = location.state as { user?: { userName?: string } } | null
-  return <div>Profile page {state?.user?.userName ?? ''}</div>
+  return <div>Profile page {location.state === null ? 'without state' : 'with state'}</div>
 }
 
 function renderLoginPage(initialEntry: string | { pathname: string; state?: { message?: string } } = '/login') {
@@ -96,10 +100,10 @@ describe('LoginPage', () => {
     expect(screen.getByRole('button', { name: /Prisijungti/i })).toBeDisabled()
 
     resolve({ status: 200, body: { id: '1', userName: 'Jonas', role: 'Student' } })
-    await waitFor(() => expect(screen.getByText(/Profile page Jonas/)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/Profile page/)).toBeInTheDocument())
   })
 
-  it('navigates to profile with user state on successful login', async () => {
+  it('marks the session started and navigates to profile without router state on successful login', async () => {
     const mockLoginUser = vi.mocked(loginUser)
     mockLoginUser.mockResolvedValue({ status: 200, body: { id: '1', userName: 'Jonas', role: 'Teacher' } })
     renderLoginPage()
@@ -108,7 +112,8 @@ describe('LoginPage', () => {
     await userEvent.type(screen.getByLabelText(/Slaptažodis/), 'secret123')
     await userEvent.click(screen.getByRole('button', { name: /Prisijungti/i }))
 
-    expect(await screen.findByText(/Profile page Jonas/)).toBeInTheDocument()
+    expect(await screen.findByText(/Profile page without state/)).toBeInTheDocument()
+    expect(markSessionStarted).toHaveBeenCalledTimes(1)
   })
 
   it('shows registration success message from router state', () => {
