@@ -60,14 +60,26 @@ public class OpenApiDocumentTests : IClassFixture<RegistrationApiFixture>
     }
 
     [Fact]
-    public async Task GetOpenApiDocument_InDevelopment_DocumentsForbiddenForLogout()
+    public async Task GetOpenApiDocument_InDevelopment_DocumentsBadRequestForLogout()
     {
         using var document = await GetDocumentAsync();
 
         var responses = document.RootElement.GetProperty("paths").GetProperty("/api/auth/logout").GetProperty("post").GetProperty("responses");
 
-        Assert.True(responses.TryGetProperty("403", out var forbidden), "Status code 403 is not documented for POST /api/auth/logout.");
-        Assert.True(forbidden.TryGetProperty("content", out _), "Status code 403 of POST /api/auth/logout has no content.");
+        Assert.True(responses.TryGetProperty("400", out var badRequest), "Status code 400 is not documented for POST /api/auth/logout.");
+        Assert.True(badRequest.TryGetProperty("content", out _), "Status code 400 of POST /api/auth/logout has no content.");
+    }
+
+    [Fact]
+    public async Task GetOpenApiDocument_InDevelopment_DocumentsCsrfTokenResponseSchema()
+    {
+        await AssertOkResponseSchemaHasPropertyAsync("/api/auth/csrf", "token");
+    }
+
+    [Fact]
+    public async Task GetOpenApiDocument_InDevelopment_DocumentsHealthResponseSchema()
+    {
+        await AssertOkResponseSchemaHasPropertyAsync("/api/health", "status");
     }
 
     [Theory]
@@ -82,6 +94,26 @@ public class OpenApiDocumentTests : IClassFixture<RegistrationApiFixture>
         var responses = document.RootElement.GetProperty("paths").GetProperty(path).GetProperty(method).GetProperty("responses");
 
         Assert.True(responses.TryGetProperty(statusCode, out _), $"Status code {statusCode} is not documented for {method.ToUpperInvariant()} {path}.");
+    }
+
+    private async Task AssertOkResponseSchemaHasPropertyAsync(string path, string propertyName)
+    {
+        using var document = await GetDocumentAsync();
+        var root = document.RootElement;
+
+        var responses = root.GetProperty("paths").GetProperty(path).GetProperty("get").GetProperty("responses");
+        Assert.True(responses.TryGetProperty("200", out var ok), $"Status code 200 is not documented for GET {path}.");
+        Assert.True(ok.TryGetProperty("content", out var content), $"Status code 200 of GET {path} has no content.");
+        Assert.True(content.TryGetProperty("application/json", out var json), $"Status code 200 of GET {path} has no JSON content.");
+        Assert.True(json.TryGetProperty("schema", out var schema), $"Status code 200 of GET {path} has no JSON schema.");
+
+        if (schema.TryGetProperty("$ref", out var reference))
+        {
+            var name = reference.GetString()!.Split('/')[^1];
+            Assert.True(root.GetProperty("components").GetProperty("schemas").TryGetProperty(name, out schema), $"Schema {name} is missing from components/schemas.");
+        }
+
+        Assert.True(schema.TryGetProperty("properties", out var properties) && properties.TryGetProperty(propertyName, out _), $"Response schema of GET {path} has no property {propertyName}.");
     }
 
     private HttpClient CreateClient()
