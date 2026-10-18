@@ -46,7 +46,7 @@ The plan describes how the feature “Registration” is implemented according t
 
 ## Technical Notes
 
-- The username and email are checked in the service before the insert to return a clear message; the unique indexes handle two identical requests sent at the same time.
+- The username and email are checked in the service before the insert to return a clear message; the unique indexes handle two identical requests sent at the same time. When the database rejects the second request, the service catches the error and returns 409.
 - AutoMapper is not used: the only mappings (request → user, user → response) are trivial.
 
 ## Constitution Check

@@ -31,7 +31,7 @@
 - The username is shorter than 3 or longer than 30 characters, or contains characters other than letters, digits and “_”.
 - No role is chosen.
 - The password is never shown and never written to logs (NFR-024).
-- Two registrations with the same email or username are sent at the same time: the database allows only one.
+- Two registrations with the same email or username are sent at the same time: the database allows only one, and the other request gets 409 (AlreadyRegistered or AlreadyInUse), not a server error.
 
 ## Requirements
 
