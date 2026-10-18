@@ -63,6 +63,12 @@ npm run dev
 
 The registration page is at http://localhost:5173/register and the endpoint is POST /api/auth/register.
 
+The login page is at http://localhost:5173/login and the endpoint is POST /api/auth/login.
+After login the user is taken to the profile page http://localhost:5173/profile, where "Atsijungti" calls POST /api/auth/logout.
+Session uses cookie authentication (HttpOnly, Secure, SameSite=Lax) with 30 minutes of inactivity.
+CSRF: POST requests that change data need the X-CSRF-TOKEN header; the token is returned by GET /api/auth/csrf (fetch it after login).
+Apply the new migration with: dotnet ef database update --project backend/src/Project.Api
+
 ## Tests
 
 ```
