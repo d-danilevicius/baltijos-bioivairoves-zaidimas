@@ -49,7 +49,7 @@ describe('RegisterPage', () => {
     await userEvent.type(screen.getByLabelText(/Slaptažodis/), 'Password123')
     await userEvent.click(screen.getByLabelText(/Mokinys/))
     await userEvent.click(screen.getByRole('button', { name: /Registruotis/i }))
-    await waitFor(() => expect(screen.getByText(/Prisijungimas/)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Prisijungimas' })).toBeInTheDocument())
     expect(screen.getByText(/Paskyra sukurta. Prisijunkite./)).toBeInTheDocument()
   })
 
@@ -104,6 +104,6 @@ describe('RegisterPage', () => {
     await userEvent.click(screen.getByRole('button', { name: /Registruotis/i }))
     expect(screen.getByRole('button', { name: /Registruotis/i })).toBeDisabled()
     resolve({ status: 201, body: { id: '1', userName: 'u', role: 'Student' } })
-    await waitFor(() => expect(screen.getByText(/Prisijungimas/)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Prisijungimas' })).toBeInTheDocument())
   })
 })

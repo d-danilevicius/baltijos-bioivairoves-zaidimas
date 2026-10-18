@@ -72,4 +72,12 @@ describe('HomePage', () => {
     expect(await screen.findByRole('link', { name: 'Prisijungti' })).toBeInTheDocument()
     expect(getCurrentUser).toHaveBeenCalledTimes(2)
   })
+
+  it('does not show the menu to a visitor on the home page', async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue({ status: 401 })
+    renderHomePage()
+
+    await screen.findByRole('link', { name: 'Prisijungti' })
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
+  })
 })
