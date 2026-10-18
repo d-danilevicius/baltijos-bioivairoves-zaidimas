@@ -23,14 +23,19 @@ internal sealed class LoginTestHelper
 
     public static string Unique(string prefix) => prefix + Guid.NewGuid().ToString("N").Substring(0, 12);
 
-    public async Task<string> CreateUserAsync(string email, string userName, string password, bool isBlocked = false)
+    public async Task<string> CreateUserAsync(
+        string email,
+        string userName,
+        string password,
+        bool isBlocked = false,
+        string role = RoleNames.Student)
     {
         using var scope = _fixture.Services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>>();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var user = new ApplicationUser { UserName = userName, Email = email };
         await userManager.CreateAsync(user, password);
-        await userManager.AddToRoleAsync(user, RoleNames.Student);
+        await userManager.AddToRoleAsync(user, role);
         if (isBlocked)
         {
             var stored = await db.Users.SingleAsync(u => u.Email == email);
