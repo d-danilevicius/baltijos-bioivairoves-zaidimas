@@ -3,9 +3,6 @@ name: Frontend
 on:
   pull_request:
     branches: [main]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/frontend.yml'
 
 jobs:
   lint-test-build:
