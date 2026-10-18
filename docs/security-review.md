@@ -29,8 +29,8 @@ Features 004–022 are not implemented yet. Where a risk belongs to a later feat
 | A user calls an endpoint of another role (for example a student calls a teacher endpoint) | Authenticated user | Privilege escalation | Role policies Student, Teacher, Administrator checked on the server; 403 with `AccessDenied` | `TestPolicyEndpoint_NonMatchingRole_Returns403WithAccessDenied`, `AuthorizeAsync_RoleAgainstPolicyMatrix_ReturnsExpectedResult` |
 | Registering as administrator | Anonymous visitor | Full control of the application | `RegisterRequest.Role` accepts only `Student` or `Teacher` | `Post_Register_AdministratorRole_Returns400`, `RegisterRequest_RoleRequiredAndAllowed_InvalidWhenMissingOrAdministrator` |
 | User A changes an identifier to read or edit data of user B | Authenticated user | Access to another user's data | Ownership checks in the services of features 007, 009, 011, 018, 019, 020 (not implemented yet) | Negative integration test in each of those features |
-| Cross-site request forgery | Malicious web page | Actions performed as the logged-in user | SameSite=Lax cookie, antiforgery token header `X-CSRF-TOKEN` required for unsafe requests | `Logout_CsrfAndAuthenticationBehaviour` |
-| Invalid or oversized input | Any client | Errors, bad data | Server-side validation with data annotations, 400 with error codes | `RegisterRequestValidationTests`, `Login_ScenarioEmptyEmailAndPassword_Returns400WithRequiredErrors` |
+| Cross-site request forgery | Malicious web page | Actions performed as the logged-in user | SameSite=Lax cookie, antiforgery token header `X-CSRF-TOKEN` required for unsafe requests of endpoints that use the session (`POST /api/auth/register` and `POST /api/auth/login` are exempt, see 3.6) | `Logout_CsrfAndAuthenticationBehaviour` |
+| Invalid or oversized input | Any client | Errors, bad data | Server-side validation with data annotations, 400 with error codes. Registration has format and length checks; login checks only that the fields are present (see section 4) | `RegisterRequestValidationTests`, `Login_ScenarioEmptyEmailAndPassword_Returns400WithRequiredErrors` |
 | Guessing passwords (credential attack) | Anonymous visitor | Account takeover | Passwords hashed by ASP.NET Core Identity; same error for unknown account and wrong password | `WrongPasswordAndUnknownEmail_Return401WithInvalidCredentials`. Limitation: no lockout or rate limiting (see 3.7) |
 | Secrets in Git | Anyone with repository access | Database access | `.env` and local settings are ignored; connection string in user secrets; `.env.example` has placeholders only | `git ls-files` shows no secret files; see 3.2 |
 | Vulnerable dependencies | Attacker using a known flaw | Remote exploitation | Dependency scan; patched `System.Security.Cryptography.Pkcs` version | Scan result in 3.3 |
@@ -88,8 +88,8 @@ Features 004–022 are not implemented yet. Where a risk belongs to a later feat
 ### 3.6 Insecure Design
 - **Risk:** missing rules that cannot be fixed by code review later.
 - **Application area:** requirements, specifications, plans.
-- **Existing protection:** requirements are written before the code (`docs/requirements.md`, `specs/`). Roles are limited at registration. The antiforgery token is required for all unsafe requests that use the session. Protection of protected species locations and the separation of confirmed GBIF data from student data are specified for features 010 and 013.
-- **Remaining limitation:** those two rules and the photo metadata removal (feature 015) are specified but not implemented. Each must have an automated test.
+- **Existing protection:** requirements are written before the code (`docs/requirements.md`, `specs/`). Roles are limited at registration. The antiforgery token is required for unsafe requests of endpoints that use the session. Protection of protected species locations and the separation of confirmed GBIF data from student data are specified for features 010 and 013.
+- **Remaining limitation:** those two rules and the photo metadata removal (feature 015) are specified but not implemented. Each must have an automated test. `POST /api/auth/register` and `POST /api/auth/login` are explicitly exempt from the antiforgery check (`[IgnoreAntiforgeryToken]`), so login CSRF is an accepted risk, recorded in `specs/002-login/research.md`; the control covers only the endpoints that use the session.
 - **Verification:** the "tests" part of each `plan.md`.
 
 ### 3.7 Authentication Failures
@@ -125,13 +125,13 @@ Features 004–022 are not implemented yet. Where a risk belongs to a later feat
 ### 3.10 Mishandling of Exceptional Conditions
 - **Risk:** stack traces or database details shown to users; unhandled exceptions leave the system in an unknown state.
 - **Application area:** `GlobalExceptionHandler`, ProblemDetails responses.
-- **Existing protection:** the exception handler writes the error to the log and returns `500` with a generic message. Expected failures return `400`, `401`, `403` or `409` in one ProblemDetails format with error codes. The CSRF failure returns `400 InvalidCsrfToken`.
-- **Remaining limitation:** none known for the current endpoints.
+- **Existing protection:** the exception handler writes the error to the log and returns `500` with a generic message. Validation, login, access-denied (role) and CSRF failures return `400`, `401`, `403` or `409` as ProblemDetails with error codes (for example `400 InvalidCsrfToken`, `401 InvalidCredentials`, `403 AccessDenied`). A missing or expired session on a protected endpoint returns `401` with an empty body, because the cookie handler only sets the status code.
+- **Remaining limitation:** the `401` for a missing or expired session has no ProblemDetails body or error code, unlike the login and validation failures. The frontend relies on the status code. The response format is therefore not identical for every expected failure.
 - **Verification:** `GlobalExceptionHandlerTests` (the response does not contain the secret detail of the exception).
 
 ## 4. Validation of input
 
-All input of the current endpoints is validated on the server with data annotations: required fields, e-mail format and length (254), user name 3–30 characters (letters, digits, `_`), password length 8–128 and the allowed roles. Invalid data returns `400` with error codes instead of an exception. Features that accept identifiers, query parameters or files must add the same server-side checks (identifier range, file type and size).
+Registration (`RegisterRequest`) is validated on the server with data annotations: required fields, e-mail format and length (254), user name 3–30 characters (letters, digits, `_`), password length 8–128 and the allowed roles. Invalid data returns `400` with error codes instead of an exception. Login (`LoginRequest`) has only `[Required]` on the e-mail and password; there are no format or length limits, and non-empty values are passed to ASP.NET Core Identity. This is a current limitation: very long values are not rejected before they are processed. Features that accept identifiers, query parameters or files must add the same server-side checks (identifier range, file type and size).
 **Verification:** `RegisterRequestValidationTests`, `RegistrationEndpointTests`, `LoginContractTests`.
 
 ## 5. Summary of remaining limitations
@@ -141,6 +141,9 @@ All input of the current endpoints is validated on the server with data annotati
 | Ownership checks and negative tests | Features 007, 009, 011, 018, 019, 020 (each feature in its own branch) |
 | No lockout or rate limiting for login | To be specified as a new security feature |
 | Access denied events are not logged | To be specified as a new security feature |
+| Login has no format or length limits for e-mail and password | To be specified as a new security feature |
+| 401 for a missing or expired session has no ProblemDetails body | To be specified as a new feature |
+| Login is exempt from the antiforgery check (login CSRF, accepted risk) | Recorded in `specs/002-login/research.md` |
 | Production host names, HTTPS certificate and Data Protection keys | Deployment |
 | Dependency scan is manual | To be added to CI when time allows |
 | Photo metadata removal and protected species coordinates | Features 013 and 015 |
