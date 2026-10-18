@@ -1,0 +1,7 @@
+export const invalidCredentials = 'Neteisingas el. paštas arba slaptažodis.'
+export const accountBlocked = 'Paskyra užblokuota. Kreipkitės į administratorių.'
+export const emailRequired = 'Įveskite el. pašto adresą.'
+export const passwordRequired = 'Įveskite slaptažodį.'
+export const loginFailedLater = 'Nepavyko prisijungti. Bandykite vėliau.'
+export const loginRequired = 'Prisijunkite, kad galėtumėte tęsti.'
+export const logoutFailed = 'Nepavyko atsijungti. Bandykite vėliau.'

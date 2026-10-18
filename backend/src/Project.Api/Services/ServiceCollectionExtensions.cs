@@ -29,8 +29,13 @@ public static class ServiceCollectionExtensions
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
+        // Configure authentication cookie and TimeProvider for tests
+        services.AddAuthenticationCookieConfiguration();
+
         // Register application services
         services.AddScoped<IRegistrationService, RegistrationService>();
+        services.AddScoped<IActionLogWriter, ActionLogWriter>();
+        services.AddScoped<ILoginService, LoginService>();
 
         return services;
     }

@@ -26,7 +26,7 @@ The plan describes how the feature “Login and logout” is implemented accordi
 
 ## Server Request Changes
 
-- POST /api/auth/login, POST /api/auth/logout
+- POST /api/auth/login, GET /api/auth/csrf, POST /api/auth/logout
 
 ## Data Model Changes
 
