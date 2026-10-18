@@ -53,6 +53,8 @@ dotnet run --project backend/src/Project.Api
 
 Check: http://localhost:5080/api/health returns `{"status":"ok"}`.
 
+On Windows both parts can be started with a double click on `start-dev.bat` in the repository root (the database must already be running).
+
 Frontend (http://localhost:5173, requests to `/api` are proxied to the backend):
 
 ```
