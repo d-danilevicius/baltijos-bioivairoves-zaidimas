@@ -10,6 +10,7 @@ import {
   passwordRequired,
 } from '../helpers/loginMessages'
 import { type LoginFieldErrors, validateLogin } from '../helpers/validateLogin'
+import { markSessionStarted } from '../helpers/sessionMarker'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -38,7 +39,8 @@ export default function LoginPage() {
     setLoading(false)
 
     if (res.status === 200) {
-      navigate('/profile', { state: { user: res.body } })
+      markSessionStarted()
+      navigate('/profile')
       return
     }
 

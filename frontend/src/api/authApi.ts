@@ -1,4 +1,4 @@
-import { LoggedInUser, LoginRequest, ProblemDetailsWithErrors, RegisterRequest, RegisterResponse201 } from '../types/auth'
+import { CurrentUser, LoggedInUser, LoginRequest, ProblemDetailsWithErrors, RegisterRequest, RegisterResponse201 } from '../types/auth'
 
 const base = (import.meta.env.VITE_API_URL ?? '') as string
 
@@ -17,6 +17,11 @@ export type LoginResult =
 
 export type LogoutResult =
   | { status: 204 }
+  | { status: 401 }
+  | { status: 'network' | 'server'; message: string }
+
+export type CurrentUserResult =
+  | { status: 200; body: CurrentUser }
   | { status: 401 }
   | { status: 'network' | 'server'; message: string }
 
@@ -80,6 +85,29 @@ export async function loginUser(req: LoginRequest): Promise<LoginResult> {
     if (res.status === 400 || res.status === 401 || res.status === 403) {
       const body = (await res.json()) as ProblemDetailsWithErrors
       return { status: res.status, body }
+    }
+
+    return { status: 'server', message: 'Server error' }
+  } catch (e) {
+    const err = e as Error | undefined
+    return { status: 'network', message: err?.message ?? 'Network error' }
+  }
+}
+
+export async function getCurrentUser(): Promise<CurrentUserResult> {
+  try {
+    const res = await fetch(base + '/api/auth/me', {
+      method: 'GET',
+      credentials: 'include',
+    })
+
+    if (res.status === 200) {
+      const body = (await res.json()) as CurrentUser
+      return { status: 200, body }
+    }
+
+    if (res.status === 401) {
+      return { status: 401 }
     }
 
     return { status: 'server', message: 'Server error' }

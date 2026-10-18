@@ -1,109 +1,108 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { logoutUser } from '../api/authApi'
-import { loginRequired, logoutFailed } from '../helpers/loginMessages'
-import LoginPage from '../pages/LoginPage'
+import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom'
+import { logoutUser, type LogoutResult } from '../api/authApi'
+import { logoutFailed } from '../helpers/loginMessages'
+import { markSessionStarted, hadSession } from '../helpers/sessionMarker'
 import ProfilePage from '../pages/ProfilePage'
+import type { CurrentUser } from '../types/auth'
 
 vi.mock('../api/authApi', () => ({
   logoutUser: vi.fn(),
 }))
 
-function renderWithRoutes(initialEntry: string | { pathname: string; state?: unknown }) {
+const mockLogoutUser = vi.mocked(logoutUser)
+
+function createUser(overrides: Partial<CurrentUser> = {}): CurrentUser {
+  return { id: '1', userName: 'Jonas', role: 'Student', ...overrides } as CurrentUser
+}
+
+function renderProfile(user: CurrentUser) {
   return render(
-    <MemoryRouter initialEntries={[initialEntry]}>
+    <MemoryRouter initialEntries={['/profile']}>
       <Routes>
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route element={<Outlet context={{ user }} />}>
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
+        <Route path="/login" element={<div>Login stub</div>} />
       </Routes>
     </MemoryRouter>
   )
 }
 
+function getLogoutButton() {
+  return screen.getByRole('button', { name: /Atsijungti/i })
+}
+
 describe('ProfilePage', () => {
+  beforeEach(() => {
+    markSessionStarted()
+  })
+
   afterEach(() => {
     vi.restoreAllMocks()
     vi.clearAllMocks()
+    sessionStorage.clear()
   })
 
   it('shows user name and Lithuanian role name', () => {
-    renderWithRoutes({
-      pathname: '/profile',
-      state: { user: { id: '1', userName: 'Jonas', role: 'Teacher' } },
-    })
+    renderProfile(createUser({ role: 'Teacher' }))
 
     expect(screen.getByRole('heading', { name: 'Profilis' })).toBeInTheDocument()
     expect(screen.getByText(/Naudotojo vardas:/)).toBeInTheDocument()
     expect(screen.getByText(/Jonas/)).toBeInTheDocument()
-    expect(screen.getByText(/Rolė:/)).toBeInTheDocument()
     expect(screen.getByText(/Mokytojas/)).toBeInTheDocument()
   })
 
-  it('redirects to login with loginRequired message when user state is missing', async () => {
-    renderWithRoutes('/profile')
+  it('navigates to login and clears session marker when logout returns 204', async () => {
+    mockLogoutUser.mockResolvedValue({ status: 204 } satisfies LogoutResult)
+    renderProfile(createUser())
 
-    await waitFor(() => expect(screen.getByRole('heading', { name: 'Prisijungimas' })).toBeInTheDocument())
-    expect(screen.getByRole('status')).toHaveTextContent(loginRequired)
+    await userEvent.click(getLogoutButton())
+
+    expect(await screen.findByText('Login stub')).toBeInTheDocument()
+    expect(hadSession()).toBe(false)
   })
 
-  it('navigates to login when logout returns 204', async () => {
-    const mockLogoutUser = vi.mocked(logoutUser)
-    mockLogoutUser.mockResolvedValue({ status: 204 })
-    renderWithRoutes({
-      pathname: '/profile',
-      state: { user: { id: '1', userName: 'Jonas', role: 'Student' } },
-    })
+  it('navigates to login and clears session marker when logout returns 401', async () => {
+    mockLogoutUser.mockResolvedValue({ status: 401 } satisfies LogoutResult)
+    renderProfile(createUser())
 
-    await userEvent.click(screen.getByRole('button', { name: /Atsijungti/i }))
+    await userEvent.click(getLogoutButton())
 
-    await waitFor(() => expect(screen.getByRole('heading', { name: 'Prisijungimas' })).toBeInTheDocument())
+    expect(await screen.findByText('Login stub')).toBeInTheDocument()
+    expect(hadSession()).toBe(false)
   })
 
-  it('navigates to login when logout returns 401', async () => {
-    const mockLogoutUser = vi.mocked(logoutUser)
-    mockLogoutUser.mockResolvedValue({ status: 401 })
-    renderWithRoutes({
-      pathname: '/profile',
-      state: { user: { id: '1', userName: 'Jonas', role: 'Student' } },
-    })
+  it.each<LogoutResult>([
+    { status: 'network', message: 'Network error' },
+    { status: 'server', message: 'Server error' },
+  ])('shows logoutFailed and stays on profile when logout fails with $status', async (result) => {
+    mockLogoutUser.mockResolvedValue(result)
+    renderProfile(createUser({ role: 'Administrator' }))
 
-    await userEvent.click(screen.getByRole('button', { name: /Atsijungti/i }))
-
-    await waitFor(() => expect(screen.getByRole('heading', { name: 'Prisijungimas' })).toBeInTheDocument())
-  })
-
-  it('shows logoutFailed and stays on profile when logout fails', async () => {
-    const mockLogoutUser = vi.mocked(logoutUser)
-    mockLogoutUser.mockResolvedValue({ status: 'server', message: 'Server error' })
-    renderWithRoutes({
-      pathname: '/profile',
-      state: { user: { id: '1', userName: 'Jonas', role: 'Administrator' } },
-    })
-
-    await userEvent.click(screen.getByRole('button', { name: /Atsijungti/i }))
+    await userEvent.click(getLogoutButton())
 
     expect(await screen.findByText(logoutFailed)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Profilis' })).toBeInTheDocument()
+    expect(screen.queryByText('Login stub')).not.toBeInTheDocument()
+    expect(hadSession()).toBe(true)
   })
 
   it('disables logout button while request is pending', async () => {
-    let resolve: (value: unknown) => void = () => {}
-    const pending = new Promise((res) => {
-      resolve = res
-    })
-    const mockLogoutUser = vi.mocked(logoutUser)
-    mockLogoutUser.mockReturnValue(pending as ReturnType<typeof logoutUser>)
-    renderWithRoutes({
-      pathname: '/profile',
-      state: { user: { id: '1', userName: 'Jonas', role: 'Student' } },
-    })
+    let resolveLogout: (value: LogoutResult) => void = () => {}
+    mockLogoutUser.mockReturnValue(
+      new Promise<LogoutResult>((resolve) => {
+        resolveLogout = resolve
+      })
+    )
+    renderProfile(createUser())
 
-    await userEvent.click(screen.getByRole('button', { name: /Atsijungti/i }))
+    await userEvent.click(getLogoutButton())
 
-    expect(screen.getByRole('button', { name: /Atsijungti/i })).toBeDisabled()
+    expect(getLogoutButton()).toBeDisabled()
 
-    resolve({ status: 204 })
-    await waitFor(() => expect(screen.getByRole('heading', { name: 'Prisijungimas' })).toBeInTheDocument())
+    resolveLogout({ status: 204 })
+    await waitFor(() => expect(screen.getByText('Login stub')).toBeInTheDocument())
   })
 })

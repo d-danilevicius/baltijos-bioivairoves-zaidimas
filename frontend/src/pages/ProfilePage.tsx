@@ -1,27 +1,16 @@
-import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { logoutUser } from '../api/authApi'
-import { loginRequired, logoutFailed } from '../helpers/loginMessages'
+import { useCurrentUser } from '../hooks/useCurrentUser'
+import { logoutFailed } from '../helpers/loginMessages'
 import { getRoleName } from '../helpers/roleNames'
-import type { LoggedInUser } from '../types/auth'
+import { clearSessionMarker } from '../helpers/sessionMarker'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
-  const location = useLocation()
+  const user = useCurrentUser()
   const [loading, setLoading] = useState(false)
   const [topError, setTopError] = useState<string | undefined>(undefined)
-  const state = (location.state as { user?: LoggedInUser } | null) ?? {}
-  const user = state.user
-
-  useEffect(() => {
-    if (!user) {
-      navigate('/login', { state: { message: loginRequired }, replace: true })
-    }
-  }, [navigate, user])
-
-  if (!user) {
-    return null
-  }
 
   async function onLogout() {
     setTopError(undefined)
@@ -30,6 +19,7 @@ export default function ProfilePage() {
     setLoading(false)
 
     if (res.status === 204 || res.status === 401) {
+      clearSessionMarker()
       navigate('/login', { replace: true })
       return
     }
