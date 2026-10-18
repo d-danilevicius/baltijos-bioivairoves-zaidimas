@@ -1,4 +1,8 @@
 import React, { useState } from 'react'
+import Button from '../components/button'
+import Card from '../components/card'
+import PageLayout from '../components/pageLayout'
+import { visitorLinks } from '../helpers/navigationLinks'
 import TextField from '../components/textField'
 import RoleChoice from '../components/roleChoice'
 import { validateRegistration } from '../helpers/validateRegistration'
@@ -80,18 +84,25 @@ export default function RegisterPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} style={{ maxWidth: 480, margin: '0 auto' }}>
-      <h1>Registracija</h1>
-      {topError && <div role="alert" className="error-text" style={{ marginBottom: '1rem' }}>{topError}</div>}
+    <PageLayout links={visitorLinks}>
+      <Card title="Registracija">
+        <form onSubmit={onSubmit}>
+          {topError && (
+            <div role="alert" className="mb-4 text-error">
+              {topError}
+            </div>
+          )}
 
-      <TextField id="email" label="El. paštas" value={email} onChange={setEmail} error={fieldErrors.email} autoComplete="email" />
-      <TextField id="userName" label="Naudotojo vardas" value={userName} onChange={setUserName} error={fieldErrors.userName} autoComplete="username" />
-      <TextField id="password" label="Slaptažodis" type="password" value={password} onChange={setPassword} error={fieldErrors.password} autoComplete="new-password" />
-      <RoleChoice value={role} onChange={setRole} error={fieldErrors.role} />
+          <TextField id="email" label="El. paštas" value={email} onChange={setEmail} error={fieldErrors.email} autoComplete="email" />
+          <TextField id="userName" label="Naudotojo vardas" value={userName} onChange={setUserName} error={fieldErrors.userName} autoComplete="username" />
+          <TextField id="password" label="Slaptažodis" type="password" value={password} onChange={setPassword} error={fieldErrors.password} autoComplete="new-password" />
+          <RoleChoice value={role} onChange={setRole} error={fieldErrors.role} />
 
-      <button type="submit" disabled={loading} style={{ padding: '0.5rem 1rem', fontSize: '1rem' }}>
-        Registruotis
-      </button>
-    </form>
+          <Button type="submit" disabled={loading} fullWidth>
+            Registruotis
+          </Button>
+        </form>
+      </Card>
+    </PageLayout>
   )
 }

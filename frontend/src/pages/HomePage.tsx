@@ -1,5 +1,7 @@
-import { Link, Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
+import Card from '../components/card'
 import ErrorState from '../components/errorState'
+import LinkButton from '../components/linkButton'
 import LoadingState from '../components/loadingState'
 import PageLayout from '../components/pageLayout'
 import { homeDescription, homeTitle, loginLink, registerLink } from '../helpers/homeMessages'
@@ -19,18 +21,15 @@ export default function HomePage() {
       {session.status === 'loading' && <LoadingState />}
       {session.status === 'error' && <ErrorState onRetry={retry} />}
       {session.status === 'unauthenticated' && (
-        <section className="home">
-          <h1>{homeTitle}</h1>
-          <p>{homeDescription}</p>
-          <p className="home-links">
-            <Link className="button button-primary" to="/login">
-              {loginLink}
-            </Link>
-            <Link className="button button-secondary" to="/register">
+        <Card title={homeTitle} size="wide">
+          <p className="mb-6 text-center">{homeDescription}</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <LinkButton to="/login">{loginLink}</LinkButton>
+            <LinkButton to="/register" variant="secondary">
               {registerLink}
-            </Link>
-          </p>
-        </section>
+            </LinkButton>
+          </div>
+        </Card>
       )}
     </PageLayout>
   )

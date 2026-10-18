@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { logoutUser } from '../api/authApi'
+import Button from '../components/button'
+import Card from '../components/card'
+import PageLayout from '../components/pageLayout'
+import { userLinks } from '../helpers/navigationLinks'
 import { useCurrentUser } from '../hooks/useCurrentUser'
 import { logoutFailed } from '../helpers/loginMessages'
 import { getRoleName } from '../helpers/roleNames'
@@ -28,20 +32,25 @@ export default function ProfilePage() {
   }
 
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto' }}>
-      <h1>Profilis</h1>
-      {topError && <div role="alert" className="error-text" style={{ marginBottom: '1rem' }}>{topError}</div>}
+    <PageLayout links={userLinks}>
+      <Card title="Profilis">
+        {topError && (
+          <div role="alert" className="mb-4 text-error">
+            {topError}
+          </div>
+        )}
 
-      <div style={{ marginBottom: '0.5rem' }}>
-        <strong>Naudotojo vardas:</strong> {user.userName}
-      </div>
-      <div style={{ marginBottom: '1rem' }}>
-        <strong>Rolė:</strong> {getRoleName(user.role)}
-      </div>
+        <p className="mb-2">
+          <strong>Naudotojo vardas:</strong> {user.userName}
+        </p>
+        <p className="mb-4">
+          <strong>Rolė:</strong> {getRoleName(user.role)}
+        </p>
 
-      <button type="button" onClick={onLogout} disabled={loading} style={{ padding: '0.5rem 1rem', fontSize: '1rem' }}>
-        Atsijungti
-      </button>
-    </div>
+        <Button type="button" onClick={onLogout} disabled={loading}>
+          Atsijungti
+        </Button>
+      </Card>
+    </PageLayout>
   )
 }
