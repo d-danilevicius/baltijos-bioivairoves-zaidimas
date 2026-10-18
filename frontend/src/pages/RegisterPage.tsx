@@ -82,7 +82,7 @@ export default function RegisterPage() {
   return (
     <form onSubmit={onSubmit} style={{ maxWidth: 480, margin: '0 auto' }}>
       <h1>Registracija</h1>
-      {topError && <div role="alert" style={{ color: 'red', marginBottom: '1rem' }}>{topError}</div>}
+      {topError && <div role="alert" className="error-text" style={{ marginBottom: '1rem' }}>{topError}</div>}
 
       <TextField id="email" label="El. paštas" value={email} onChange={setEmail} error={fieldErrors.email} autoComplete="email" />
       <TextField id="userName" label="Naudotojo vardas" value={userName} onChange={setUserName} error={fieldErrors.userName} autoComplete="username" />

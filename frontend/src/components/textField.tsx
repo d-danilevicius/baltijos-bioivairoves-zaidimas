@@ -26,7 +26,7 @@ export default function TextField({ id, label, type = 'text', value, onChange, e
         style={{ display: 'block', width: '100%', padding: '0.5rem', fontSize: '1rem' }}
       />
       {error && (
-        <div id={`${id}-error`} role="alert" style={{ color: 'red', marginTop: '0.25rem' }}>
+        <div id={`${id}-error`} role="alert" className="error-text" style={{ marginTop: '0.25rem' }}>
           {error}
         </div>
       )}

@@ -21,12 +21,12 @@ The plan describes how the feature “Home page” is implemented according to t
 
 ## Structure and Main Components
 
-- Server: MeController (GET /api/me).
-- Frontend: HomePage with redirection by role.
+- Server: no change. The existing `GET /api/auth/me` is used.
+- Frontend: `HomePage` uses the existing `useCurrentUserSession` hook, the `LoadingState` and `ErrorState` components and `Navigate` of React Router. The texts are in `helpers/homeMessages.ts`. The styles are in `styles.css`.
 
 ## Server Request Changes
 
-- GET /api/me
+- None.
 
 ## Data Model Changes
 
@@ -35,22 +35,22 @@ The plan describes how the feature “Home page” is implemented according to t
 
 ## Testing Plan
 
-- Test case: redirection by role.
+- Frontend (Vitest and React Testing Library, `getCurrentUser` is mocked): visitor view, redirection of a logged-in user, loading state, error state with retry.
+- Backend: no change, so no new backend test. The backend checks still run in CI.
 
 ## Technical Notes
 
-- Business rules are placed in the services listed above; controllers only translate HTTP.
+- Session states: `loading` → loading state; `ready` → `<Navigate to="/profile" replace />`; `unauthenticated` → visitor view; `error` → error state with retry.
 
 ## Constitution Check
 
-- **1. Code quality:** complies. Each class has one responsibility and stays below 200 lines; React file names follow the naming rules.
-- **2. Architecture:** complies. MeController (GET /api/me) only calls services; the rules are in the services; `ApplicationDbContext` is used directly (no Repository); DTOs are used at the API boundary and AutoMapper for non-trivial mappings; there is no schema change.
-- **3. Testing:** complies. The requirements FR-010, FR-011 are covered by the tests in the testing plan.
-- **4. Security:** complies. Role and ownership are checked on the server for: GET /api/me; all input is validated on the server; no secret is stored in Git.
+- **1. Code quality:** complies. Each file has one responsibility and stays below 200 lines; React file names follow the naming rules (page `HomePage.tsx`, helper `homeMessages.ts`).
+- **2. Architecture:** complies. No backend change.
+- **3. Testing:** complies. The requirements FR-010, FR-011 and FR-012 are covered by the tests in the testing plan.
+- **4. Security:** complies. The redirection is only a convenience; the access to protected data is still checked on the server (feature 003). No secret is stored in Git.
 - **5. Version control:** complies. The work is done in branch `004-home-page`, created from an updated `main`, and enters through a Pull Request.
 - **6. Documentation:** complies. The specification is written before the code; README and `docs/` are updated if the behaviour changes.
 - **7. AI assistance:** complies. The code is reviewed and tested by the student; the Pull Request gets a separate AI review.
-- **8. Simplicity:** complies. No new libraries or layers are added.
+- **8. Simplicity:** complies. No new libraries or layers are added; plain CSS is used.
 
 **No exceptions. The plan complies with the constitution.**
-

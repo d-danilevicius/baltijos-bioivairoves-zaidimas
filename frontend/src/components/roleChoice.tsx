@@ -28,7 +28,7 @@ export default function RoleChoice({ value, onChange, error }: Props) {
         />{' '}
         Mokytojas
       </label>
-      {error && <div id="role-error" role="alert" style={{ color: 'red', marginTop: '0.25rem' }}>{error}</div>}
+      {error && <div id="role-error" role="alert" className="error-text" style={{ marginTop: '0.25rem' }}>{error}</div>}
     </fieldset>
   )
 }

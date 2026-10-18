@@ -30,7 +30,7 @@ export default function ProfilePage() {
   return (
     <div style={{ maxWidth: 480, margin: '0 auto' }}>
       <h1>Profilis</h1>
-      {topError && <div role="alert" style={{ color: 'red', marginBottom: '1rem' }}>{topError}</div>}
+      {topError && <div role="alert" className="error-text" style={{ marginBottom: '1rem' }}>{topError}</div>}
 
       <div style={{ marginBottom: '0.5rem' }}>
         <strong>Naudotojo vardas:</strong> {user.userName}
