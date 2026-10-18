@@ -106,6 +106,7 @@ Features 004–022 are not implemented yet. Where a risk belongs to a later feat
   - `CheckPasswordSignInAsync` is called with `lockoutOnFailure: false`, so repeated wrong passwords are not limited. A lockout or rate limit is not implemented.
   - The password rule checks only length (as required by the specification), not complexity or a list of leaked passwords.
   - A request for an unknown e-mail can be faster than for a known one (timing difference).
+  - The session expiration is sliding (30 minutes of inactivity, NFR-004). A stolen cookie that is used regularly stays valid. There is no absolute session lifetime and no short-lived token with renewal.
 - **Verification:** `LoginEndpointTests` (wrong password, blocked user, cookie flags, logout, session expiry after 29 and 31 minutes), `LoginContractTests`, `AuthMeEndpointTests`.
 
 ### 3.8 Software or Data Integrity Failures
@@ -141,6 +142,7 @@ Registration (`RegisterRequest`) is validated on the server with data annotation
 | Ownership checks and negative tests | Features 007, 009, 011, 018, 019, 020 (each feature in its own branch) |
 | No lockout or rate limiting for login | To be specified as a new security feature |
 | Access denied events are not logged | To be specified as a new security feature |
+| Sliding 30-minute session has no absolute lifetime (a stolen cookie can be kept alive) | To be specified as a new security feature (shorter timeout or maximum session lifetime) |
 | Login has no format or length limits for e-mail and password | To be specified as a new security feature |
 | 401 for a missing or expired session has no ProblemDetails body | To be specified as a new feature |
 | Login is exempt from the antiforgery check (login CSRF, accepted risk) | Recorded in `specs/002-login/research.md` |
