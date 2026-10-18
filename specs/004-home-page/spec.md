@@ -60,6 +60,10 @@
 - Q: What is the starting screen of each role now? → A: The role-specific screens (task list, class list, account list) belong to later features. Until they exist, the starting screen of every role is the profile page `/profile`.
 - Q: What does the page show when the session check fails with a server error? → A: The error state with a retry button (FR-012).
 
+**Session 2026-10-18 (AI review)**
+
+- Q: What color do error messages use on the new background? → A: One shared CSS class `error-text` with the color `#b00020` (contrast 6.83:1 on `#f4f8f5`) is used for all error messages, because the former inline `red` gives only 3.73:1 (NFR-010).
+
 No unresolved clarification markers remain.
 
 ## Assumptions

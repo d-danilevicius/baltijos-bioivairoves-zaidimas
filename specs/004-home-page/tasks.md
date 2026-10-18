@@ -28,4 +28,5 @@ Do the tasks in order. Each phase depends on the previous one. Tests are written
 
 - [x] T009 Run `npm run lint`, `npm test` and `npm run build` (the backend is not changed; CI runs the backend checks)
 - [x] T010 Update README and `docs/` if the behaviour, setup or configuration changed
-- [ ] T011 Review `git diff` and open the Pull Request with the separate AI review evidence
+- [x] T011 Fix the contrast of error messages after the AI review: shared class `error-text` (`#b00020`) instead of inline `red` – `frontend/src/styles.css` and the components that show errors
+- [ ] T012 Review `git diff` and open the Pull Request with the separate AI review evidence

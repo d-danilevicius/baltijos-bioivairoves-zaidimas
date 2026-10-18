@@ -7,7 +7,7 @@ type Props = {
 export default function ErrorState({ onRetry }: Props) {
   return (
     <div>
-      <div role="alert" style={{ color: 'red', marginBottom: '0.5rem' }}>
+      <div role="alert" className="error-text" style={{ marginBottom: '0.5rem' }}>
         {serverError}
       </div>
       <button type="button" onClick={onRetry}>

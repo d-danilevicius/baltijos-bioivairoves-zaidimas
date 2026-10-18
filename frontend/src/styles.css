@@ -52,3 +52,7 @@ main {
   outline: 3px solid #1b2b24;
   outline-offset: 2px;
 }
+
+.error-text {
+  color: #b00020;
+}

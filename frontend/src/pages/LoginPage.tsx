@@ -72,7 +72,7 @@ export default function LoginPage() {
     <form onSubmit={onSubmit} style={{ maxWidth: 480, margin: '0 auto' }}>
       <h1>Prisijungimas</h1>
       {state.message && <div role="status" style={{ marginTop: '1rem', color: 'green' }}>{state.message}</div>}
-      {topError && <div role="alert" style={{ color: 'red', marginBottom: '1rem' }}>{topError}</div>}
+      {topError && <div role="alert" className="error-text" style={{ marginBottom: '1rem' }}>{topError}</div>}
 
       <TextField id="email" label="El. paštas" value={email} onChange={setEmail} error={fieldErrors.email} autoComplete="email" />
       <TextField
