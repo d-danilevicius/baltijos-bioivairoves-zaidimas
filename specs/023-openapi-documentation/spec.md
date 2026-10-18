@@ -26,6 +26,7 @@
 ## Edge Cases
 
 - An action without declared status codes would be documented incompletely; therefore every action MUST declare its status codes (see Assumptions).
+- The CSRF failure of `POST /api/auth/logout` is a 400 response with ProblemDetails and the error code `InvalidCsrfToken`, and it MUST be documented.
 - Endpoints that require a session or a role (401, 403) MUST show these codes in the document, even though the interactive page does not log in (see Scope Boundaries).
 
 ## Requirements
@@ -38,6 +39,7 @@
 - The document MUST list all existing endpoints: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/csrf`, `GET /api/auth/me` and `GET /api/health`.
 - For every endpoint the document MUST show the request DTOs, the response DTOs, the status codes the endpoint can return (including 400, 401, 403 and 409 where they apply) and the ProblemDetails error format.
 - The descriptions MUST come from the code (attributes such as `ProducesResponseType`); there MUST be no hand-written copy of the API description, so it cannot get out of date.
+- The 200 responses of `GET /api/auth/csrf` and `GET /api/health` MUST show a response body schema (named response DTOs `CsrfTokenResponse` and `HealthResponse`; the JSON shape is not changed).
 - The README MUST explain where to open the documentation.
 
 ### Non-functional Requirements
@@ -64,6 +66,10 @@
 **Session 2026-10-17**
 
 - No questions were raised.
+
+**Session 2026-10-18**
+
+- The AI review of the Pull Request found the logout status code (400, not 403) and the missing response schemas of csrf and health; the specification was updated accordingly.
 
 No unresolved clarification markers remain.
 

@@ -27,4 +27,12 @@ Do the tasks in order. Each phase depends on the previous one. Tests are written
 
 - [x] T008 Run `dotnet build` and `dotnet test`
 - [x] T009 Update README with where to open the documentation (`/openapi/v1.json` and the interactive page, Development only) and `docs/` if the setup changed – `README.md`
-- [ ] T010 Review `git diff` and open the Pull Request with the separate AI review evidence
+
+## Fixes after AI review (depends on: Implementation)
+
+- [x] T010 [US1] Update the integration tests: logout documents 400, csrf and health 200 response schemas – `backend/tests/Project.IntegrationTests/OpenApi/OpenApiDocumentTests.cs`
+- [x] T011 [US1] Fix the logout status code attribute (400), add `CsrfTokenResponse` and `HealthResponse` and use them in the csrf and health actions – `backend/src/Project.Api/Controllers/AuthController.cs`, `backend/src/Project.Api/Controllers/HealthController.cs`, `backend/src/Project.Api/DTOs/Responses/`
+
+## Pull Request (depends on: Fixes after AI review)
+
+- [ ] T012 Review `git diff` and open the Pull Request with the separate AI review evidence

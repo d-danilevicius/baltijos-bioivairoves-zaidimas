@@ -26,6 +26,7 @@ The plan describes how the backend generates an OpenAPI document from the code a
 - Server:
   - `AddOpenApi()` registration and Development-only mapping of `/openapi/v1.json` and the Scalar page in `backend/src/Project.Api/Program.cs`;
   - `ProducesResponseType` attributes (request/response DTOs, 200/201/204, 400, 401, 403, 409 and `ProblemDetails`) on `AuthController` and the health endpoint.
+  - response DTOs in `backend/src/Project.Api/DTOs/Responses/`: `CsrfTokenResponse`, `HealthResponse`.
 - Documentation: README section with the documentation address.
 
 ## Server Request Changes
@@ -34,6 +35,7 @@ The plan describes how the backend generates an OpenAPI document from the code a
 - New (Development only): interactive documentation page (Scalar).
 - Existing endpoints get status code attributes only; their behavior does not change:
   - `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/csrf`, `GET /api/auth/me`, `GET /api/health`.
+- `POST /api/auth/logout` documents 400 (invalid CSRF token), not 403; `GET /api/auth/csrf` and `GET /api/health` return named response DTOs with an unchanged JSON shape.
 
 ## Data Model Changes
 
@@ -45,6 +47,7 @@ The plan describes how the backend generates an OpenAPI document from the code a
 - Backend integration tests:
   - in the test (Development) host `GET /openapi/v1.json` -> 200 and the document contains the paths of all existing endpoints (`/api/auth/register`, `/api/auth/login`, `/api/auth/logout`, `/api/auth/csrf`, `/api/auth/me`, `/api/health`) and the status codes 401 and 403 where documented;
   - in the Production environment `/openapi/v1.json` and the interactive page -> 404.
+  - the 200 response schemas of `GET /api/auth/csrf` and `GET /api/health` contain the properties "token" and "status", and `POST /api/auth/logout` documents 400.
 
 ## Technical Notes
 
