@@ -79,6 +79,7 @@ public class AccessControlEndpointTests : IClassFixture<AccessControlApiFixture>
         var errors = json.RootElement.GetProperty("errors").GetProperty("");
         var values = errors.EnumerateArray().Select(x => x.GetString()).OfType<string>();
         Assert.Contains("AccessDenied", values);
+        Assert.Equal("Prieiga uždrausta", json.RootElement.GetProperty("detail").GetString());
     }
 
     [Theory]

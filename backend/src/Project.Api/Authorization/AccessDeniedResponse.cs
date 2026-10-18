@@ -8,6 +8,7 @@ namespace Project.Api.Authorization;
 public static class AccessDeniedResponse
 {
     public const string ErrorCode = "AccessDenied";
+    public const string Message = "Prieiga uždrausta";
 
     public static Task WriteAsync(HttpResponse response)
     {
@@ -18,8 +19,8 @@ public static class AccessDeniedResponse
         {
             Status = StatusCodes.Status403Forbidden,
             Type = "https://tools.ietf.org/html/rfc9110#section-15.5.4",
-            Title = "Forbidden",
-            Detail = "Access denied."
+            Title = Message,
+            Detail = Message
         };
 
         response.StatusCode = StatusCodes.Status403Forbidden;

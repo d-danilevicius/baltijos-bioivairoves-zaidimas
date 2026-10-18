@@ -84,11 +84,20 @@ public class AuthController : ControllerBase
     [Authorize]
     public IActionResult Me()
     {
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userName = User.FindFirstValue(ClaimTypes.Name);
+        var role = User.FindFirstValue(ClaimTypes.Role);
+
+        if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(role))
+        {
+            return Unauthorized();
+        }
+
         var response = new CurrentUserResponse
         {
-            Id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty,
-            UserName = User.FindFirstValue(ClaimTypes.Name) ?? string.Empty,
-            Role = User.FindFirstValue(ClaimTypes.Role) ?? string.Empty
+            Id = id,
+            UserName = userName,
+            Role = role
         };
 
         return Ok(response);
