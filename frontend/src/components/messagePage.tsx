@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom'
+import Card from './card'
+import LinkButton from './linkButton'
 import PageLayout from './pageLayout'
 
 type MessagePageProps = {
@@ -9,10 +10,9 @@ type MessagePageProps = {
 export default function MessagePage({ title, actionLabel }: MessagePageProps) {
   return (
     <PageLayout>
-      <h1>{title}</h1>
-      <p>
-        <Link to="/">{actionLabel}</Link>
-      </p>
+      <Card title={title}>
+        <LinkButton to="/">{actionLabel}</LinkButton>
+      </Card>
     </PageLayout>
   )
 }

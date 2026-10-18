@@ -121,4 +121,11 @@ describe('LoginPage', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('Paskyra sukurta. Prisijunkite.')
   })
+
+  it('shows a registration link for users without an account', () => {
+    renderLoginPage()
+
+    expect(screen.getByText(/Dar neturite paskyros/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Registruotis' })).toHaveAttribute('href', '/register')
+  })
 })

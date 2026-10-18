@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import ErrorState from './errorState'
 import LoadingState from './loadingState'
+import PageLayout from './pageLayout'
 import { useCurrentUserSession } from '../hooks/useCurrentUserSession'
 import AccessDeniedPage from '../pages/AccessDeniedPage'
 import type { CurrentUser } from '../types/auth'
@@ -13,7 +14,11 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const { session, retry } = useCurrentUserSession()
 
   if (session.status === 'loading') {
-    return <LoadingState />
+    return (
+      <PageLayout>
+        <LoadingState />
+      </PageLayout>
+    )
   }
 
   if (session.status === 'unauthenticated') {
@@ -21,7 +26,11 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   }
 
   if (session.status === 'error') {
-    return <ErrorState onRetry={retry} />
+    return (
+      <PageLayout>
+        <ErrorState onRetry={retry} />
+      </PageLayout>
+    )
   }
 
   if (allowedRoles && !allowedRoles.includes(session.user.role)) {

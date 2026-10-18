@@ -1,4 +1,5 @@
 import { retry, serverError } from '../helpers/stateMessages'
+import Button from './button'
 
 type Props = {
   onRetry: () => void
@@ -6,13 +7,13 @@ type Props = {
 
 export default function ErrorState({ onRetry }: Props) {
   return (
-    <div>
-      <div role="alert" className="error-text" style={{ marginBottom: '0.5rem' }}>
+    <div className="rounded-2xl bg-white p-6 shadow-md">
+      <div role="alert" className="mb-2 text-error">
         {serverError}
       </div>
-      <button type="button" onClick={onRetry}>
+      <Button type="button" onClick={onRetry}>
         {retry}
-      </button>
+      </Button>
     </div>
   )
 }

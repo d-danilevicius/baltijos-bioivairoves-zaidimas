@@ -1,5 +1,9 @@
 import { FormEvent, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import Button from '../components/button'
+import Card from '../components/card'
+import PageLayout from '../components/pageLayout'
+import { visitorLinks } from '../helpers/navigationLinks'
 import TextField from '../components/textField'
 import { loginUser } from '../api/authApi'
 import {
@@ -69,25 +73,42 @@ export default function LoginPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} style={{ maxWidth: 480, margin: '0 auto' }}>
-      <h1>Prisijungimas</h1>
-      {state.message && <div role="status" style={{ marginTop: '1rem', color: 'green' }}>{state.message}</div>}
-      {topError && <div role="alert" className="error-text" style={{ marginBottom: '1rem' }}>{topError}</div>}
+    <PageLayout links={visitorLinks}>
+      <Card title="Prisijungimas">
+        <form onSubmit={onSubmit}>
+          {state.message && (
+            <div role="status" className="mb-4 text-brand">
+              {state.message}
+            </div>
+          )}
+          {topError && (
+            <div role="alert" className="mb-4 text-error">
+              {topError}
+            </div>
+          )}
 
-      <TextField id="email" label="El. paštas" value={email} onChange={setEmail} error={fieldErrors.email} autoComplete="email" />
-      <TextField
-        id="password"
-        label="Slaptažodis"
-        type="password"
-        value={password}
-        onChange={setPassword}
-        error={fieldErrors.password}
-        autoComplete="current-password"
-      />
+          <TextField id="email" label="El. paštas" value={email} onChange={setEmail} error={fieldErrors.email} autoComplete="email" />
+          <TextField
+            id="password"
+            label="Slaptažodis"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            error={fieldErrors.password}
+            autoComplete="current-password"
+          />
 
-      <button type="submit" disabled={loading} style={{ padding: '0.5rem 1rem', fontSize: '1rem' }}>
-        Prisijungti
-      </button>
-    </form>
+          <Button type="submit" disabled={loading} fullWidth>
+            Prisijungti
+          </Button>
+        </form>
+        <p className="mt-4 text-center">
+          Dar neturite paskyros?{' '}
+          <Link to="/register" className="font-semibold text-brand underline">
+            Registruotis
+          </Link>
+        </p>
+      </Card>
+    </PageLayout>
   )
 }

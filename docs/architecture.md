@@ -18,7 +18,7 @@ Every major dependency must have a clear reason for being included. Do not add a
 
 - **Server:** .NET 10 and ASP.NET Core Web API. This is the latest stable version at the start of the project, as required by the assignment and the general rules.
 
-- **Frontend:** React with TypeScript, Vite and React Router. React – screens are built from reusable parts; TypeScript – errors in API data types are visible already during development; Vite – build tool and development server; React Router – screen addresses.
+- **Frontend:** React with TypeScript, Vite, React Router and Tailwind CSS. React – screens are built from reusable parts; TypeScript – errors in API data types are visible already during development; Vite – build tool and development server; React Router – screen addresses; Tailwind CSS – styles are written as utility classes with one theme (colours) in `styles.css`, so the screens look the same; it is a build-time dependency.
 
 - **Map:** Leaflet with OpenStreetMap tiles. Used only to choose a location (FR-025); the OpenStreetMap attribution link is shown. The location can also be given by coordinates.
 
