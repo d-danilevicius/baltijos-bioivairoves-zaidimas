@@ -13,23 +13,26 @@ Do the tasks in order. Each phase depends on the previous one. Tests are written
 
 ## Tests (written first) (depends on: Data)
 
-- [ ] T002 [US1] Test case: authorization table (student, teacher, administrator × protected actions); frontend route protection – `backend/tests/Project.UnitTests/AccessControl/AccessPolicyTests.cs`
-- [ ] T003 [US1] Test for NFR-003: authorization tests for every protected action – `backend/tests/Project.IntegrationTests/AccessControl/AccessControlEndpointTests.cs`
-- [ ] T004 [US1] Test for NFR-027: Vitest test – `frontend/src/tests/AccessDeniedPage.test.tsx`
-- [ ] T005 [US1] Test for NFR-028: Vitest tests – `frontend/src/tests/AccessDeniedPage.test.tsx`
-- [ ] T006 [US1] Test for NFR-029: Vitest tests – `frontend/src/tests/AccessDeniedPage.test.tsx`
-- [ ] T007 [US1] Frontend test: the screens of this feature (E19 Access denied, E20 Page not found) show the loading, empty, error and success states – `frontend/src/tests/AccessDeniedPage.test.tsx`
+- [ ] T002 [US1] Unit tests for role policy matrix (Student, Teacher, Administrator × protected actions) – `backend/tests/Project.UnitTests/AccessControl/AccessPolicyTests.cs`
+- [ ] T003 [US1] Integration tests for `GET /api/auth/me`: valid session -> 200 with `{ id, userName, role }`; no session -> 401 – `backend/tests/Project.IntegrationTests/AccessControl/AuthMeEndpointTests.cs`
+- [ ] T004 [US1] Integration tests for role policies using a small test-only controller in `backend/tests/Project.IntegrationTests/AccessControl/` (not in `Project.Api`): three actions (Student, Teacher, Administrator) called as student, teacher, administrator and without a session; role mismatch -> 403 with “Prieiga uždrausta” – `backend/tests/Project.IntegrationTests/AccessControl/AccessControlEndpointTests.cs`
+- [ ] T005 [US1] Frontend tests for `ProtectedRoute`: no session redirect to login with “Prisijunkite, kad galėtumėte tęsti.” and expired session inactivity message – `frontend/src/tests/ProtectedRoute.test.tsx`
+- [ ] T006 [US1] Frontend tests for E19 AccessDeniedPage on wrong-role flow – `frontend/src/tests/AccessDeniedPage.test.tsx`
+- [ ] T007 [US1] Frontend tests for E20 NotFoundPage unknown URL flow with “Į pradžią” button – `frontend/src/tests/NotFoundPage.test.tsx`
+- [ ] T008 [US1] Frontend tests for shared loading/error (“Bandyti dar kartą”)/empty-state components – `frontend/src/tests/CommonStateComponents.test.tsx`
+- [ ] T009 [US1] Frontend test for `ProfilePage` loading current user via `/api/auth/me` instead of router state – `frontend/src/tests/ProfilePage.test.tsx`
 
 ## Implementation (depends on: Tests)
 
-- [ ] T008 [US1] Create the authorization policies for the roles Student, Teacher and Administrator and apply them to the controllers – `backend/src/Project.Api/Program.cs, backend/src/Project.Api/Controllers/`
-- [ ] T009 [US1] Create the ownership checks that the services call before changing or returning data of a class or a student – `backend/src/Project.Api/Services/`
-- [ ] T010 [US1] Return the error “Prieiga uždrausta” (Access denied) with status 403 through the central error handling – `backend/src/Project.Api/Middleware/`
-- [ ] T011 [US1] Build the screens: AccessDeniedPage, NotFoundPage, protectedRoute component – `frontend/src/pages/, frontend/src/components/`
-- [ ] T012 [US1] Add the API calls and types for the screens – `frontend/src/api/, frontend/src/types/`
+- [ ] T010 [US1] Define server role policies for Student, Teacher and Administrator and apply them where an endpoint needs a role; `GET /api/auth/me` and logout stay available to every authenticated role – `backend/src/Project.Api/Program.cs, backend/src/Project.Api/Controllers/`
+- [ ] T011 [US1] Add `GET /api/auth/me` endpoint that returns current user `{ id, userName, role }` for valid session and 401 otherwise – `backend/src/Project.Api/Controllers/`
+- [ ] T012 [US1] Return 403 with “Prieiga uždrausta” (Access denied) through central error handling for insufficient-role access – `backend/src/Project.Api/Middleware/`
+- [ ] T013 [US1] Build frontend route-access foundations: `ProtectedRoute`, `AccessDeniedPage`, `NotFoundPage` – `frontend/src/components/, frontend/src/pages/`
+- [ ] T014 [US1] Add shared loading/error/empty-state components and integrate them into the protected-route flows – `frontend/src/components/`
+- [ ] T015 [US1] Update `ProfilePage` to use `/api/auth/me` instead of router state and adjust related API/types – `frontend/src/pages/, frontend/src/api/, frontend/src/types/`
 
 ## Verification (depends on: Implementation)
 
-- [ ] T013 Run `dotnet build`, `dotnet test`, `npm run lint`, `npm test` and `npm run build`
-- [ ] T014 Update README and `docs/` if the behaviour, setup or configuration changed
-- [ ] T015 Review `git diff` and open the Pull Request with the separate AI review evidence
+- [ ] T016 Run `dotnet build`, `dotnet test`, `npm run lint`, `npm test` and `npm run build`
+- [ ] T017 Update README and `docs/` if the behaviour, setup or configuration changed
+- [ ] T018 Review `git diff` and open the Pull Request with the separate AI review evidence
