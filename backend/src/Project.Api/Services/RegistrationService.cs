@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Project.Api.DTOs.Requests;
 using Project.Api.DTOs.Responses;
@@ -30,24 +31,11 @@ public class RegistrationService : IRegistrationService
             });
         }
 
-        // Existing email
-        var existingByEmail = await _userManager.FindByEmailAsync(request.Email);
-        if (existingByEmail != null)
+        // Existing email or username
+        var existing = await FindConflictAsync(request);
+        if (existing != null)
         {
-            return RegistrationResult.Conflict(new Dictionary<string, string[]>
-            {
-                ["email"] = new[] { "AlreadyRegistered" }
-            });
-        }
-
-        // Existing username
-        var existingByName = await _userManager.FindByNameAsync(request.UserName);
-        if (existingByName != null)
-        {
-            return RegistrationResult.Conflict(new Dictionary<string, string[]>
-            {
-                ["userName"] = new[] { "AlreadyInUse" }
-            });
+            return existing;
         }
 
         var user = new ApplicationUser
@@ -56,7 +44,19 @@ public class RegistrationService : IRegistrationService
             Email = request.Email,
         };
 
-        var createResult = await _userManager.CreateAsync(user, request.Password);
+        IdentityResult createResult;
+        try
+        {
+            createResult = await _userManager.CreateAsync(user, request.Password);
+        }
+        catch (DbUpdateException)
+        {
+            // A concurrent request may have saved the same user between the checks and the save.
+            var conflict = await FindConflictAsync(request);
+            if (conflict is null) throw;
+            _logger.LogWarning("Registration conflicted with a concurrent request");
+            return conflict;
+        }
         if (!createResult.Succeeded)
         {
             // Map identity errors to contract errors or throw on unknown
@@ -82,5 +82,20 @@ public class RegistrationService : IRegistrationService
         };
 
         return RegistrationResult.Created(created);
+    }
+
+    private async Task<RegistrationResult?> FindConflictAsync(RegisterRequest request)
+    {
+        if (await _userManager.FindByEmailAsync(request.Email) != null)
+        {
+            return RegistrationResult.Conflict(new Dictionary<string, string[]> { ["email"] = new[] { "AlreadyRegistered" } });
+        }
+
+        if (await _userManager.FindByNameAsync(request.UserName) != null)
+        {
+            return RegistrationResult.Conflict(new Dictionary<string, string[]> { ["userName"] = new[] { "AlreadyInUse" } });
+        }
+
+        return null;
     }
 }
