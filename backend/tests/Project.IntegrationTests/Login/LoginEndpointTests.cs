@@ -159,7 +159,7 @@ public class LoginEndpointTests : IClassFixture<LoginApiFixture>
         Assert.Equal(HttpStatusCode.OK, loginRes.StatusCode);
 
         // Attempt logout without CSRF token
-        var logoutRes = await LogoutWithTokenAsync(token: null);
+        var logoutRes = await LogoutWithTokenAsync(token: string.Empty);
         Assert.Equal(HttpStatusCode.BadRequest, logoutRes.StatusCode);
         var pd = JsonDocument.Parse(await logoutRes.Content.ReadAsStringAsync());
         Assert.Contains("InvalidCsrfToken", pd.RootElement.GetProperty("errors").GetProperty("").EnumerateArray().Select(e => e.GetString()));

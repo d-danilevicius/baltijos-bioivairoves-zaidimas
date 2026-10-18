@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Api.DTOs.Requests;
@@ -13,14 +14,17 @@ namespace Project.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IRegistrationService _registrationService;
+    private readonly IAntiforgery _antiforgery;
 
-    public AuthController(IRegistrationService registrationService)
+    public AuthController(IRegistrationService registrationService, IAntiforgery antiforgery)
     {
         _registrationService = registrationService;
+        _antiforgery = antiforgery;
     }
 
     [HttpPost("register")]
     [AllowAnonymous]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         var result = await _registrationService.RegisterAsync(request);
@@ -48,5 +52,14 @@ public class AuthController : ControllerBase
             return Conflict(details);
 
         return BadRequest(details);
+    }
+
+    [HttpGet("csrf")]
+    [AllowAnonymous]
+    [IgnoreAntiforgeryToken]
+    public IActionResult Csrf()
+    {
+        var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+        return Ok(new { token = tokens.RequestToken });
     }
 }
