@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,13 @@ namespace Project.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IRegistrationService _registrationService;
+    private readonly ILoginService _loginService;
     private readonly IAntiforgery _antiforgery;
 
-    public AuthController(IRegistrationService registrationService, IAntiforgery antiforgery)
+    public AuthController(IRegistrationService registrationService, ILoginService loginService, IAntiforgery antiforgery)
     {
         _registrationService = registrationService;
+        _loginService = loginService;
         _antiforgery = antiforgery;
     }
 
@@ -54,6 +57,29 @@ public class AuthController : ControllerBase
         return BadRequest(details);
     }
 
+    [HttpPost("login")]
+    [AllowAnonymous]
+    [IgnoreAntiforgeryToken]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        var result = await _loginService.LoginAsync(request, HttpContext.RequestAborted);
+        return MapLoginResult(result);
+    }
+
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
+        await _loginService.LogoutAsync(userId, HttpContext.RequestAborted);
+        return NoContent();
+    }
+
     [HttpGet("csrf")]
     [AllowAnonymous]
     [IgnoreAntiforgeryToken]
@@ -61,5 +87,55 @@ public class AuthController : ControllerBase
     {
         var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
         return Ok(new { token = tokens.RequestToken });
+    }
+
+    private IActionResult MapLoginResult(LoginResult result)
+    {
+        if (result.Outcome == LoginOutcome.Succeeded)
+        {
+            if (result.User == null)
+            {
+                throw new InvalidOperationException("LoginService returned Succeeded but User is null");
+            }
+
+            return Ok(result.User);
+        }
+
+        if (result.Outcome == LoginOutcome.InvalidCredentials)
+        {
+            var details = new ValidationProblemDetails(new Dictionary<string, string[]>
+            {
+                [""] = new[] { "InvalidCredentials" }
+            })
+            {
+                Status = StatusCodes.Status401Unauthorized,
+                Type = "https://tools.ietf.org/html/rfc7235#section-3.1",
+                Title = "Unauthorized",
+                Detail = "Invalid credentials."
+            };
+
+            return new UnauthorizedObjectResult(details);
+        }
+
+        if (result.Outcome == LoginOutcome.Blocked)
+        {
+            var details = new ValidationProblemDetails(new Dictionary<string, string[]>
+            {
+                [""] = new[] { "AccountBlocked" }
+            })
+            {
+                Status = StatusCodes.Status403Forbidden,
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.4",
+                Title = "Forbidden",
+                Detail = "Account is blocked."
+            };
+
+            return new ObjectResult(details)
+            {
+                StatusCode = StatusCodes.Status403Forbidden
+            };
+        }
+
+        throw new InvalidOperationException($"Unexpected login outcome: {result.Outcome}");
     }
 }
