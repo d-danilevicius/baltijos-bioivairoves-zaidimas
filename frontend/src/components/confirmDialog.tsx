@@ -19,6 +19,7 @@ export default function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   const messageId = useId()
+  const dialogRef = useRef<HTMLDivElement>(null)
   const cancelButtonRef = useRef<HTMLButtonElement>(null)
   const onCancelRef = useRef(onCancel)
   onCancelRef.current = onCancel
@@ -29,13 +30,30 @@ export default function ConfirmDialog({
     const previousElement = document.activeElement as HTMLElement | null
     cancelButtonRef.current?.focus()
 
-    function cancelOnEscape(event: KeyboardEvent) {
+    function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') onCancelRef.current()
+      if (event.key === 'Tab') keepFocusInside(event)
     }
 
-    document.addEventListener('keydown', cancelOnEscape)
+    function keepFocusInside(event: KeyboardEvent) {
+      const buttons = dialogRef.current?.querySelectorAll<HTMLElement>('button')
+      if (!buttons || buttons.length === 0) return
+
+      const first = buttons[0]
+      const last = buttons[buttons.length - 1]
+      const active = document.activeElement
+      const leavesStart = event.shiftKey && active === first
+      const leavesEnd = !event.shiftKey && active === last
+
+      if (leavesStart || leavesEnd) {
+        event.preventDefault()
+        ;(leavesStart ? last : first).focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
     return () => {
-      document.removeEventListener('keydown', cancelOnEscape)
+      document.removeEventListener('keydown', handleKeyDown)
       previousElement?.focus()
     }
   }, [open])
@@ -45,10 +63,11 @@ export default function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 px-4">
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={messageId}
-        className="w-full max-w-md rounded-2xl bg-white p-8 shadow-md"
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-8 shadow-md"
       >
         <p id={messageId} className="mb-6 text-center text-lg font-semibold break-words">
           {message}
