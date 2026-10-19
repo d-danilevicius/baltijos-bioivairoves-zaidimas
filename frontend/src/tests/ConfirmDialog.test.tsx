@@ -65,6 +65,26 @@ describe('ConfirmDialog', () => {
     expect(onConfirm).not.toHaveBeenCalled()
   })
 
+  it('keeps the focus inside the dialog when Shift+Tab is pressed on the first button', async () => {
+    render(<DialogWithTrigger />)
+    await userEvent.click(screen.getByRole('button', { name: 'Atidaryti' }))
+
+    await userEvent.tab({ shift: true })
+
+    expect(screen.getByRole('button', { name: 'Patvirtinti' })).toHaveFocus()
+  })
+
+  it('keeps the focus inside the dialog when Tab is pressed on the last button', async () => {
+    render(<DialogWithTrigger />)
+    await userEvent.click(screen.getByRole('button', { name: 'Atidaryti' }))
+    await userEvent.tab()
+    expect(screen.getByRole('button', { name: 'Patvirtinti' })).toHaveFocus()
+
+    await userEvent.tab()
+
+    expect(screen.getByRole('button', { name: 'Atšaukti' })).toHaveFocus()
+  })
+
   it('shows nothing when the dialog is closed', () => {
     renderDialog({ open: false })
 
