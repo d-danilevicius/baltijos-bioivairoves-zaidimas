@@ -30,9 +30,12 @@
 ## Edge Cases
 
 - Spaces at the beginning and end of the class name are removed; the name is not checked for uniqueness, because the class is identified by the code (VT-023).
-- Two classes can get the same generated code only by chance; the server detects it (unique index) and generates another code, so the teacher never sees a duplicate.
+- Two classes can get the same generated code only by chance (also when they are created at the same time); the server detects it (unique index) and generates another code, so the teacher never sees a duplicate.
+- The length limit of the name applies to the name without the spaces at the beginning and the end (50 letters with spaces around are accepted).
+- When the session has expired, the class screens open the login page with the message „Sesija baigėsi dėl neveiklumo. Prisijunkite iš naujo.“ (NFR-004).
+- When the class was already deleted in another browser tab, the screen shows „Puslapis nerastas“.
 - The class code contains only uppercase letters A–Z and digits (VT-030).
-- Two teachers delete the same class at the same time: the second request returns 404.
+- Two requests delete the same class at the same time: the second request returns 404.
 - Class tasks do not exist yet; when the later features add them, they are deleted together with the class, and the points earned by the students remain (VT-009, VT-027).
 
 ## Requirements
