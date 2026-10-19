@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { getCurrentUser } from '../api/authApi'
@@ -78,7 +78,8 @@ describe('ClassListPage', () => {
     vi.mocked(listClasses).mockReturnValue(new Promise(() => {}))
     renderList()
 
-    expect(await screen.findByText(loading)).toBeInTheDocument()
+    await waitFor(() => expect(listClasses).toHaveBeenCalled())
+    expect(screen.getByText(loading)).toBeInTheDocument()
   })
 
   it('shows the error state and loads the classes again when retry is pressed', async () => {

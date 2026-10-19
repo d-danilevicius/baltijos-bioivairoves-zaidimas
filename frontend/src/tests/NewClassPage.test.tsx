@@ -70,7 +70,7 @@ describe('NewClassPage', () => {
   })
 
   it('shows the error of the server next to the field when the server returns 400', async () => {
-    vi.mocked(createClass).mockResolvedValue({ status: 400, body: { errors: { Name: ['TooLong'] } } })
+    vi.mocked(createClass).mockResolvedValue({ status: 400, body: { errors: { name: ['TooLong'] } } })
     renderNewClass()
 
     await submitName('7a klasė')
