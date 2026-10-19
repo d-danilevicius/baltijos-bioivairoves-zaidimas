@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Project.Api.Data;
 using Project.Api.DTOs.Requests;
 using Project.Api.DTOs.Responses;
@@ -9,6 +10,7 @@ namespace Project.Api.Services;
 public class ClassService : IClassService
 {
     private const int MaxCodeAttempts = 10;
+    private const string CodeIndexName = "IX_Classes_Code";
 
     private readonly ApplicationDbContext _dbContext;
     private readonly IClassCodeGenerator _codeGenerator;
@@ -23,19 +25,32 @@ public class ClassService : IClassService
 
     public async Task<ClassResponse> CreateAsync(string ownerId, CreateClassRequest request, CancellationToken cancellationToken)
     {
-        var schoolClass = new SchoolClass
+        for (var attempt = 0; attempt < MaxCodeAttempts; attempt++)
         {
-            Id = Guid.NewGuid(),
-            Name = request.Name.Trim(),
-            Code = await GenerateUniqueCodeAsync(cancellationToken),
-            OwnerId = ownerId,
-            CreatedAtUtc = _timeProvider.GetUtcNow().UtcDateTime
-        };
+            var schoolClass = new SchoolClass
+            {
+                Id = Guid.NewGuid(),
+                Name = request.Name,
+                Code = _codeGenerator.Generate(),
+                OwnerId = ownerId,
+                CreatedAtUtc = _timeProvider.GetUtcNow().UtcDateTime
+            };
 
-        _dbContext.Classes.Add(schoolClass);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+            _dbContext.Classes.Add(schoolClass);
 
-        return ToResponse(schoolClass);
+            try
+            {
+                await _dbContext.SaveChangesAsync(cancellationToken);
+                return ToResponse(schoolClass);
+            }
+            catch (DbUpdateException ex) when (IsCodeCollision(ex))
+            {
+                // The unique index rejected the code: forget this entity and try another code
+                _dbContext.Entry(schoolClass).State = EntityState.Detached;
+            }
+        }
+
+        throw new InvalidOperationException("Could not generate a unique class code.");
     }
 
     public async Task<IReadOnlyList<ClassResponse>> ListAsync(string ownerId, CancellationToken cancellationToken)
@@ -77,24 +92,22 @@ public class ClassService : IClassService
         }
 
         _dbContext.Classes.Remove(schoolClass);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // Another request deleted the class between the load and the save
+            return ClassResult.NotFound();
+        }
 
         return ClassResult.Succeeded();
     }
 
-    private async Task<string> GenerateUniqueCodeAsync(CancellationToken cancellationToken)
-    {
-        for (var attempt = 0; attempt < MaxCodeAttempts; attempt++)
-        {
-            var code = _codeGenerator.Generate();
-            if (!await _dbContext.Classes.AnyAsync(c => c.Code == code, cancellationToken))
-            {
-                return code;
-            }
-        }
-
-        throw new InvalidOperationException("Could not generate a unique class code.");
-    }
+    private static bool IsCodeCollision(DbUpdateException exception) =>
+        exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: CodeIndexName };
 
     private static ClassResponse ToResponse(SchoolClass schoolClass) => new()
     {

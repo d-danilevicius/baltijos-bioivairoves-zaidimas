@@ -7,6 +7,7 @@ import ConfirmDialog from '../components/confirmDialog'
 import ErrorState from '../components/errorState'
 import LoadingState from '../components/loadingState'
 import PageLayout from '../components/pageLayout'
+import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
 import { classDeleted } from '../helpers/classMessages'
 import { teacherLinks } from '../helpers/navigationLinks'
 import { serverError } from '../helpers/stateMessages'
@@ -17,6 +18,7 @@ import NotFoundPage from './NotFoundPage'
 type DetailsState =
   | { status: 'loading' }
   | { status: 'ready'; schoolClass: SchoolClass }
+  | { status: 'expired' }
   | { status: 'forbidden' }
   | { status: 'notFound' }
   | { status: 'error' }
@@ -37,6 +39,7 @@ export default function ClassDetailsPage() {
       const res = await getClass(id)
       if (cancelled) return
       if (res.status === 200) setState({ status: 'ready', schoolClass: res.body })
+      else if (res.status === 401) setState({ status: 'expired' })
       else if (res.status === 403) setState({ status: 'forbidden' })
       else if (res.status === 404) setState({ status: 'notFound' })
       else setState({ status: 'error' })
@@ -60,9 +63,13 @@ export default function ClassDetailsPage() {
       navigate('/classes', { state: { message: classDeleted } })
       return
     }
-    setDeleteError(true)
+    if (res.status === 401) setState({ status: 'expired' })
+    else if (res.status === 403) setState({ status: 'forbidden' })
+    else if (res.status === 404) setState({ status: 'notFound' })
+    else setDeleteError(true)
   }
 
+  if (state.status === 'expired') return <SessionExpiredRedirect />
   if (state.status === 'forbidden') return <AccessDeniedPage />
   if (state.status === 'notFound') return <NotFoundPage />
 

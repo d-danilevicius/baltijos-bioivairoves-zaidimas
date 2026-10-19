@@ -4,6 +4,7 @@ import { createClass } from '../api/classesApi'
 import Button from '../components/button'
 import Card from '../components/card'
 import PageLayout from '../components/pageLayout'
+import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
 import TextField from '../components/textField'
 import { classCreated, classNameRequired, classNameTooLong } from '../helpers/classMessages'
 import { teacherLinks } from '../helpers/navigationLinks'
@@ -15,6 +16,7 @@ export default function NewClassPage() {
   const [nameError, setNameError] = useState<string | undefined>(undefined)
   const [topError, setTopError] = useState<string | undefined>(undefined)
   const [loading, setLoading] = useState(false)
+  const [expired, setExpired] = useState(false)
   const navigate = useNavigate()
 
   async function onSubmit(e: FormEvent) {
@@ -34,6 +36,11 @@ export default function NewClassPage() {
       return
     }
 
+    if (res.status === 401) {
+      setExpired(true)
+      return
+    }
+
     if (res.status === 400) {
       const codes = res.body.errors?.name ?? []
       if (codes.includes('Required')) setNameError(classNameRequired)
@@ -44,6 +51,8 @@ export default function NewClassPage() {
 
     setTopError(serverError)
   }
+
+  if (expired) return <SessionExpiredRedirect />
 
   return (
     <PageLayout links={teacherLinks}>

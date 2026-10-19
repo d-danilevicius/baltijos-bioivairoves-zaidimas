@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { deleteClass, getClass } from '../api/classesApi'
 import { classCreated, classDeleted } from '../helpers/classMessages'
-import { accessDenied, loading, pageNotFound, retry, serverError } from '../helpers/stateMessages'
+import { hadSession, markSessionStarted } from '../helpers/sessionMarker'
+import { accessDenied, loading, pageNotFound, retry, serverError, sessionExpired } from '../helpers/stateMessages'
 import ClassDetailsPage from '../pages/ClassDetailsPage'
 
 vi.mock('../api/classesApi', () => ({ getClass: vi.fn(), deleteClass: vi.fn() }))
@@ -16,11 +17,18 @@ function ListStub() {
   return <div>Class list stub {message}</div>
 }
 
+function LoginStub() {
+  const location = useLocation()
+  const message = (location.state as { message?: string } | null)?.message
+  return <div>Login stub {message}</div>
+}
+
 function renderDetails(state?: { message: string }) {
   return render(
     <MemoryRouter initialEntries={[{ pathname: '/classes/abc', state }]}>
       <Routes>
         <Route path="/classes" element={<ListStub />} />
+        <Route path="/login" element={<LoginStub />} />
         <Route path="/classes/:id" element={<ClassDetailsPage />} />
       </Routes>
     </MemoryRouter>,
@@ -68,6 +76,15 @@ describe('ClassDetailsPage', () => {
     renderDetails()
 
     expect(await screen.findByRole('heading', { name: pageNotFound })).toBeInTheDocument()
+  })
+
+  it('opens the login page with the session expired message when loading returns 401', async () => {
+    markSessionStarted()
+    vi.mocked(getClass).mockResolvedValue({ status: 401 })
+    renderDetails()
+
+    expect(await screen.findByText(new RegExp(`Login stub ${sessionExpired}`))).toBeInTheDocument()
+    expect(hadSession()).toBe(false)
   })
 
   it('shows the error state and loads the class again when retry is pressed', async () => {
@@ -126,5 +143,41 @@ describe('ClassDetailsPage', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent(serverError)
     expect(screen.getByRole('heading', { name: '7a klasė' })).toBeInTheDocument()
+  })
+
+  it('opens the login page with the session expired message when deleting returns 401', async () => {
+    markSessionStarted()
+    vi.mocked(getClass).mockResolvedValue({ status: 200, body: schoolClass })
+    vi.mocked(deleteClass).mockResolvedValue({ status: 401 })
+    renderDetails()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Ištrinti klasę' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Ištrinti' }))
+
+    expect(await screen.findByText(new RegExp(`Login stub ${sessionExpired}`))).toBeInTheDocument()
+    expect(hadSession()).toBe(false)
+  })
+
+  it('shows page not found when the class was already deleted in another tab', async () => {
+    vi.mocked(getClass).mockResolvedValue({ status: 200, body: schoolClass })
+    vi.mocked(deleteClass).mockResolvedValue({ status: 404 })
+    renderDetails()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Ištrinti klasę' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Ištrinti' }))
+
+    expect(await screen.findByRole('heading', { name: pageNotFound })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Ištrinti klasę' })).not.toBeInTheDocument()
+  })
+
+  it('shows access denied when the server returns 403 for deleting', async () => {
+    vi.mocked(getClass).mockResolvedValue({ status: 200, body: schoolClass })
+    vi.mocked(deleteClass).mockResolvedValue({ status: 403 })
+    renderDetails()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Ištrinti klasę' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Ištrinti' }))
+
+    expect(await screen.findByRole('heading', { name: accessDenied })).toBeInTheDocument()
   })
 })
