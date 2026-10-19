@@ -8,6 +8,7 @@ namespace Project.Api.Data;
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public DbSet<ActionLog> ActionLogs { get; set; } = null!;
+    public DbSet<SchoolClass> Classes { get; set; } = null!;
 
     // Fixed role Ids and ConcurrencyStamps to allow deterministic migrations
     private const string StudentRoleId = "11111111-1111-1111-1111-111111111111";
@@ -67,6 +68,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // SchoolClass entity configuration (table Classes)
+        builder.Entity<SchoolClass>(e =>
+        {
+            e.ToTable("Classes");
+            e.Property(c => c.Name).HasMaxLength(50).IsRequired();
+            e.Property(c => c.Code).HasMaxLength(6).IsFixedLength().IsRequired();
+            e.HasIndex(c => c.Code).IsUnique();
+
+            // When the teacher account is deleted, the classes are deleted too
+            e.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(c => c.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

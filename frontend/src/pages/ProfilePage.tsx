@@ -4,7 +4,7 @@ import { logoutUser } from '../api/authApi'
 import Button from '../components/button'
 import Card from '../components/card'
 import PageLayout from '../components/pageLayout'
-import { userLinks } from '../helpers/navigationLinks'
+import { getUserLinks } from '../helpers/navigationLinks'
 import { useCurrentUser } from '../hooks/useCurrentUser'
 import { logoutFailed } from '../helpers/loginMessages'
 import { getRoleName } from '../helpers/roleNames'
@@ -32,7 +32,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <PageLayout links={userLinks}>
+    <PageLayout links={getUserLinks(user.role)}>
       <Card title="Profilis">
         {topError && (
           <div role="alert" className="mb-4 text-error">

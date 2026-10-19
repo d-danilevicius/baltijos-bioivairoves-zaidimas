@@ -42,6 +42,7 @@ Schema changes are EF Core migrations stored in `backend/src/Project.Api/Migrati
 - Apply migrations: `dotnet ef database update --project backend/src/Project.Api`
 
 The first migration CreateIdentityTables exists (ASP.NET Core Identity tables and the seeded roles Student, Teacher, Administrator) and is applied with `dotnet ef database update --project backend/src/Project.Api`.
+The migration CreateClassesTable adds the table Classes (name, unique 6-character code, owner, creation time).
 
 ## Run
 
@@ -76,6 +77,10 @@ Frontend: protected routes (ProtectedRoute) redirect to /login when there is no 
 No new migration and no new configuration in this feature.
 
 Apply the new migration with: dotnet ef database update --project backend/src/Project.Api
+
+Classes (teacher only): GET /api/classes lists the classes of the logged-in teacher, POST /api/classes creates a class (body `{ "name": "7a" }`, name 1–50 characters; the server generates the 6-character code), GET /api/classes/{id} returns one class and DELETE /api/classes/{id} deletes it.
+A student gets 403, a teacher who is not the owner gets 403, an unknown class gets 404 and a visitor gets 401. POST and DELETE need the X-CSRF-TOKEN header.
+Frontend: the teacher's starting screen is the class list http://localhost:5173/classes; a new class is created at /classes/new and the class information with the code is at /classes/{id}. Students keep /profile as the starting screen.
 
 ## API documentation
 

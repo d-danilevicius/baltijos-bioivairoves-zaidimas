@@ -3,57 +3,77 @@
 **Feature:** `specs/007-class-create-and-delete/spec.md`
 **Branch:** `007-class-create-and-delete`
 **Status:** draft
-**Depends on features:** 003-access-control, 006-confirmation-dialog
+**Depends on features:** 003-access-control, 006-confirmation-dialog, 024-page-styling
 
 ## Summary
 
-The plan describes how the feature “Class creation and deletion” is implemented according to the approved specification: as a teacher, I want to create a class and get its code so that I can bring my students together, and to delete it when it is no longer needed.
+A teacher creates a class with a name, the server generates a unique 6-character code, the teacher sees the list of own classes and one class, and can delete the class after a confirmation. The server enforces the roles and the ownership. The frontend gets three screens (class list, new class, class information), the teacher’s starting screen and the menu link “Klasės”.
 
 ## Technical Context
 
 - **Language and version:** C# with .NET 10 (server); TypeScript (frontend).
-- **Libraries:** as selected in `docs/architecture.md` (section 1): ASP.NET Core Identity, Entity Framework Core with Npgsql, AutoMapper for non-trivial mappings.
-- **Frontend:** React with Vite and React Router.
-- **Storage:** PostgreSQL through Entity Framework Core; schema changes only through migrations.
+- **Libraries:** as selected in `docs/architecture.md` (section 1). No new library. The mapping from the entity to the response is trivial (three fields) and is done in the query with `Select`; AutoMapper is not added for it.
+- **Frontend:** React with Vite, React Router and Tailwind CSS; the dialog of feature 006.
+- **Storage:** PostgreSQL through Entity Framework Core; the schema change is made by the migration `CreateClassesTable`.
 - **Testing:** xUnit (unit and integration, PostgreSQL in Testcontainers), Vitest and React Testing Library.
 - **Target platform:** web application in current Chrome, Firefox, Edge and Safari; screens from 360 px width.
-- **Constraints:** HTTPS only; secrets are not stored in the repository.
+- **Constraints:** HTTPS only; POST and DELETE use the existing CSRF protection; secrets are not stored in the repository.
 
 ## Structure and Main Components
 
-- Server: ClassesController, ClassService (code generation, deletion).
-- Frontend: ClassListPage, NewClassPage, ClassInfoPage.
+- Server:
+  - `Entities/SchoolClass.cs` – the entity (named `SchoolClass` to avoid the keyword `class`; the table is `Classes`): `Id`, `Name`, `Code`, `OwnerId`, `CreatedAtUtc`.
+  - `Data/ApplicationDbContext.cs` – `DbSet<SchoolClass> Classes`, name up to 50 characters, code of 6 characters with a unique index, the owner is a foreign key to the user (a deleted teacher deletes the classes, VT-009).
+  - `Services/IClassCodeGenerator.cs`, `Services/ClassCodeGenerator.cs` – generates 6 random characters A–Z and 0–9 (one responsibility, replaceable in tests).
+  - `Services/IClassService.cs`, `Services/ClassService.cs` – creates (generates the code, saves, and generates another code when the unique index `IX_Classes_Code` rejects the save, at most 10 attempts), lists, gets and deletes classes of the owner (a delete that finds the class already removed returns `NotFound`); returns a result with the outcome `Succeeded`, `NotFound` or `Forbidden`; the name is validated by the request DTO (`Required`, `TooLong`) before the service is called.
+  - `Services/ClassResult.cs` – the result type.
+  - `Controllers/ClassesController.cs` – `[Authorize(Policy = PolicyNames.Teacher)]`, translates the result to 200, 201, 204, 400, 403 and 404 (the 403 body is the existing `AccessDeniedResponse`).
+  - `DTOs/Requests/CreateClassRequest.cs`, `DTOs/Responses/ClassResponse.cs`.
+  - `Services/ServiceCollectionExtensions.cs` – registers the two services.
+- Frontend:
+  - `types/classes.ts`, `api/classesApi.ts` – types and calls (list, get, create, delete; CSRF token for POST and DELETE as in the logout call).
+  - `pages/ClassListPage.tsx`, `pages/NewClassPage.tsx`, `pages/ClassDetailsPage.tsx`.
+  - `helpers/validateClassName.ts`, `helpers/classMessages.ts` – the validation and the texts.
+  - `helpers/startingScreen.ts` – the starting screen by role (teacher `/classes`, others `/profile`), used by `LoginPage` and `HomePage`.
+  - `helpers/navigationLinks.ts` – the menu by role (teacher: “Klasės”, “Profilis”), used by the profile and class pages.
+  - `App.tsx` – routes `/classes`, `/classes/new`, `/classes/:id` inside `ProtectedRoute allowedRoles={['Teacher']}`.
 
 ## Server Request Changes
 
-- GET /api/classes, POST /api/classes, DELETE /api/classes/{id}
+- `GET /api/classes` – the classes of the logged-in teacher (200).
+- `POST /api/classes` – creates a class (201, 400 with the errors per field, 401, 403).
+- `GET /api/classes/{id}` – one class of the owner (200, 401, 403, 404).
+- `DELETE /api/classes/{id}` – deletes a class of the owner (204, 401, 403, 404).
 
 ## Data Model Changes
 
-- Class (Name, Code, OwnerId).
-- Migration `CreateClassesTable`.
+- New table `Classes` (`Id`, `Name`, `Code`, `OwnerId`, `CreatedAtUtc`), unique index on `Code`, foreign key `OwnerId` to the users with cascade delete.
+- New migration `CreateClassesTable` in the same branch.
 
 ## Testing Plan
 
-- Test case: code uniqueness.
-- Test case: a student has no permission.
-- Test case: a non-owner is rejected.
+- Unit tests (`ClassCodeGenerator`): the code has 6 characters; the characters are only A–Z and 0–9.
+- Unit tests (`ClassService`): the name is trimmed; an empty name and a name of 51 characters are rejected; a name of 50 characters is accepted; the owner comes from the argument; a non-owner gets `Forbidden`; a missing class gets `NotFound`; a class deleted by another request before the save gives `NotFound`. The request validation test also checks a name of 50 letters with spaces around.
+- Integration tests: a teacher creates a class and gets 201 with a 6-character code; the list shows only own classes; a student gets 403 on every endpoint; another teacher gets 403 on get and delete; a visitor gets 401; delete of an own class gives 204 and the class is no longer in the list; delete of a missing class gives 404; an invalid name gives 400 with the error for the field `name`; a name of 50 letters with spaces around gives 201; when the generated code already exists, and when two teachers create at the same time with the same code, both classes get different codes (the generator is replaced in these tests).
+- Frontend tests: the class list shows the classes and the empty state with “Sukurti pirmą klasę”; the new class form shows the two validation errors and the server error, and opens the class information after success; the class information shows the code and deletes only after the confirmation (cancel changes nothing); a teacher is sent to `/classes` after login and from the home page; a student is sent to `/profile`; the teacher menu shows “Klasės”; a student opening `/classes` sees “Prieiga uždrausta”; the status 401 of any class request opens the login page with the session message; a delete answered with 404 or 403 shows “Puslapis nerastas” or “Prieiga uždrausta”.
 
 ## Technical Notes
 
-- Business rules are placed in the services listed above; controllers only translate HTTP.
-- How the related data of a deleted class are removed (explicit deletion in the service inside one transaction, or cascade constraints) is decided in this feature’s `data-model.md` before implementation; the students’ points remain (VT-009, VT-027).
+- The code is generated by the server only; the request has no field for it or for the owner.
+- A collision of the code is handled when saving: the unique index rejects the second class with the same code (also when two requests are made at the same time), and the service generates another code (at most 10 attempts).
+- `CreateClassRequest` removes the spaces at the beginning and the end of the name when the value is set, so the validation of the length applies to the trimmed name.
+- The frontend wrappers keep the status 401; the class pages open the login page with the session message through `SessionExpiredRedirect` (clears the session marker as `ProtectedRoute` does).
+- The class tasks and the student memberships do not exist yet; their foreign keys will be added with cascade delete in the later features.
 
 ## Constitution Check
 
 - **1. Code quality:** complies. Each class has one responsibility and stays below 200 lines; React file names follow the naming rules.
-- **2. Architecture:** complies. ClassesController only calls services; the rules are in the services; `ApplicationDbContext` is used directly (no Repository); DTOs are used at the API boundary and AutoMapper for non-trivial mappings; the schema is changed by the migration `CreateClassesTable`.
-- **3. Testing:** complies. The requirements FR-013, FR-014, FR-015, FR-023 are covered by the tests in the testing plan.
-- **4. Security:** complies. Authentication, role and ownership are checked on the server for the protected requests: GET /api/classes, POST /api/classes, DELETE /api/classes/{id}. All input is validated on the server; no secret is stored in Git.
+- **2. Architecture:** complies. `ClassesController` only calls `IClassService`; the rules are in the service; `ApplicationDbContext` is used directly (no Repository); DTOs are used at the API boundary; the schema change has a migration.
+- **3. Testing:** complies. FR-013–FR-015, FR-023 and FR-001–FR-005 are covered by the tests in the testing plan, including the authorization tests.
+- **4. Security:** complies. Role and ownership are checked on the server for all four endpoints; the owner is taken from the session; all input is validated on the server; no secret is stored in Git.
 - **5. Version control:** complies. The work is done in branch `007-class-create-and-delete`, created from an updated `main`, and enters through a Pull Request.
-- **6. Documentation:** complies. The specification is written before the code; README and `docs/` are updated if the behaviour changes.
+- **6. Documentation:** complies. The specification is written before the code; README and `docs/` are updated.
 - **7. AI assistance:** complies. The code is reviewed and tested by the student; the Pull Request gets a separate AI review.
-- **8. Simplicity:** complies. No new libraries or layers are added.
+- **8. Simplicity:** complies. No new libraries or layers; two small services.
 
 **No exceptions. The plan complies with the constitution.**
-

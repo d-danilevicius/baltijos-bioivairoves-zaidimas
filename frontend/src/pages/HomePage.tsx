@@ -5,15 +5,14 @@ import LinkButton from '../components/linkButton'
 import LoadingState from '../components/loadingState'
 import PageLayout from '../components/pageLayout'
 import { homeDescription, homeTitle, loginLink, registerLink } from '../helpers/homeMessages'
+import { getStartingScreen } from '../helpers/startingScreen'
 import { useCurrentUserSession } from '../hooks/useCurrentUserSession'
-
-const startingScreen = '/profile'
 
 export default function HomePage() {
   const { session, retry } = useCurrentUserSession()
 
   if (session.status === 'ready') {
-    return <Navigate to={startingScreen} replace />
+    return <Navigate to={getStartingScreen(session.user.role)} replace />
   }
 
   return (

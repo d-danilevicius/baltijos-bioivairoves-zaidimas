@@ -15,6 +15,7 @@ import {
 } from '../helpers/loginMessages'
 import { type LoginFieldErrors, validateLogin } from '../helpers/validateLogin'
 import { markSessionStarted } from '../helpers/sessionMarker'
+import { getStartingScreen } from '../helpers/startingScreen'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -44,7 +45,7 @@ export default function LoginPage() {
 
     if (res.status === 200) {
       markSessionStarted()
-      navigate('/profile')
+      navigate(getStartingScreen(res.body.role))
       return
     }
 

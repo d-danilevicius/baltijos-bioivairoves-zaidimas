@@ -1,0 +1,7 @@
+export const classNameRequired = 'Įveskite klasės pavadinimą.'
+export const classNameTooLong = 'Pavadinimas negali būti ilgesnis nei 50 simbolių.'
+export const classCreated = 'Klasė sukurta.'
+export const classDeleted = 'Klasė ištrinta.'
+export const noClasses = 'Dar nesukūrėte nė vienos klasės.'
+export const createFirstClass = 'Sukurti pirmą klasę'
+export const newClass = 'Nauja klasė'

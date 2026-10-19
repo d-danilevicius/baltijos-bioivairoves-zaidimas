@@ -15,6 +15,7 @@ function renderHomePage() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/profile" element={<div>Profile stub</div>} />
+        <Route path="/classes" element={<div>Classes stub</div>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -42,15 +43,25 @@ describe('HomePage', () => {
     expect(screen.getByRole('link', { name: 'Registruotis' })).toHaveAttribute('href', '/register')
   })
 
-  it('redirects a logged-in user to the profile page', async () => {
+  it('redirects a logged-in student to the profile page', async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue({
+      status: 200,
+      body: { id: '1', userName: 'Jonas', email: 'jonas@example.com', role: 'Student' },
+    })
+    renderHomePage()
+
+    expect(await screen.findByText('Profile stub')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Prisijungti' })).not.toBeInTheDocument()
+  })
+
+  it('redirects a logged-in teacher to the class list', async () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
       status: 200,
       body: { id: '1', userName: 'Jonas', email: 'jonas@example.com', role: 'Teacher' },
     })
     renderHomePage()
 
-    expect(await screen.findByText('Profile stub')).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'Prisijungti' })).not.toBeInTheDocument()
+    expect(await screen.findByText('Classes stub')).toBeInTheDocument()
   })
 
   it('shows the loading state while the session is being checked', () => {
