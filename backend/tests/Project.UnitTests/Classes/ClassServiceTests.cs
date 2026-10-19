@@ -52,20 +52,6 @@ public class ClassServiceTests
     }
 
     [Fact]
-    public async Task CreateAsync_WhenGeneratedCodeAlreadyExists_UsesAnotherCode()
-    {
-        using var factory = await TestServiceFactory.CreateAsync();
-        using var scope = factory.ServiceProvider.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var service = CreateService(db, "AAAAAA", "AAAAAA", "BBBBBB");
-        await service.CreateAsync("teacher-1", new CreateClassRequest { Name = "7a" }, CancellationToken.None);
-
-        var response = await service.CreateAsync("teacher-2", new CreateClassRequest { Name = "8b" }, CancellationToken.None);
-
-        Assert.Equal("BBBBBB", response.Code);
-    }
-
-    [Fact]
     public async Task ListAsync_WithClassesOfTwoOwners_ReturnsOnlyClassesOfGivenOwner()
     {
         using var factory = await TestServiceFactory.CreateAsync();

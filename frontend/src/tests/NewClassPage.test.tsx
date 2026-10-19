@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { createClass } from '../api/classesApi'
 import { classCreated, classNameRequired, classNameTooLong } from '../helpers/classMessages'
-import { serverError } from '../helpers/stateMessages'
+import { hadSession, markSessionStarted } from '../helpers/sessionMarker'
+import { serverError, sessionExpired } from '../helpers/stateMessages'
 import NewClassPage from '../pages/NewClassPage'
 
 vi.mock('../api/classesApi', () => ({ createClass: vi.fn() }))
@@ -14,11 +15,18 @@ function DetailsStub() {
   return <div>Class details stub {location.pathname} {message}</div>
 }
 
+function LoginStub() {
+  const location = useLocation()
+  const message = (location.state as { message?: string } | null)?.message
+  return <div>Login stub {message}</div>
+}
+
 function renderNewClass() {
   return render(
     <MemoryRouter initialEntries={['/classes/new']}>
       <Routes>
         <Route path="/classes/new" element={<NewClassPage />} />
+        <Route path="/login" element={<LoginStub />} />
         <Route path="/classes/:id" element={<DetailsStub />} />
       </Routes>
     </MemoryRouter>,
@@ -86,6 +94,17 @@ describe('NewClassPage', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent(serverError)
     expect(screen.getByLabelText('Klasės pavadinimas')).toBeInTheDocument()
+  })
+
+  it('opens the login page with the session expired message when the server returns 401', async () => {
+    markSessionStarted()
+    vi.mocked(createClass).mockResolvedValue({ status: 401 })
+    renderNewClass()
+
+    await submitName('7a klasė')
+
+    expect(await screen.findByText(new RegExp(`Login stub ${sessionExpired}`))).toBeInTheDocument()
+    expect(hadSession()).toBe(false)
   })
 
   it('disables the button while the class is being created', async () => {

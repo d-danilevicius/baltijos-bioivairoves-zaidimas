@@ -7,11 +7,16 @@ import ErrorState from '../components/errorState'
 import LinkButton from '../components/linkButton'
 import LoadingState from '../components/loadingState'
 import PageLayout from '../components/pageLayout'
+import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
 import { createFirstClass, newClass, noClasses } from '../helpers/classMessages'
 import { teacherLinks } from '../helpers/navigationLinks'
 import type { SchoolClass } from '../types/classes'
 
-type ListState = { status: 'loading' } | { status: 'ready'; classes: SchoolClass[] } | { status: 'error' }
+type ListState =
+  | { status: 'loading' }
+  | { status: 'ready'; classes: SchoolClass[] }
+  | { status: 'expired' }
+  | { status: 'error' }
 
 export default function ClassListPage() {
   const [state, setState] = useState<ListState>({ status: 'loading' })
@@ -24,7 +29,9 @@ export default function ClassListPage() {
     async function load() {
       const res = await listClasses()
       if (cancelled) return
-      setState(res.status === 200 ? { status: 'ready', classes: res.body } : { status: 'error' })
+      if (res.status === 200) setState({ status: 'ready', classes: res.body })
+      else if (res.status === 401) setState({ status: 'expired' })
+      else setState({ status: 'error' })
     }
 
     load()
@@ -37,6 +44,8 @@ export default function ClassListPage() {
     setState({ status: 'loading' })
     setAttempt((value) => value + 1)
   }
+
+  if (state.status === 'expired') return <SessionExpiredRedirect />
 
   return (
     <PageLayout links={teacherLinks}>

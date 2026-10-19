@@ -31,6 +31,17 @@ public class CreateClassRequestValidationTests
     }
 
     [Fact]
+    public void CreateClassRequest_WithFiftyCharactersAndSpacesAround_IsValidAndTrimmed()
+    {
+        var request = new CreateClassRequest { Name = $"  {new string('a', 50)}  " };
+
+        var results = Validate(request);
+
+        Assert.Empty(results);
+        Assert.Equal(new string('a', 50), request.Name);
+    }
+
+    [Fact]
     public void CreateClassRequest_WithFiftyCharacters_IsValid()
     {
         var results = Validate(new CreateClassRequest { Name = new string('a', 50) });

@@ -1,11 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { getCurrentUser } from '../api/authApi'
 import { listClasses } from '../api/classesApi'
 import ProtectedRoute from '../components/protectedRoute'
 import { noClasses, createFirstClass, newClass } from '../helpers/classMessages'
-import { accessDenied, loading, retry, serverError } from '../helpers/stateMessages'
+import { hadSession, markSessionStarted } from '../helpers/sessionMarker'
+import { accessDenied, loading, retry, serverError, sessionExpired } from '../helpers/stateMessages'
 import ClassListPage from '../pages/ClassListPage'
 import type { CurrentUser } from '../types/auth'
 
@@ -14,10 +15,17 @@ vi.mock('../api/classesApi', () => ({ listClasses: vi.fn() }))
 
 const teacher: CurrentUser = { id: '1', userName: 'Jonas', email: 'jonas@example.com', role: 'Teacher' }
 
+function LoginStub() {
+  const location = useLocation()
+  const message = (location.state as { message?: string } | null)?.message
+  return <div>Login stub {message}</div>
+}
+
 function renderList(state?: { message: string }) {
   return render(
     <MemoryRouter initialEntries={[{ pathname: '/classes', state }]}>
       <Routes>
+        <Route path="/login" element={<LoginStub />} />
         <Route element={<ProtectedRoute allowedRoles={['Teacher']} />}>
           <Route path="/classes" element={<ClassListPage />} />
           <Route path="/classes/new" element={<div>New class stub</div>} />
@@ -109,6 +117,15 @@ describe('ClassListPage', () => {
     await screen.findByText(noClasses)
     expect(screen.getByRole('link', { name: 'Klasės' })).toHaveAttribute('href', '/classes')
     expect(screen.getByRole('link', { name: 'Profilis' })).toHaveAttribute('href', '/profile')
+  })
+
+  it('opens the login page with the session expired message when the server returns 401', async () => {
+    markSessionStarted()
+    vi.mocked(listClasses).mockResolvedValue({ status: 401 })
+    renderList()
+
+    expect(await screen.findByText(new RegExp(`Login stub ${sessionExpired}`))).toBeInTheDocument()
+    expect(hadSession()).toBe(false)
   })
 
   it('shows access denied to a student and does not load the classes', async () => {

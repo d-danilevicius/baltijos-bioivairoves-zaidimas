@@ -33,6 +33,18 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     }
 
     [Fact]
+    public async Task PostClasses_WithFiftyCharactersAndSpacesAround_Returns201WithTrimmedName()
+    {
+        var teacher = await ClassesTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var name = new string('a', 50);
+
+        var response = await teacher.CreateAsync($"  {name}  ");
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(name, (await ReadJsonAsync(response)).GetProperty("name").GetString());
+    }
+
+    [Fact]
     public async Task PostClasses_WithEmptyName_Returns400WithRequiredErrorForName()
     {
         var teacher = await ClassesTestClient.LoginAsync(_fixture, RoleNames.Teacher);
