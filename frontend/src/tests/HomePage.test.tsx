@@ -45,7 +45,7 @@ describe('HomePage', () => {
   it('redirects a logged-in user to the profile page', async () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
       status: 200,
-      body: { id: '1', userName: 'Jonas', role: 'Teacher' },
+      body: { id: '1', userName: 'Jonas', email: 'jonas@example.com', role: 'Teacher' },
     })
     renderHomePage()
 
