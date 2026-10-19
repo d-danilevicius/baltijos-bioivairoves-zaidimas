@@ -41,7 +41,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var errors = (await ReadJsonAsync(response)).GetProperty("errors");
-        Assert.Contains("Required", errors.GetProperty("Name").EnumerateArray().Select(x => x.GetString()));
+        Assert.Contains("Required", errors.GetProperty("name").EnumerateArray().Select(x => x.GetString()));
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var errors = (await ReadJsonAsync(response)).GetProperty("errors");
-        Assert.Contains("TooLong", errors.GetProperty("Name").EnumerateArray().Select(x => x.GetString()));
+        Assert.Contains("TooLong", errors.GetProperty("name").EnumerateArray().Select(x => x.GetString()));
     }
 
     [Fact]
