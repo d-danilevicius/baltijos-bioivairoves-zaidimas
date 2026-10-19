@@ -14,11 +14,11 @@ Do the tasks in order. Each phase depends on the previous one. Tests are written
 
 ## Tests (written first) (depends on: Data)
 
-- [ ] T003 [US1] Unit tests of the code generator – `backend/tests/Project.UnitTests/Classes/ClassCodeGeneratorTests.cs`
+- [ ] T003 [US1] Unit tests of the code generator – `backend/tests/Project.UnitTests/Classes/ClassCodeGeneratorTests.cs`, `CreateClassRequestValidationTests.cs`
 - [ ] T004 [US1] Unit tests of the class service: name rules, collision of the code, owner, not found – `backend/tests/Project.UnitTests/Classes/ClassServiceTests.cs`
-- [ ] T005 [US1] Integration tests of the four endpoints: create, list, get, delete, student 403, other teacher 403, visitor 401, 404, validation 400 – `backend/tests/Project.IntegrationTests/Classes/ClassEndpointTests.cs`
+- [ ] T005 [US1] Integration tests of the four endpoints: create, list, get, delete, student 403, other teacher 403, visitor 401, 404, validation 400 – `backend/tests/Project.IntegrationTests/Classes/ClassEndpointTests.cs`, `ClassesTestClient.cs`
 - [ ] T006 [US1] Frontend tests of the class list, the new class form and the class information with the dialog – `frontend/src/tests/ClassListPage.test.tsx`, `frontend/src/tests/NewClassPage.test.tsx`, `frontend/src/tests/ClassDetailsPage.test.tsx`
-- [ ] T007 [US1] Frontend tests of the starting screen by role, the teacher menu and the access of a student – `frontend/src/tests/startingScreen.test.ts`, `frontend/src/tests/LoginPage.test.tsx`, `frontend/src/tests/HomePage.test.tsx`, `frontend/src/tests/PageLayout.test.tsx`
+- [ ] T007 [US1] Frontend tests of the starting screen by role, the teacher menu and the access of a student – `frontend/src/tests/startingScreen.test.ts`, `frontend/src/tests/navigationLinks.test.ts`, `frontend/src/tests/validateClassName.test.ts`, `frontend/src/tests/LoginPage.test.tsx`, `frontend/src/tests/HomePage.test.tsx`
 
 ## Implementation (depends on: Tests)
 

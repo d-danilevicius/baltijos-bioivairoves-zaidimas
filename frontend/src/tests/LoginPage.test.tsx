@@ -25,6 +25,7 @@ function renderLoginPage(initialEntry: string | { pathname: string; state?: { me
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePageStub />} />
+        <Route path="/classes" element={<div>Classes page</div>} />
       </Routes>
     </MemoryRouter>
   )
@@ -103,9 +104,9 @@ describe('LoginPage', () => {
     await waitFor(() => expect(screen.getByText(/Profile page/)).toBeInTheDocument())
   })
 
-  it('marks the session started and navigates to profile without router state on successful login', async () => {
+  it('marks the session started and navigates a student to profile without router state on successful login', async () => {
     const mockLoginUser = vi.mocked(loginUser)
-    mockLoginUser.mockResolvedValue({ status: 200, body: { id: '1', userName: 'Jonas', role: 'Teacher' } })
+    mockLoginUser.mockResolvedValue({ status: 200, body: { id: '1', userName: 'Jonas', role: 'Student' } })
     renderLoginPage()
 
     await userEvent.type(screen.getByLabelText(/El. paštas/), 'user@example.com')
@@ -114,6 +115,18 @@ describe('LoginPage', () => {
 
     expect(await screen.findByText(/Profile page without state/)).toBeInTheDocument()
     expect(markSessionStarted).toHaveBeenCalledTimes(1)
+  })
+
+  it('navigates a teacher to the class list on successful login', async () => {
+    const mockLoginUser = vi.mocked(loginUser)
+    mockLoginUser.mockResolvedValue({ status: 200, body: { id: '1', userName: 'Jonas', role: 'Teacher' } })
+    renderLoginPage()
+
+    await userEvent.type(screen.getByLabelText(/El. paštas/), 'user@example.com')
+    await userEvent.type(screen.getByLabelText(/Slaptažodis/), 'secret123')
+    await userEvent.click(screen.getByRole('button', { name: /Prisijungti/i }))
+
+    expect(await screen.findByText('Classes page')).toBeInTheDocument()
   })
 
   it('shows registration success message from router state', () => {
