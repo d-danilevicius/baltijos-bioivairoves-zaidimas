@@ -23,11 +23,13 @@
 4. **Given** an open dialog, **when** the user presses the Esc key, **then** it is the same as pressing the cancel button.
 5. **Given** a dialog that is opened, **when** it appears, **then** the keyboard focus is on the cancel button (the safe choice); **when** the dialog closes, **then** the focus returns to the element that had it before the dialog opened.
 6. **Given** a dialog that is closed, **when** the screen is shown, **then** the dialog is not shown.
+7. **Given** an open dialog, **when** the user presses Tab on the last button or Shift+Tab on the first button, **then** the focus moves to the other end of the dialog and never to the page behind it.
 
 ## Edge Cases
 
 - A long question wraps inside the dialog and does not cause horizontal scrolling on a screen 360 px wide.
-- While the dialog is open, the page behind it is covered and cannot be used with the mouse.
+- While the dialog is open, the page behind it is covered and cannot be used with the mouse or the keyboard.
+- A question that is taller than the screen (a short mobile screen or enlarged text) does not move the buttons out of reach: the dialog is not higher than the screen and scrolls inside.
 
 ## Requirements
 
@@ -36,7 +38,7 @@
 - **FR-053:** The system MUST ask the user for confirmation before the actions listed in VT-029. This feature provides the dialog; every later feature that has one of these actions uses it.
 - **FR-001:** The dialog MUST show the question, a confirm button and a cancel button; the button texts have the defaults “Patvirtinti” and “Atšaukti” and can be set by the screen that uses the dialog.
 - **FR-002:** The dialog MUST call the confirm action only when the user presses the confirm button; cancelling (the cancel button or the Esc key) MUST NOT call it.
-- **FR-003:** The dialog MUST be keyboard accessible: the focus is moved to the cancel button when it opens, Esc cancels, and the focus returns to the previous element when it closes (NFR-013).
+- **FR-003:** The dialog MUST be keyboard accessible: the focus is moved to the cancel button when it opens, Tab and Shift+Tab keep the focus inside the dialog, Esc cancels, and the focus returns to the previous element when it closes (NFR-013).
 - **FR-004:** The dialog MUST be marked as a dialog for assistive technologies (`role="dialog"`, `aria-modal="true"`, labelled by the question).
 
 ### Key Entities
@@ -52,7 +54,8 @@
 
 - Q: Where is the dialog used in this feature? → A: Nowhere yet. The actions of VT-029 do not exist yet; the later features add them and use the dialog. This feature only provides and tests the component.
 - Q: Which button has the focus when the dialog opens? → A: The cancel button, so that pressing Enter by accident does not confirm an irreversible action.
-- Q: Does the dialog trap the focus inside? → A: No. This is kept simple; the page behind is covered, and Esc and the two buttons are enough for the keyboard.
+- Q: Does the dialog trap the focus inside? → A: Yes. `aria-modal` does not make the page behind inert, so Tab and Shift+Tab move only between the two buttons of the dialog (changed after the code review of the Pull Request).
+- Q: What happens when the question is taller than the screen? → A: The dialog has a maximum height of 90 % of the screen and scrolls inside, so the question and both buttons can be reached (added after the code review of the Pull Request).
 
 No unresolved clarification markers remain.
 

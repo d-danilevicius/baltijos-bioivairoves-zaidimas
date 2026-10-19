@@ -23,7 +23,8 @@ A shared frontend component `ConfirmDialog` is added. It shows a question and tw
 
 - Frontend: `frontend/src/components/confirmDialog.tsx` with the component `ConfirmDialog` and the properties `open`, `message`, `confirmLabel` (default “Patvirtinti”), `cancelLabel` (default “Atšaukti”), `onConfirm`, `onCancel`.
 - The dialog is a block with `role="dialog"`, `aria-modal="true"` and `aria-labelledby` that points to the question, over a backdrop that covers the page.
-- When it opens, the focus is moved to the cancel button; the Esc key calls `onCancel`; when it closes, the focus returns to the element that had it before.
+- When it opens, the focus is moved to the cancel button; Tab and Shift+Tab keep the focus between the buttons of the dialog; the Esc key calls `onCancel`; when it closes, the focus returns to the element that had it before.
+- The panel has a maximum height of 90 % of the screen and scrolls vertically inside.
 
 ## Server Request Changes
 
@@ -42,6 +43,7 @@ A shared frontend component `ConfirmDialog` is added. It shows a question and tw
 - Test case: cancel button calls `onCancel` and does not call `onConfirm`.
 - Test case: Esc key calls `onCancel`.
 - Test case: the focus is on the cancel button when the dialog opens and returns to the previous element when it closes.
+- Test case: Tab on the last button and Shift+Tab on the first button keep the focus inside the dialog.
 - Test case: a closed dialog shows nothing.
 - Test case: the dialog has the role `dialog` and is labelled by the question.
 
