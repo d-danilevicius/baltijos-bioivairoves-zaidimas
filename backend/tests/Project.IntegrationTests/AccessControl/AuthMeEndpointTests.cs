@@ -50,6 +50,30 @@ public class AuthMeEndpointTests : IClassFixture<AccessControlApiFixture>
     }
 
     [Fact]
+    public async Task GetAuthMe_ValidSession_ReturnsEmailOfCurrentUser()
+    {
+        var client = _fixture.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false,
+            BaseAddress = new Uri("https://localhost")
+        });
+
+        var helper = new LoginTestHelper(_fixture, client);
+        var email = LoginTestHelper.Unique("e") + "@example.com";
+        const string password = "StrongPass123";
+
+        await helper.CreateUserAsync(email, LoginTestHelper.Unique("u"), password, role: RoleNames.Student);
+        var loginResponse = await helper.LoginAsync(email, password);
+        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+
+        var response = await client.GetAsync("/api/auth/me");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(email, json.RootElement.GetProperty("email").GetString());
+    }
+
+    [Fact]
     public async Task GetAuthMe_NoSession_Returns401()
     {
         var client = _fixture.CreateClient(new WebApplicationFactoryClientOptions

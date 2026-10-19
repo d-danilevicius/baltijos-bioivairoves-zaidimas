@@ -14,7 +14,7 @@ vi.mock('../api/authApi', () => ({
 const mockLogoutUser = vi.mocked(logoutUser)
 
 function createUser(overrides: Partial<CurrentUser> = {}): CurrentUser {
-  return { id: '1', userName: 'Jonas', role: 'Student', ...overrides } as CurrentUser
+  return { id: '1', userName: 'Jonas', email: 'jonas@example.com', role: 'Student', ...overrides } as CurrentUser
 }
 
 function renderProfile(user: CurrentUser) {
@@ -52,6 +52,13 @@ describe('ProfilePage', () => {
     expect(screen.getByText(/Naudotojo vardas:/)).toBeInTheDocument()
     expect(screen.getByText(/Jonas/)).toBeInTheDocument()
     expect(screen.getByText(/Mokytojas/)).toBeInTheDocument()
+  })
+
+  it('shows the email of the user', () => {
+    renderProfile(createUser({ email: 'ona@example.com' }))
+
+    expect(screen.getByText(/El. paštas:/)).toBeInTheDocument()
+    expect(screen.getByText(/ona@example.com/)).toBeInTheDocument()
   })
 
   it('navigates to login and clears session marker when logout returns 204', async () => {
