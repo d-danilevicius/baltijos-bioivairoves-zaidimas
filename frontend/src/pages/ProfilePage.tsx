@@ -43,6 +43,9 @@ export default function ProfilePage() {
         <p className="mb-2 break-all">
           <strong>Naudotojo vardas:</strong> {user.userName}
         </p>
+        <p className="mb-2 break-all">
+          <strong>El. paštas:</strong> {user.email}
+        </p>
         <p className="mb-4">
           <strong>Rolė:</strong> {getRoleName(user.role)}
         </p>

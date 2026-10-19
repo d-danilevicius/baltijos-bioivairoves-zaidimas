@@ -98,9 +98,10 @@ public class AuthController : ControllerBase
     {
         var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var userName = User.FindFirstValue(ClaimTypes.Name);
+        var email = User.FindFirstValue(ClaimTypes.Email);
         var role = User.FindFirstValue(ClaimTypes.Role);
 
-        if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(role))
+        if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(role))
         {
             return Unauthorized();
         }
@@ -109,6 +110,7 @@ public class AuthController : ControllerBase
         {
             Id = id,
             UserName = userName,
+            Email = email,
             Role = role
         };
 

@@ -70,7 +70,7 @@ After login the user is taken to the profile page http://localhost:5173/profile,
 Session uses cookie authentication (HttpOnly, Secure, SameSite=Lax) with 30 minutes of inactivity.
 CSRF: POST requests that change data need the X-CSRF-TOKEN header; the token is returned by GET /api/auth/csrf (fetch it after login).
 
-Access control: GET /api/auth/me returns the current user { id, userName, role } when the session is valid and 401 otherwise; the frontend uses it to restore the session after a page refresh.
+Access control: GET /api/auth/me returns the current user { id, userName, email, role } when the session is valid and 401 otherwise; the frontend uses it to restore the session after a page refresh.
 Role policies Student, Teacher and Administrator exist on the server; a user with the wrong role gets 403 with the error code "AccessDenied" (shown in the UI as "Prieiga uždrausta").
 Frontend: protected routes (ProtectedRoute) redirect to /login when there is no session; unknown addresses show the "Puslapis nerastas" page; wrong role shows "Prieiga uždrausta".
 No new migration and no new configuration in this feature.

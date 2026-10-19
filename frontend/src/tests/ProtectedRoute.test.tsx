@@ -33,7 +33,7 @@ function renderRoute(allowedRoles?: CurrentUser['role'][]) {
   )
 }
 
-const teacher: CurrentUser = { id: '1', userName: 'Jonas', role: 'Teacher' }
+const teacher: CurrentUser = { id: '1', userName: 'Jonas', email: 'jonas@example.com', role: 'Teacher' }
 
 describe('ProtectedRoute', () => {
   afterEach(() => {
