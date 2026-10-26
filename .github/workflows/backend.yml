@@ -17,7 +17,7 @@ jobs:
       - name: Build
         run: dotnet build backend/Project.slnx --no-restore --configuration Release
       - name: Check formatting
-        run: dotnet format backend/Project.slnx --verify-no-changes --no-restore --exclude "**/Migrations/**"
+        run: dotnet format backend/Project.slnx --verify-no-changes --no-restore --exclude backend/src/Project.Api/Migrations
       - name: Check vulnerable packages
         run: |
           dotnet list backend/Project.slnx package --vulnerable --include-transitive --format json > vulnerable-packages.json
