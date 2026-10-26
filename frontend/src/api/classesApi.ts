@@ -9,17 +9,10 @@ type Failure = { status: 'network' | 'server'; message: string }
 export type ListClassesResult = { status: 200; body: SchoolClass[] } | { status: 401 } | Failure
 
 export type GetClassResult =
-  | { status: 200; body: SchoolClass }
-  | { status: 401 }
-  | { status: 403 }
-  | { status: 404 }
-  | Failure
+  { status: 200; body: SchoolClass } | { status: 401 } | { status: 403 } | { status: 404 } | Failure
 
 export type CreateClassResult =
-  | { status: 201; body: SchoolClass }
-  | { status: 400; body: ProblemDetailsWithErrors }
-  | { status: 401 }
-  | Failure
+  { status: 201; body: SchoolClass } | { status: 400; body: ProblemDetailsWithErrors } | { status: 401 } | Failure
 
 export type DeleteClassResult = { status: 204 } | { status: 401 } | { status: 403 } | { status: 404 } | Failure
 

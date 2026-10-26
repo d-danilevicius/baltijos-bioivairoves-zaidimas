@@ -16,5 +16,12 @@ jobs:
         run: dotnet restore backend/Project.slnx
       - name: Build
         run: dotnet build backend/Project.slnx --no-restore --configuration Release
+      - name: Check formatting
+        run: dotnet format backend/Project.slnx --verify-no-changes --no-restore --exclude backend/src/Project.Api/Migrations
+      - name: Check vulnerable packages
+        run: |
+          dotnet list backend/Project.slnx package --vulnerable --include-transitive --format json > vulnerable-packages.json
+          cat vulnerable-packages.json
+          jq -e '[.projects[] | .frameworks[]? | (.topLevelPackages[]?, .transitivePackages[]?) | .vulnerabilities[]?] | length == 0' vulnerable-packages.json
       - name: Test
         run: dotnet test backend/Project.slnx --no-build --configuration Release

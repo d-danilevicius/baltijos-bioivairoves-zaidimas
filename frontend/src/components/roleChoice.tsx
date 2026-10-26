@@ -28,7 +28,11 @@ export default function RoleChoice({ value, onChange, error }: Props) {
         />{' '}
         Mokytojas
       </label>
-      {error && <div id="role-error" role="alert" className="mt-1 text-error">{error}</div>}
+      {error && (
+        <div id="role-error" role="alert" className="mt-1 text-error">
+          {error}
+        </div>
+      )}
     </fieldset>
   )
 }

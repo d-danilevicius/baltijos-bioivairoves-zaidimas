@@ -29,7 +29,7 @@ function renderRoute(allowedRoles?: CurrentUser['role'][]) {
         </Route>
         <Route path="/login" element={<LoginPage />} />
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   )
 }
 

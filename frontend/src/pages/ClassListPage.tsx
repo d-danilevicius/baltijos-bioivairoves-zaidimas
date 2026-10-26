@@ -13,10 +13,7 @@ import { teacherLinks } from '../helpers/navigationLinks'
 import type { SchoolClass } from '../types/classes'
 
 type ListState =
-  | { status: 'loading' }
-  | { status: 'ready'; classes: SchoolClass[] }
-  | { status: 'expired' }
-  | { status: 'error' }
+  { status: 'loading' } | { status: 'ready'; classes: SchoolClass[] } | { status: 'expired' } | { status: 'error' }
 
 export default function ClassListPage() {
   const [state, setState] = useState<ListState>({ status: 'loading' })

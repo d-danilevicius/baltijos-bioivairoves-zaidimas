@@ -7,17 +7,19 @@ import * as api from '../api/authApi'
 
 function renderWithRoutes() {
   return render(
-    <MemoryRouter initialEntries={["/register"]}>
+    <MemoryRouter initialEntries={['/register']}>
       <Routes>
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   )
 }
 
 describe('RegisterPage', () => {
-  afterEach(() => { vi.restoreAllMocks() })
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
 
   it('empty form shows errors and does not call API', async () => {
     const mock = vi.spyOn(api, 'registerUser')
@@ -42,7 +44,7 @@ describe('RegisterPage', () => {
 
   it('valid form 201 navigates to login with success message', async () => {
     const mock = vi.spyOn(api, 'registerUser')
-        mock.mockResolvedValue({ status: 201, body: { id: '1', userName: 'u', role: 'Student' } })
+    mock.mockResolvedValue({ status: 201, body: { id: '1', userName: 'u', role: 'Student' } })
     renderWithRoutes()
     await userEvent.type(screen.getByLabelText(/El. paštas/), 'a@b.com')
     await userEvent.type(screen.getByLabelText(/Naudotojo vardas/), 'user1')
@@ -55,7 +57,7 @@ describe('RegisterPage', () => {
 
   it('409 for email shows server emailRegistered message and keeps email but clears password', async () => {
     const mock = vi.spyOn(api, 'registerUser')
-        mock.mockResolvedValue({ status: 409, body: { errors: { email: ['AlreadyRegistered'] } } })
+    mock.mockResolvedValue({ status: 409, body: { errors: { email: ['AlreadyRegistered'] } } })
     renderWithRoutes()
     await userEvent.type(screen.getByLabelText(/El. paštas/), 'a@b.com')
     await userEvent.type(screen.getByLabelText(/Naudotojo vardas/), 'user1')
@@ -69,7 +71,7 @@ describe('RegisterPage', () => {
 
   it('409 for userName shows userNameTaken message', async () => {
     const mock = vi.spyOn(api, 'registerUser')
-        mock.mockResolvedValue({ status: 409, body: { errors: { userName: ['AlreadyInUse'] } } })
+    mock.mockResolvedValue({ status: 409, body: { errors: { userName: ['AlreadyInUse'] } } })
     renderWithRoutes()
     await userEvent.type(screen.getByLabelText(/El. paštas/), 'a@b.com')
     await userEvent.type(screen.getByLabelText(/Naudotojo vardas/), 'user1')
@@ -81,7 +83,7 @@ describe('RegisterPage', () => {
 
   it('server failure shows server failure message', async () => {
     const mock = vi.spyOn(api, 'registerUser')
-        mock.mockResolvedValue({ status: 'server', message: 'Server error' })
+    mock.mockResolvedValue({ status: 'server', message: 'Server error' })
     renderWithRoutes()
     await userEvent.type(screen.getByLabelText(/El. paštas/), 'a@b.com')
     await userEvent.type(screen.getByLabelText(/Naudotojo vardas/), 'user1')
@@ -93,7 +95,9 @@ describe('RegisterPage', () => {
 
   it('button is disabled while request pending', async () => {
     let resolve: (v: unknown) => void = () => {}
-    const p = new Promise<unknown>((r) => { resolve = r })
+    const p = new Promise<unknown>((r) => {
+      resolve = r
+    })
     const mock = vi.spyOn(api, 'registerUser')
     mock.mockReturnValue(p as unknown as Promise<import('../api/authApi').RegisterResult>)
     renderWithRoutes()

@@ -27,7 +27,7 @@ function renderLoginPage(initialEntry: string | { pathname: string; state?: { me
         <Route path="/profile" element={<ProfilePageStub />} />
         <Route path="/classes" element={<div>Classes page</div>} />
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   )
 }
 

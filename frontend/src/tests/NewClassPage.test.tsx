@@ -12,7 +12,11 @@ vi.mock('../api/classesApi', () => ({ createClass: vi.fn() }))
 function DetailsStub() {
   const location = useLocation()
   const message = (location.state as { message?: string } | null)?.message
-  return <div>Class details stub {location.pathname} {message}</div>
+  return (
+    <div>
+      Class details stub {location.pathname} {message}
+    </div>
+  )
 }
 
 function LoginStub() {

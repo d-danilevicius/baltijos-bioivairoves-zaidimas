@@ -45,7 +45,7 @@ describe('getCurrentUser', () => {
 
     expect(fetchSpy).toHaveBeenCalledWith(
       expect.stringContaining('/api/auth/me'),
-      expect.objectContaining({ credentials: 'include' })
+      expect.objectContaining({ credentials: 'include' }),
     )
   })
 })

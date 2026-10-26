@@ -20,7 +20,7 @@ Backend (in the repository root):
 - `dotnet restore backend/Project.slnx`
 - `dotnet build backend/Project.slnx`
 - `dotnet test backend/Project.slnx`
-- `dotnet format backend/Project.slnx --verify-no-changes`
+- `dotnet format backend/Project.slnx --verify-no-changes --exclude backend/src/Project.Api/Migrations`
 - `dotnet ef migrations add <NameDescribingTheChange> --project backend/src/Project.Api`
 
 Frontend (in the `frontend/` folder):

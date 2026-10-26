@@ -37,7 +37,7 @@ describe('Common state components', () => {
     render(
       <EmptyState message="Nėra įrašų.">
         <button type="button">Pridėti</button>
-      </EmptyState>
+      </EmptyState>,
     )
 
     expect(screen.getByRole('button', { name: 'Pridėti' })).toBeInTheDocument()

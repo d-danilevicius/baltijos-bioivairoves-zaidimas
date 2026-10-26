@@ -1,4 +1,11 @@
-import { CurrentUser, LoggedInUser, LoginRequest, ProblemDetailsWithErrors, RegisterRequest, RegisterResponse201 } from '../types/auth'
+import {
+  CurrentUser,
+  LoggedInUser,
+  LoginRequest,
+  ProblemDetailsWithErrors,
+  RegisterRequest,
+  RegisterResponse201,
+} from '../types/auth'
 
 const base = (import.meta.env.VITE_API_URL ?? '') as string
 
@@ -15,15 +22,10 @@ export type LoginResult =
   | { status: 403; body: ProblemDetailsWithErrors }
   | { status: 'network' | 'server'; message: string }
 
-export type LogoutResult =
-  | { status: 204 }
-  | { status: 401 }
-  | { status: 'network' | 'server'; message: string }
+export type LogoutResult = { status: 204 } | { status: 401 } | { status: 'network' | 'server'; message: string }
 
 export type CurrentUserResult =
-  | { status: 200; body: CurrentUser }
-  | { status: 401 }
-  | { status: 'network' | 'server'; message: string }
+  { status: 200; body: CurrentUser } | { status: 401 } | { status: 'network' | 'server'; message: string }
 
 export async function registerUser(req: RegisterRequest): Promise<RegisterResult> {
   try {

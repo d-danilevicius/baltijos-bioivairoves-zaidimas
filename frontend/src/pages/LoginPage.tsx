@@ -88,7 +88,14 @@ export default function LoginPage() {
             </div>
           )}
 
-          <TextField id="email" label="El. paštas" value={email} onChange={setEmail} error={fieldErrors.email} autoComplete="email" />
+          <TextField
+            id="email"
+            label="El. paštas"
+            value={email}
+            onChange={setEmail}
+            error={fieldErrors.email}
+            autoComplete="email"
+          />
           <TextField
             id="password"
             label="Slaptažodis"
