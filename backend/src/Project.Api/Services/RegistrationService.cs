@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -5,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Project.Api.DTOs.Requests;
 using Project.Api.DTOs.Responses;
 using Project.Api.Entities;
-using System.Collections.Generic;
 
 namespace Project.Api.Services;
 

@@ -1,13 +1,13 @@
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Testcontainers.PostgreSql;
 using Project.Api.Data;
+using Testcontainers.PostgreSql;
 
 namespace Project.IntegrationTests.Registration;
 
