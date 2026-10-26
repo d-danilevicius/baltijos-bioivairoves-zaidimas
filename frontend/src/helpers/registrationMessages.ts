@@ -5,30 +5,30 @@ export const messages = {
     email: {
       Required: 'Įveskite el. pašto adresą.',
       InvalidFormat: 'Įveskite teisingą el. pašto adresą.',
-      TooLong: 'El. paštas negali būti ilgesnis nei 254 simboliai.'
+      TooLong: 'El. paštas negali būti ilgesnis nei 254 simboliai.',
     },
     userName: {
       Required: 'Įveskite naudotojo vardą.',
-      InvalidFormat: 'Naudotojo vardą turi sudaryti 3–30 raidžių, skaičių ar simbolių "_".'
+      InvalidFormat: 'Naudotojo vardą turi sudaryti 3–30 raidžių, skaičių ar simbolių "_".',
     },
     password: {
       Required: 'Įveskite slaptažodį.',
-      InvalidLength: 'Slaptažodį turi sudaryti nuo 8 iki 128 simbolių.'
+      InvalidLength: 'Slaptažodį turi sudaryti nuo 8 iki 128 simbolių.',
     },
     role: {
       Required: 'Pasirinkite rolę.',
-      NotAllowed: 'Pasirinkite rolę.'
-    }
+      NotAllowed: 'Pasirinkite rolę.',
+    },
   },
 
   server: {
     emailRegistered: 'Šis el. pašto adresas jau užregistruotas.',
     userNameTaken: 'Toks naudotojo vardas jau naudojamas.',
     failure: 'Nepavyko užregistruoti. Bandykite vėliau.',
-    success: 'Paskyra sukurta. Prisijunkite.'
+    success: 'Paskyra sukurta. Prisijunkite.',
   },
 
-  formNotSubmitted: 'Forma neišsiųsta. Ištaisykite pažymėtus laukus.'
+  formNotSubmitted: 'Forma neišsiųsta. Ištaisykite pažymėtus laukus.',
 }
 
 export function messageFor(field: keyof FieldErrors | undefined, code: string | undefined): string | undefined {
