@@ -93,9 +93,31 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <TextField id="email" label="El. paštas" value={email} onChange={setEmail} error={fieldErrors.email} autoComplete="email" />
-          <TextField id="userName" label="Naudotojo vardas" value={userName} onChange={setUserName} error={fieldErrors.userName} autoComplete="username" />
-          <TextField id="password" label="Slaptažodis" type="password" value={password} onChange={setPassword} error={fieldErrors.password} autoComplete="new-password" />
+          <TextField
+            id="email"
+            label="El. paštas"
+            value={email}
+            onChange={setEmail}
+            error={fieldErrors.email}
+            autoComplete="email"
+          />
+          <TextField
+            id="userName"
+            label="Naudotojo vardas"
+            value={userName}
+            onChange={setUserName}
+            error={fieldErrors.userName}
+            autoComplete="username"
+          />
+          <TextField
+            id="password"
+            label="Slaptažodis"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            error={fieldErrors.password}
+            autoComplete="new-password"
+          />
           <RoleChoice value={role} onChange={setRole} error={fieldErrors.role} />
 
           <Button type="submit" disabled={loading} fullWidth>
