@@ -101,7 +101,7 @@ dotnet test backend/Project.slnx
 cd frontend && npm test
 ```
 
-Other checks: `dotnet format backend/Project.slnx --verify-no-changes`, `npm run lint`, `npm run build`.
+Other checks: `dotnet format backend/Project.slnx --verify-no-changes --exclude "**/Migrations/**"`, `npm run lint`, `npm run build`.
 
 ## Configuration
 
