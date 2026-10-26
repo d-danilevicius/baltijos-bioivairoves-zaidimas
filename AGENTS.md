@@ -35,6 +35,7 @@ Feature workflow according to the general project rules: updated `main` → bran
 - Review `git diff` and remove debug code.
 - Run the backend build and tests; if `frontend/` changed, run lint, tests and build.
 - Check that the specification and tasks are fulfilled; update README and `docs/` if the behaviour changed.
+- Before the Pull Request check DRY, KISS and YAGNI (constitution 1.1 and 8): the same rule written in one place only, no unused code, no abstraction without a real boundary; then run the review step.
 
 ## Do not touch
 - `.env`, secrets, `bin/`, `obj/`, `node_modules/`, `dist/`.
