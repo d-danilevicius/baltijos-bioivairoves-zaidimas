@@ -26,7 +26,7 @@ function renderProfile(user: CurrentUser) {
         </Route>
         <Route path="/login" element={<div>Login stub</div>} />
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   )
 }
 
@@ -101,7 +101,7 @@ describe('ProfilePage', () => {
     mockLogoutUser.mockReturnValue(
       new Promise<LogoutResult>((resolve) => {
         resolveLogout = resolve
-      })
+      }),
     )
     renderProfile(createUser())
 
