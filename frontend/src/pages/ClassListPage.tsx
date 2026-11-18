@@ -9,7 +9,7 @@ import LoadingState from '../components/loadingState'
 import PageLayout from '../components/pageLayout'
 import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
 import { createFirstClass, newClass, noClasses } from '../helpers/classMessage'
-import { teacherLinks } from '../helpers/navigationLinks'
+import { teacherLinks } from '../helpers/navigationLink'
 import type { SchoolClass } from '../types/schoolClass'
 import { HttpStatus } from '../helpers/httpStatus'
 

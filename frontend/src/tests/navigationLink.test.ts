@@ -1,4 +1,4 @@
-import { getUserLinks, teacherLinks } from '../helpers/navigationLinks'
+import { getUserLinks, teacherLinks } from '../helpers/navigationLink'
 
 describe('getUserLinks', () => {
   it('returns the class list and profile links for a teacher', () => {
