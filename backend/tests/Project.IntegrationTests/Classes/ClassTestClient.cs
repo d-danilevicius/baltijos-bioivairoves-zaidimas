@@ -5,28 +5,28 @@ using Project.IntegrationTests.Login;
 
 namespace Project.IntegrationTests.Classes;
 
-internal sealed class ClassesTestClient
+internal sealed class ClassTestClient
 {
     private readonly HttpClient _client;
     private readonly LoginTestHelper _helper;
 
-    private ClassesTestClient(HttpClient client, LoginTestHelper helper)
+    private ClassTestClient(HttpClient client, LoginTestHelper helper)
     {
         _client = client;
         _helper = helper;
     }
 
-    public static ClassesTestClient CreateAnonymous(LoginApiFixture fixture)
+    public static ClassTestClient CreateAnonymous(LoginApiFixture fixture)
     {
         var client = fixture.CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false,
             BaseAddress = new Uri("https://localhost")
         });
-        return new ClassesTestClient(client, new LoginTestHelper(fixture, client));
+        return new ClassTestClient(client, new LoginTestHelper(fixture, client));
     }
 
-    public static async Task<ClassesTestClient> LoginAsync(LoginApiFixture fixture, string role)
+    public static async Task<ClassTestClient> LoginAsync(LoginApiFixture fixture, string role)
     {
         var testClient = CreateAnonymous(fixture);
         var email = LoginTestHelper.Unique("e") + "@example.com";
