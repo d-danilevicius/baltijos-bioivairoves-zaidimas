@@ -11,6 +11,9 @@ internal sealed class FakeGbifClient : IGbifClient
 
     public bool Fails { get; set; }
 
+    // How long each GBIF request takes; the delay stops when the token is cancelled
+    public TimeSpan Delay { get; set; }
+
     // Runs while GBIF "answers"; used to simulate another request that finishes first
     public Func<Task>? OnSearch { get; set; }
 
@@ -28,6 +31,11 @@ internal sealed class FakeGbifClient : IGbifClient
         CancellationToken cancellationToken)
     {
         Calls++;
+        if (Delay > TimeSpan.Zero)
+        {
+            await Task.Delay(Delay, cancellationToken);
+        }
+
         if (OnSearch is not null)
         {
             await OnSearch();

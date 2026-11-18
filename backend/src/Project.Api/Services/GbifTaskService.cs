@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using Project.Api.Data;
 using Project.Api.Entities;
@@ -12,6 +13,7 @@ public class GbifTaskService : IGbifTaskService
 
     private readonly ApplicationDbContext _dbContext;
     private readonly IGbifClient _gbifClient;
+    private readonly TimeSpan _gbifTimeout;
     private readonly GbifTaskFactory _taskFactory;
     private readonly SeasonalTaskFactory _seasonalTaskFactory;
     private readonly ILogger<GbifTaskService> _logger;
@@ -19,12 +21,14 @@ public class GbifTaskService : IGbifTaskService
     public GbifTaskService(
         ApplicationDbContext dbContext,
         IGbifClient gbifClient,
+        IOptions<GbifOptions> gbifOptions,
         GbifTaskFactory taskFactory,
         SeasonalTaskFactory seasonalTaskFactory,
         ILogger<GbifTaskService> logger)
     {
         _dbContext = dbContext;
         _gbifClient = gbifClient;
+        _gbifTimeout = TimeSpan.FromSeconds(gbifOptions.Value.TimeoutSeconds);
         _taskFactory = taskFactory;
         _seasonalTaskFactory = seasonalTaskFactory;
         _logger = logger;
@@ -70,7 +74,7 @@ public class GbifTaskService : IGbifTaskService
         return await SaveAsync(schoolClass, latitude, longitude, season, observations, tasks, cancellationToken);
     }
 
-    // Returns null when GBIF is not available (NFR-020)
+    // Returns null when GBIF is not available or does not answer in time (NFR-020)
     private async Task<GbifObservations?> LoadObservationsAsync(
         Guid classId,
         double latitude,
@@ -78,11 +82,15 @@ public class GbifTaskService : IGbifTaskService
         Season season,
         CancellationToken cancellationToken)
     {
+        // One time limit for both GBIF requests together
+        using var timeLimit = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeLimit.CancelAfter(_gbifTimeout);
+
         try
         {
             // One request after another: parallel requests made GBIF answer 429 (Too Many Requests)
-            var chosen = await _gbifClient.SearchAsync(latitude, longitude, GbifObservationSelector.MaxDistanceKm, season, cancellationToken);
-            var opposite = await _gbifClient.SearchAsync(latitude, longitude, GbifObservationSelector.MaxDistanceKm, season.Opposite(), cancellationToken);
+            var chosen = await _gbifClient.SearchAsync(latitude, longitude, GbifObservationSelector.MaxDistanceKm, season, timeLimit.Token);
+            var opposite = await _gbifClient.SearchAsync(latitude, longitude, GbifObservationSelector.MaxDistanceKm, season.Opposite(), timeLimit.Token);
 
             return new GbifObservations(
                 ToObservations(chosen, latitude, longitude, classId, season),
@@ -91,6 +99,11 @@ public class GbifTaskService : IGbifTaskService
         catch (GbifUnavailableException ex)
         {
             _logger.LogWarning(ex, "GBIF tasks of class {ClassId} were not created because GBIF is not available", classId);
+            return null;
+        }
+        catch (OperationCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(ex, "GBIF tasks of class {ClassId} were not created because GBIF did not answer in time", classId);
             return null;
         }
     }
