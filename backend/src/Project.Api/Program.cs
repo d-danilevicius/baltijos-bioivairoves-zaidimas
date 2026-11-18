@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Project.Api.Data;
+using Project.Api.Integrations.Gbif;
 using Project.Api.Middleware;
 using Project.Api.Services;
 using Scalar.AspNetCore;
@@ -19,6 +20,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // Identity and application services
 builder.Services.AddProjectIdentity(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddGbifClient(builder.Configuration);
 
 // Antiforgery configuration
 builder.Services.AddCsrfProtection();
