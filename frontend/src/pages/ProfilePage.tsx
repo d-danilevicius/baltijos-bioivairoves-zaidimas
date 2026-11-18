@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { logoutUser } from '../api/authApi'
 import Button from '../components/button'
 import Card from '../components/card'
@@ -13,6 +13,7 @@ import { HttpStatus } from '../helpers/httpStatus'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
+  const message = (useLocation().state as { message?: string } | null)?.message
   const user = useCurrentUser()
   const [loading, setLoading] = useState(false)
   const [topError, setTopError] = useState<string | undefined>(undefined)
@@ -35,6 +36,12 @@ export default function ProfilePage() {
   return (
     <PageLayout links={getUserLinks(user.role)}>
       <Card title="Profilis">
+        {message && (
+          <div role="status" className="mb-4 text-brand">
+            {message}
+          </div>
+        )}
+
         {topError && (
           <div role="alert" className="mb-4 text-error">
             {topError}

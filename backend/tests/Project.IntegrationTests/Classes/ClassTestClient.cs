@@ -45,6 +45,24 @@ internal sealed class ClassTestClient
 
     public Task<HttpResponseMessage> DeleteAsync(string id) => SendAsync(HttpMethod.Delete, $"/api/classes/{id}");
 
+    public Task<HttpResponseMessage> JoinAsync(string code, bool confirmChange = false) =>
+        SendAsync(HttpMethod.Post, "/api/classes/join", new { code, confirmChange });
+
+    public async Task<HttpResponseMessage[]> JoinAtTheSameTimeAsync(string code, int count)
+    {
+        // One CSRF token is used for all requests, because every new token replaces the previous one
+        var token = await _helper.GetCsrfTokenAsync();
+        var requests = Enumerable.Range(0, count).Select(_ =>
+        {
+            var message = new HttpRequestMessage(HttpMethod.Post, "/api/classes/join");
+            message.Headers.Add("X-CSRF-TOKEN", token);
+            message.Content = JsonContent.Create(new { code, confirmChange = false });
+            return _client.SendAsync(message);
+        });
+
+        return await Task.WhenAll(requests);
+    }
+
     public async Task<HttpResponseMessage> SendWithoutCsrfTokenAsync(HttpMethod method, string url, object? body = null)
     {
         var message = new HttpRequestMessage(method, url);
@@ -61,6 +79,13 @@ internal sealed class ClassTestClient
         var response = await CreateAsync(name);
         response.EnsureSuccessStatusCode();
         return JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.GetProperty("id").GetString()!;
+    }
+
+    public async Task<string> CreateAndGetCodeAsync(string name)
+    {
+        var response = await CreateAsync(name);
+        response.EnsureSuccessStatusCode();
+        return JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.GetProperty("code").GetString()!;
     }
 
     private async Task<HttpResponseMessage> SendAsync(HttpMethod method, string url, object? body = null)

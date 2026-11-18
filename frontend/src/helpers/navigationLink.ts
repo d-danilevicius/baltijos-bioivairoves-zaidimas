@@ -10,11 +10,18 @@ export const visitorLinks: NavigationLink[] = [
 
 export const userLinks: NavigationLink[] = [{ to: '/profile', label: 'Profilis' }]
 
+export const studentLinks: NavigationLink[] = [
+  { to: '/join', label: 'Prisijungti prie klasės' },
+  { to: '/profile', label: 'Profilis' },
+]
+
 export const teacherLinks: NavigationLink[] = [
   { to: '/classes', label: 'Klasės' },
   { to: '/profile', label: 'Profilis' },
 ]
 
 export function getUserLinks(role: CurrentUser['role']): NavigationLink[] {
-  return role === 'Teacher' ? teacherLinks : userLinks
+  if (role === 'Teacher') return teacherLinks
+  if (role === 'Student') return studentLinks
+  return userLinks
 }

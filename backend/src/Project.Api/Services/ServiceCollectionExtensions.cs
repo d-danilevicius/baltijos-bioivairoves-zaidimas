@@ -42,6 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ILoginService, LoginService>();
         services.AddSingleton<IClassCodeGenerator, ClassCodeGenerator>();
         services.AddScoped<IClassService, ClassService>();
+        services.AddScoped<IClassMembershipService, ClassMembershipService>();
 
         return services;
     }

@@ -1,11 +1,10 @@
 import type { ProblemDetailsWithErrors } from '../types/auth'
 import type { SchoolClass } from '../types/schoolClass'
 import { fetchCsrfToken } from './authApi'
+import { toFailure, type Failure } from './apiFailure'
 import { HttpStatus } from '../helpers/httpStatus'
 
 const base = (import.meta.env.VITE_API_URL ?? '') as string
-
-type Failure = { status: 'network' | 'server'; message: string }
 
 export type ListClassesResult =
   { status: typeof HttpStatus.Ok; body: SchoolClass[] } | { status: typeof HttpStatus.Unauthorized } | Failure
@@ -29,11 +28,6 @@ export type DeleteClassResult =
   | { status: typeof HttpStatus.Forbidden }
   | { status: typeof HttpStatus.NotFound }
   | Failure
-
-function toFailure(e: unknown): Failure {
-  const message = (e as Error | undefined)?.message ?? 'Network error'
-  return { status: message === 'Server error' ? 'server' : 'network', message }
-}
 
 export async function listClasses(): Promise<ListClassesResult> {
   try {

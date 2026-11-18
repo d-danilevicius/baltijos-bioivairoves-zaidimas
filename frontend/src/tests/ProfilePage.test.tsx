@@ -17,9 +17,9 @@ function createUser(overrides: Partial<CurrentUser> = {}): CurrentUser {
   return { id: '1', userName: 'Jonas', email: 'jonas@example.com', role: 'Student', ...overrides } as CurrentUser
 }
 
-function renderProfile(user: CurrentUser) {
+function renderProfile(user: CurrentUser, state?: { message: string }) {
   return render(
-    <MemoryRouter initialEntries={['/profile']}>
+    <MemoryRouter initialEntries={[{ pathname: '/profile', state }]}>
       <Routes>
         <Route element={<Outlet context={{ user }} />}>
           <Route path="/profile" element={<ProfilePage />} />
@@ -52,6 +52,18 @@ describe('ProfilePage', () => {
     expect(screen.getByText(/Naudotojo vardas:/)).toBeInTheDocument()
     expect(screen.getByText(/Jonas/)).toBeInTheDocument()
     expect(screen.getByText(/Mokytojas/)).toBeInTheDocument()
+  })
+
+  it('shows the message received from the previous page', () => {
+    renderProfile(createUser(), { message: 'Prisijungėte prie klasės „7a“.' })
+
+    expect(screen.getByRole('status')).toHaveTextContent('Prisijungėte prie klasės „7a“.')
+  })
+
+  it('shows no message when the profile is opened without one', () => {
+    renderProfile(createUser())
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
 
   it('shows the email of the user', () => {

@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project.Api.Authorization;
@@ -26,7 +25,7 @@ public class ClassController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> List()
     {
-        var classes = await _classService.ListAsync(GetOwnerId(), HttpContext.RequestAborted);
+        var classes = await _classService.ListAsync(User.GetRequiredUserId(), HttpContext.RequestAborted);
         return Ok(classes);
     }
 
@@ -37,7 +36,7 @@ public class ClassController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Create([FromBody] CreateClassRequest request)
     {
-        var created = await _classService.CreateAsync(GetOwnerId(), request, HttpContext.RequestAborted);
+        var created = await _classService.CreateAsync(User.GetRequiredUserId(), request, HttpContext.RequestAborted);
         return Created($"/api/classes/{created.Id}", created);
     }
 
@@ -48,7 +47,7 @@ public class ClassController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(Guid id)
     {
-        var result = await _classService.GetAsync(GetOwnerId(), id, HttpContext.RequestAborted);
+        var result = await _classService.GetAsync(User.GetRequiredUserId(), id, HttpContext.RequestAborted);
         return MapResult(result, () => Ok(result.Class));
     }
 
@@ -59,12 +58,9 @@ public class ClassController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var result = await _classService.DeleteAsync(GetOwnerId(), id, HttpContext.RequestAborted);
+        var result = await _classService.DeleteAsync(User.GetRequiredUserId(), id, HttpContext.RequestAborted);
         return MapResult(result, NoContent);
     }
-
-    private string GetOwnerId() =>
-        User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("The signed-in user has no identifier claim.");
 
     private IActionResult MapResult(ClassResult result, Func<IActionResult> onSucceeded)
     {
