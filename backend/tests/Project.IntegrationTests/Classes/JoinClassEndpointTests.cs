@@ -145,7 +145,7 @@ public class JoinClassEndpointTests : IClassFixture<LoginApiFixture>
         var code = await CreateClassCodeAsync("7a");
         var student = await ClassTestClient.LoginAsync(_fixture, RoleName.Student);
 
-        var responses = await Task.WhenAll(student.JoinAsync(code), student.JoinAsync(code));
+        var responses = await student.JoinAtTheSameTimeAsync(code, 2);
 
         Assert.All(responses, r => Assert.Equal(HttpStatusCode.OK, r.StatusCode));
     }
