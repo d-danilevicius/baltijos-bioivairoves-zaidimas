@@ -26,6 +26,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         // Ensure unique index on NormalizedEmail as required by the plan
         builder.Entity<ApplicationUser>()
@@ -56,19 +57,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 ConcurrencyStamp = AdministratorConcurrencyStamp
             }
         );
-
-        // ActionLog entity configuration
-        builder.Entity<ActionLog>(e =>
-        {
-            e.Property(a => a.Action).HasMaxLength(50).IsRequired();
-            e.HasIndex(a => a.OccurredAtUtc);
-
-            // Nullable FK to AspNetUsers; when a user is deleted the UserId is set to null
-            e.HasOne<ApplicationUser>()
-                .WithMany()
-                .HasForeignKey(a => a.UserId)
-                .OnDelete(DeleteBehavior.SetNull);
-        });
 
         // SchoolClass entity configuration (table Classes)
         builder.Entity<SchoolClass>(e =>
