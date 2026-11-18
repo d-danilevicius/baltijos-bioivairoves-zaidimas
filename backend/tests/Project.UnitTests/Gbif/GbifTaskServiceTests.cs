@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Project.Api.Data;
 using Project.Api.Entities;
 using Project.Api.Integrations.Gbif;
@@ -100,6 +101,39 @@ public class GbifTaskServiceTests
 
         Assert.Equal(GbifTaskOutcome.GbifUnavailable, result.Outcome);
         await AssertNothingSavedAsync(db, classId);
+    }
+
+    [Fact]
+    public async Task CreateAsync_WhenTwoGbifRequestsTogetherTakeLongerThanTheLimit_ReturnsGbifUnavailableAndSavesNothing()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassAsync(db);
+        var client = CreateClientWithEnoughObservations();
+        client.Delay = TimeSpan.FromMilliseconds(700);
+        var service = CreateService(db, client, timeoutSeconds: 1);
+
+        var result = await service.CreateAsync(OwnerId, classId, Latitude, Longitude, Season.Summer, CancellationToken.None);
+
+        Assert.Equal(GbifTaskOutcome.GbifUnavailable, result.Outcome);
+        await AssertNothingSavedAsync(db, classId);
+    }
+
+    [Fact]
+    public async Task CreateAsync_WhenCallerCancels_ThrowsOperationCanceledNotGbifUnavailable()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassAsync(db);
+        var client = CreateClientWithEnoughObservations();
+        client.Delay = TimeSpan.FromSeconds(5);
+        var service = CreateService(db, client);
+        using var cancellation = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => service.CreateAsync(OwnerId, classId, Latitude, Longitude, Season.Summer, cancellation.Token));
     }
 
     [Fact]
@@ -208,8 +242,14 @@ public class GbifTaskServiceTests
         Assert.Equal("VU", stored.IucnCategory);
     }
 
-    private static GbifTaskService CreateService(ApplicationDbContext db, IGbifClient client) =>
-        new(db, client, new GbifTaskFactory(new Random(1)), new SeasonalTaskFactory(new Random(1)), NullLogger<GbifTaskService>.Instance);
+    private static GbifTaskService CreateService(ApplicationDbContext db, IGbifClient client, int timeoutSeconds = 10) =>
+        new(
+            db,
+            client,
+            Options.Create(new GbifOptions { BaseUrl = "https://api.gbif.org/v1/", TimeoutSeconds = timeoutSeconds }),
+            new GbifTaskFactory(new Random(1)),
+            new SeasonalTaskFactory(new Random(1)),
+            NullLogger<GbifTaskService>.Instance);
 
     private static async Task<Guid> AddClassAsync(ApplicationDbContext db)
     {

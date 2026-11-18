@@ -86,7 +86,7 @@ Frontend: the teacher's starting screen is the class list http://localhost:5173/
 Joining a class (student only): POST /api/classes/join with the body `{ "code": "ab12cd", "confirmChange": false }`. The server removes spaces and converts letters to uppercase; the code must be 6 letters or digits. The answers: 200 (joined, or `alreadyMember` is true when the student is already in this class), 400 (empty or wrong code, or the class is not found; the error is for the field `code`), 409 (the student belongs to another class; the body has `currentClassName` and `newClassName`, and the request is sent again with `confirmChange` true to change the class), 401 for a visitor and 403 for a teacher or an administrator. POST needs the X-CSRF-TOKEN header.
 Frontend: a student joins a class at http://localhost:5173/join (menu link “Prisijungti prie klasės”); after joining, the profile opens with the message.
 
-GBIF tasks: a teacher opens a class, chooses “Užduotys” and “Sukurti iš GBIF”, selects a location on the map (Leaflet, OpenStreetMap tiles) or enters coordinates, and chooses a season. Observations are taken from GBIF within 10 km of the location (Lithuania only). Endpoints: `POST /api/classes/{id}/gbif-tasks`, `GET /api/classes/{id}/tasks`.
+GBIF tasks: a teacher opens a class, chooses “Užduotys” and “Sukurti iš GBIF”, selects a location on the map (Leaflet, OpenStreetMap tiles) or enters coordinates, and chooses a season. Observations are taken from GBIF within 10 km of the location (Lithuania only); only the first 300 GBIF records of the season are read. Endpoints: `POST /api/classes/{id}/gbif-tasks`, `GET /api/classes/{id}/tasks`.
 
 ## API documentation
 
