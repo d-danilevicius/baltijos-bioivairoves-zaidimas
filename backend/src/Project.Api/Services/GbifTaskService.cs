@@ -80,13 +80,13 @@ public class GbifTaskService : IGbifTaskService
     {
         try
         {
-            var results = await Task.WhenAll(
-                _gbifClient.SearchAsync(latitude, longitude, GbifObservationSelector.MaxDistanceKm, season, cancellationToken),
-                _gbifClient.SearchAsync(latitude, longitude, GbifObservationSelector.MaxDistanceKm, season.Opposite(), cancellationToken));
+            // One request after another: parallel requests made GBIF answer 429 (Too Many Requests)
+            var chosen = await _gbifClient.SearchAsync(latitude, longitude, GbifObservationSelector.MaxDistanceKm, season, cancellationToken);
+            var opposite = await _gbifClient.SearchAsync(latitude, longitude, GbifObservationSelector.MaxDistanceKm, season.Opposite(), cancellationToken);
 
             return new GbifObservations(
-                ToObservations(results[0], latitude, longitude, classId, season),
-                ToObservations(results[1], latitude, longitude, classId, season.Opposite()));
+                ToObservations(chosen, latitude, longitude, classId, season),
+                ToObservations(opposite, latitude, longitude, classId, season.Opposite()));
         }
         catch (GbifUnavailableException ex)
         {

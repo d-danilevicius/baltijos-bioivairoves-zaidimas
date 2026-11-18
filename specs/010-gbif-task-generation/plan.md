@@ -34,7 +34,7 @@ A teacher chooses a point in Lithuania and a season for an own class. The server
   - `Services/GeoDistance.cs` – the distance in km between two points (haversine); used by the selector only.
   - `Services/GbifObservationSelector.cs` – keeps occurrences with coordinates and a species name, no farther than 10 km from the point (VT-011); removes duplicates by GBIF key.
   - `Services/GbifTaskFactory.cs` – creates the tasks “Atpažink rūšių grupę”, “Rask dažnos vietinės rūšies požymių” and “Atsakyk į klausimą”; `Services/SeasonalTaskFactory.cs` – creates “Palygink sezoninius stebėjimus”. Task texts only ask to recognise, name and observe from a distance (VT-021).
-  - `Services/IGbifTaskService.cs`, `GbifTaskService.cs` – checks the class and the owner, rejects a class that already has GBIF tasks, calls the GBIF client for the chosen and the opposite season (in parallel), selects, checks the minimum of 10, builds the tasks, saves everything in one `SaveChangesAsync`; returns `GbifTaskResult`.
+  - `Services/IGbifTaskService.cs`, `GbifTaskService.cs` – checks the class and the owner, rejects a class that already has GBIF tasks, calls the GBIF client for the chosen and the opposite season (one after another), selects, checks the minimum of 10, builds the tasks, saves everything in one `SaveChangesAsync`; returns `GbifTaskResult`.
   - `Services/GbifTaskResult.cs`, `Services/GbifTaskOutcome.cs` – `Created`, `NotFound`, `Forbidden`, `AlreadyCreated`, `TooFewObservations`, `GbifUnavailable`.
   - `Services/IClassTaskService.cs`, `ClassTaskService.cs` – lists the tasks of the teacher’s class for E12 (same ownership check).
   - `Controllers/ClassTaskController.cs` – `[Authorize(Policy = PolicyName.Teacher)]`, route `api/classes/{id}/...`; translates the results to status codes.
@@ -77,7 +77,7 @@ A teacher chooses a point in Lithuania and a season for an own class. The server
 ## Technical Notes
 
 - The owner of the class is taken from the session, never from the request. The location and the season are saved only after GBIF tasks are created, so a class without them has no GBIF tasks (this is how a second creation is detected).
-- The two GBIF calls (chosen and opposite season) run in parallel; each has the 10-second timeout, so the whole request stays below the 30 seconds of NFR-016.
+- The two GBIF calls (chosen and opposite season) run one after another (parallel requests made GBIF answer 429); each has the 10-second timeout, so the whole request takes at most 20 seconds, below the 30 seconds of NFR-016.
 - GBIF has no search by distance in kilometres, so the client asks for the square around the point and the server removes what is farther than 10 km. The request parameters are checked against the GBIF Occurrence API documentation when the client tests are written.
 - Winter spans two calendar years; the months of a season are sent as a list, not a range.
 - The concurrency conflict of two requests for one class is detected by making `Season` of the class a concurrency token: both requests read the class with an empty season, the second update finds the season already set, fails, and the service returns `AlreadyCreated`. This works in PostgreSQL and in the in-memory test provider, and needs no extra column.
