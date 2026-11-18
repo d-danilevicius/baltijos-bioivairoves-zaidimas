@@ -10,6 +10,7 @@ import { messageFor, messages } from '../helpers/registrationMessages'
 import { registerUser } from '../api/authApi'
 import type { RegisterRequest } from '../types/auth'
 import { useNavigate } from 'react-router-dom'
+import { HttpStatus } from '../helpers/httpStatus'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -47,7 +48,7 @@ export default function RegisterPage() {
     const res = await registerUser(req)
     setLoading(false)
 
-    if (res.status === 201) {
+    if (res.status === HttpStatus.Created) {
       navigate('/login', { state: { message: messages.server.success } })
       return
     }
@@ -57,17 +58,17 @@ export default function RegisterPage() {
 
     // map server conflict
     const m: Record<string, string> = {}
-    if (res.status === 409 && res.body && res.body.errors) {
+    if (res.status === HttpStatus.Conflict && res.body && res.body.errors) {
       if (res.body.errors.email) m.email = messages.server.emailRegistered
       if (res.body.errors.userName) m.userName = messages.server.userNameTaken
     }
-    if (res.status === 409) {
+    if (res.status === HttpStatus.Conflict) {
       setFieldErrors(m)
       setTopError(messages.formNotSubmitted)
       return
     }
 
-    if (res.status === 400) {
+    if (res.status === HttpStatus.BadRequest) {
       const m: Record<string, string> = {}
       for (const key of Object.keys(res.body.errors ?? {})) {
         const k = key as keyof RegisterRequest

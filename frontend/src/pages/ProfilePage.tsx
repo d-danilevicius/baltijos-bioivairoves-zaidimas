@@ -9,6 +9,7 @@ import { useCurrentUser } from '../hooks/useCurrentUser'
 import { logoutFailed } from '../helpers/loginMessages'
 import { getRoleName } from '../helpers/roleNames'
 import { clearSessionMarker } from '../helpers/sessionMarker'
+import { HttpStatus } from '../helpers/httpStatus'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -22,7 +23,7 @@ export default function ProfilePage() {
     const res = await logoutUser()
     setLoading(false)
 
-    if (res.status === 204 || res.status === 401) {
+    if (res.status === HttpStatus.NoContent || res.status === HttpStatus.Unauthorized) {
       clearSessionMarker()
       navigate('/login', { replace: true })
       return
