@@ -2,7 +2,7 @@ namespace Project.Api.DTOs.Responses;
 
 public class LoggedInUserResponse
 {
-    public string Id { get; set; } = null!;
-    public string UserName { get; set; } = null!;
-    public string Role { get; set; } = null!;
+    public required string Id { get; set; }
+    public required string UserName { get; set; }
+    public required string Role { get; set; }
 }
