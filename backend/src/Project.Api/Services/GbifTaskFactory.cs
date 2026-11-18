@@ -33,7 +33,8 @@ public class GbifTaskFactory
             .Select(o => (Observation: o, Group: SpeciesGroupName.For(o.GbifClass ?? string.Empty)))
             .ToList();
         var groups = withGroup.Select(o => o.Group).Distinct().ToList();
-        if (groups.Count < 2)
+        // FR-027: the options are one correct group and three others
+        if (groups.Count < MaxOptions)
         {
             return Enumerable.Empty<ClassTask>();
         }

@@ -97,11 +97,12 @@ describe('CreateGbifTasksPage', () => {
     expect(await screen.findByText(locationOutsideLithuania)).toBeInTheDocument()
   })
 
-  it('opens the task list when the tasks already exist', async () => {
+  it('opens the task list without the success message when the tasks already exist', async () => {
     vi.mocked(createGbifTasks).mockResolvedValue({ status: 409 })
     renderPage()
     await fillAndSubmit()
-    expect(await screen.findByText(/Tasks stub/)).toBeInTheDocument()
+    expect(await screen.findByText('Tasks stub')).toBeInTheDocument()
+    expect(screen.queryByText(new RegExp(gbifTasksCreated))).not.toBeInTheDocument()
   })
 
   it('shows the too few observations message', async () => {

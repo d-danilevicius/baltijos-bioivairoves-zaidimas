@@ -60,7 +60,8 @@ export default function CreateGbifTasksPage() {
   }
 
   function showResult(res: CreateGbifTasksResult) {
-    if (res.status === HttpStatus.Created || res.status === HttpStatus.Conflict) goToTasks()
+    if (res.status === HttpStatus.Created) goToTasks()
+    else if (res.status === HttpStatus.Conflict) navigate(`/classes/${id}/tasks`)
     else if (res.status === HttpStatus.Unauthorized) setBlocked('expired')
     else if (res.status === HttpStatus.Forbidden) setBlocked('forbidden')
     else if (res.status === HttpStatus.NotFound) setBlocked('notFound')

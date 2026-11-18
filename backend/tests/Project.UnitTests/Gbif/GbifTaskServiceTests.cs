@@ -236,9 +236,10 @@ public class GbifTaskServiceTests
 
     // 12 summer observations: Parus major 5, Vulpes vulpes 4, Apis mellifera 3
     private static List<GbifOccurrence> SummerOccurrences() =>
-        Occurrences("Parus major", "Aves", 5, 6, 100)
-            .Concat(Occurrences("Vulpes vulpes", "Mammalia", 4, 7, 200))
-            .Concat(Occurrences("Apis mellifera", "Insecta", 3, 8, 300)).ToList();
+        Occurrences("Parus major", "Aves", 4, 6, 100)
+            .Concat(Occurrences("Vulpes vulpes", "Mammalia", 3, 7, 200))
+            .Concat(Occurrences("Apis mellifera", "Insecta", 3, 8, 300))
+            .Concat(Occurrences("Rana temporaria", "Amphibia", 2, 6, 350)).ToList();
 
     // 10 winter observations: Parus major 3, Vulpes vulpes 6, Apis mellifera 1
     private static List<GbifOccurrence> WinterOccurrences() =>

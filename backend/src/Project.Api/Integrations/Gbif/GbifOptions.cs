@@ -12,6 +12,6 @@ public class GbifOptions
     public string BaseUrl { get; set; } = string.Empty;
 
     // NFR-020: GBIF must answer within 10 seconds
-    [Range(1, 30)]
+    [Range(1, 10)]
     public int TimeoutSeconds { get; set; } = 10;
 }

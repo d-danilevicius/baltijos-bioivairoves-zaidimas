@@ -24,7 +24,7 @@ public class GbifTaskFactoryTests
             Assert.Equal(1, t.DifficultyGroup);
             Assert.NotNull(t.Options);
             Assert.Contains(t.CorrectAnswer, t.Options);
-            Assert.InRange(t.Options.Length, 2, 4);
+            Assert.Equal(4, t.Options.Length);
             Assert.Equal(t.Options.Length, t.Options.Distinct().Count());
         });
         Assert.Equal(tasks.Count, tasks.Select(t => t.ObservationId).Distinct().Count());
@@ -36,17 +36,40 @@ public class GbifTaskFactoryTests
         var observations = new List<Observation>
         {
             TestObservations.Create("Parus major", "Aves"),
-            TestObservations.Create("Vulpes vulpes", "Mammalia")
+            TestObservations.Create("Vulpes vulpes", "Mammalia"),
+            TestObservations.Create("Apis mellifera", "Insecta"),
+            TestObservations.Create("Rana temporaria", "Amphibia")
+        };
+        var expectedGroups = new Dictionary<string, string>
+        {
+            ["Parus major"] = "Paukščiai",
+            ["Vulpes vulpes"] = "Žinduoliai",
+            ["Apis mellifera"] = "Vabzdžiai",
+            ["Rana temporaria"] = "Varliagyviai"
         };
 
         var tasks = _factory.Create(TestObservations.ClassId, observations)
             .Where(t => t.Type == TaskType.RecogniseSpeciesGroup).ToList();
 
+        Assert.NotEmpty(tasks);
         Assert.All(tasks, t =>
         {
-            var expected = t.Question.Contains("Parus major") ? "Paukščiai" : "Žinduoliai";
-            Assert.Equal(expected, t.CorrectAnswer);
+            var species = expectedGroups.Keys.Single(name => t.Question.Contains(name));
+            Assert.Equal(expectedGroups[species], t.CorrectAnswer);
         });
+    }
+
+    [Fact]
+    public void Create_WhenThereAreOnlyThreeGroups_SkipsRecognitionTasks()
+    {
+        var observations = TestObservations.Many("Parus major", 6, "Aves")
+            .Concat(TestObservations.Many("Vulpes vulpes", 3, "Mammalia"))
+            .Concat(TestObservations.Many("Apis mellifera", 3, "Insecta"))
+            .ToList();
+
+        var tasks = _factory.Create(TestObservations.ClassId, observations);
+
+        Assert.DoesNotContain(tasks, t => t.Type == TaskType.RecogniseSpeciesGroup);
     }
 
     [Fact]

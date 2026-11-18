@@ -36,7 +36,7 @@
 - A season is defined by months (VT-012): spring – March to May, summer – June to August, autumn – September to November, winter – December to February.
 - The “other season” for the seasonal comparison is the opposite season: spring ↔ autumn, summer ↔ winter.
 - If the other season has too few observations, the seasonal comparison task is skipped and the other tasks are still created.
-- A task type that cannot be created from the available observations (for example, fewer than 2 species groups for recognition) is skipped; tasks are created only if at least 10 suitable observations are found.
+- A task type that cannot be created from the available observations (for example, fewer than 4 species groups for recognition) is skipped; tasks are created only if at least 10 suitable observations are found.
 - Observations of protected species (IUCN category VU, EN or CR) are stored with that mark; the hiding of their coordinates for students belongs to feature 013 (VT-020).
 - No task text asks the student to collect, catch, touch or disturb organisms; the tasks ask only to recognise, name and observe from a distance (FR-047, VT-021).
 - A request that fails in the middle (database error) creates nothing: either all tasks and observations are saved or none (NFR-020).

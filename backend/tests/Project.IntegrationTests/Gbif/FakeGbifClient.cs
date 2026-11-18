@@ -26,9 +26,10 @@ public sealed class FakeGbifClient : IGbifClient
     // 12 summer and 10 winter observations at the point (22 stored observations)
     public void UseEnoughObservations()
     {
-        _bySeason[Season.Summer] = Create("Parus major", "Aves", 5, 6, 100)
-            .Concat(Create("Vulpes vulpes", "Mammalia", 4, 7, 200))
-            .Concat(Create("Apis mellifera", "Insecta", 3, 8, 300)).ToList();
+        _bySeason[Season.Summer] = Create("Parus major", "Aves", 4, 6, 100)
+            .Concat(Create("Vulpes vulpes", "Mammalia", 3, 7, 200))
+            .Concat(Create("Apis mellifera", "Insecta", 3, 8, 300))
+            .Concat(Create("Rana temporaria", "Amphibia", 2, 6, 350)).ToList();
         _bySeason[Season.Winter] = Create("Parus major", "Aves", 3, 12, 400)
             .Concat(Create("Vulpes vulpes", "Mammalia", 6, 1, 500))
             .Concat(Create("Apis mellifera", "Insecta", 1, 2, 600)).ToList();
