@@ -10,7 +10,7 @@ namespace Project.Api.Controllers;
 
 [ApiController]
 [Route("api/classes")]
-[Authorize(Policy = PolicyNames.Teacher)]
+[Authorize(Policy = PolicyName.Teacher)]
 public class ClassController : ControllerBase
 {
     private readonly IClassService _classService;

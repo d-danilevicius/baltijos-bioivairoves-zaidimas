@@ -8,9 +8,9 @@ public static class RolePolicyExtensions
     {
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(PolicyNames.Student, policy => policy.RequireRole(PolicyNames.Student));
-            options.AddPolicy(PolicyNames.Teacher, policy => policy.RequireRole(PolicyNames.Teacher));
-            options.AddPolicy(PolicyNames.Administrator, policy => policy.RequireRole(PolicyNames.Administrator));
+            options.AddPolicy(PolicyName.Student, policy => policy.RequireRole(PolicyName.Student));
+            options.AddPolicy(PolicyName.Teacher, policy => policy.RequireRole(PolicyName.Teacher));
+            options.AddPolicy(PolicyName.Administrator, policy => policy.RequireRole(PolicyName.Administrator));
         });
 
         return services;

@@ -9,21 +9,21 @@ namespace Project.IntegrationTests.AccessControl;
 public class PolicyTestController : ControllerBase
 {
     [HttpGet("student")]
-    [Authorize(Policy = PolicyNames.Student)]
+    [Authorize(Policy = PolicyName.Student)]
     public IActionResult Student()
     {
         return Ok();
     }
 
     [HttpGet("teacher")]
-    [Authorize(Policy = PolicyNames.Teacher)]
+    [Authorize(Policy = PolicyName.Teacher)]
     public IActionResult Teacher()
     {
         return Ok();
     }
 
     [HttpGet("administrator")]
-    [Authorize(Policy = PolicyNames.Administrator)]
+    [Authorize(Policy = PolicyName.Administrator)]
     public IActionResult Administrator()
     {
         return Ok();

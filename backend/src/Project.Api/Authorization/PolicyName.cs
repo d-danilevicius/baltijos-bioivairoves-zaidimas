@@ -2,7 +2,7 @@ namespace Project.Api.Authorization;
 
 using Project.Api.Entities;
 
-public static class PolicyNames
+public static class PolicyName
 {
     public const string Student = RoleNames.Student;
     public const string Teacher = RoleNames.Teacher;
