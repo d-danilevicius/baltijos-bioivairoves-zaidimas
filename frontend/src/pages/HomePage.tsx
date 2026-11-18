@@ -4,7 +4,7 @@ import ErrorState from '../components/errorState'
 import LinkButton from '../components/linkButton'
 import LoadingState from '../components/loadingState'
 import PageLayout from '../components/pageLayout'
-import { homeDescription, homeTitle, loginLink, registerLink } from '../helpers/homeMessages'
+import { homeDescription, homeTitle, loginLink, registerLink } from '../helpers/homeMessage'
 import { getStartingScreen } from '../helpers/startingScreen'
 import { useCurrentUserSession } from '../hooks/useCurrentUserSession'
 

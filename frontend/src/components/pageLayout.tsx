@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { homeTitle } from '../helpers/homeMessages'
+import { homeTitle } from '../helpers/homeMessage'
 import type { NavigationLink } from '../helpers/navigationLinks'
 
 type PageLayoutProps = { children: ReactNode; links?: NavigationLink[] }
