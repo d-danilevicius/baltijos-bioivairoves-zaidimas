@@ -2,5 +2,5 @@ namespace Project.Api.DTOs.Responses;
 
 public class HealthResponse
 {
-    public string Status { get; set; } = null!;
+    public required string Status { get; set; }
 }

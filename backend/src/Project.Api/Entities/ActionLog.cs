@@ -12,5 +12,5 @@ public class ActionLog
     // Nullable user id; if the user is deleted the FK is set to null
     public string? UserId { get; set; }
 
-    public string Action { get; set; } = null!;
+    public required string Action { get; set; }
 }

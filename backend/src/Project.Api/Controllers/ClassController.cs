@@ -63,7 +63,8 @@ public class ClassController : ControllerBase
         return MapResult(result, NoContent);
     }
 
-    private string GetOwnerId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+    private string GetOwnerId() =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("The signed-in user has no identifier claim.");
 
     private IActionResult MapResult(ClassResult result, Func<IActionResult> onSucceeded)
     {

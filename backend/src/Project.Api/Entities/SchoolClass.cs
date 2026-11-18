@@ -4,11 +4,11 @@ public class SchoolClass
 {
     public Guid Id { get; set; }
 
-    public string Name { get; set; } = null!;
+    public required string Name { get; set; }
 
-    public string Code { get; set; } = null!;
+    public required string Code { get; set; }
 
-    public string OwnerId { get; set; } = null!;
+    public required string OwnerId { get; set; }
 
     public DateTime CreatedAtUtc { get; set; }
 }

@@ -4,7 +4,7 @@ namespace Project.Api.DTOs.Requests;
 
 public class CreateClassRequest
 {
-    private string _name = null!;
+    private string _name = string.Empty;
 
     // The spaces at the beginning and the end are removed before the validation, so the limit applies to the trimmed name
     [Required(ErrorMessage = "Required")]
@@ -12,6 +12,6 @@ public class CreateClassRequest
     public string Name
     {
         get => _name;
-        set => _name = value?.Trim()!;
+        set => _name = value?.Trim() ?? string.Empty;
     }
 }

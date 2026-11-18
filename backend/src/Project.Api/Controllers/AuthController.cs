@@ -124,7 +124,7 @@ public class AuthController : ControllerBase
     public IActionResult Csrf()
     {
         var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
-        return Ok(new CsrfTokenResponse { Token = tokens.RequestToken! });
+        return Ok(new CsrfTokenResponse { Token = tokens.RequestToken ?? throw new InvalidOperationException("The antiforgery request token was not created.") });
     }
 
     private IActionResult MapLoginResult(LoginResult result)
