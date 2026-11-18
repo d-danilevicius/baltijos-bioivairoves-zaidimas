@@ -7,7 +7,7 @@ import PageLayout from '../components/pageLayout'
 import { getUserLinks } from '../helpers/navigationLink'
 import { useCurrentUser } from '../hooks/useCurrentUser'
 import { logoutFailed } from '../helpers/loginMessage'
-import { getRoleName } from '../helpers/roleNames'
+import { getRoleName } from '../helpers/roleName'
 import { clearSessionMarker } from '../helpers/sessionMarker'
 import { HttpStatus } from '../helpers/httpStatus'
 
