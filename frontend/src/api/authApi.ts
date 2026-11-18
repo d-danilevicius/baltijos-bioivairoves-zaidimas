@@ -6,26 +6,32 @@ import {
   RegisterRequest,
   RegisterResponse201,
 } from '../types/auth'
+import { HttpStatus } from '../helpers/httpStatus'
 
 const base = (import.meta.env.VITE_API_URL ?? '') as string
 
 export type RegisterResult =
-  | { status: 201; body: RegisterResponse201 }
-  | { status: 400; body: ProblemDetailsWithErrors }
-  | { status: 409; body: ProblemDetailsWithErrors }
+  | { status: typeof HttpStatus.Created; body: RegisterResponse201 }
+  | { status: typeof HttpStatus.BadRequest; body: ProblemDetailsWithErrors }
+  | { status: typeof HttpStatus.Conflict; body: ProblemDetailsWithErrors }
   | { status: 'network' | 'server'; message: string }
 
 export type LoginResult =
-  | { status: 200; body: LoggedInUser }
-  | { status: 400; body: ProblemDetailsWithErrors }
-  | { status: 401; body: ProblemDetailsWithErrors }
-  | { status: 403; body: ProblemDetailsWithErrors }
+  | { status: typeof HttpStatus.Ok; body: LoggedInUser }
+  | { status: typeof HttpStatus.BadRequest; body: ProblemDetailsWithErrors }
+  | { status: typeof HttpStatus.Unauthorized; body: ProblemDetailsWithErrors }
+  | { status: typeof HttpStatus.Forbidden; body: ProblemDetailsWithErrors }
   | { status: 'network' | 'server'; message: string }
 
-export type LogoutResult = { status: 204 } | { status: 401 } | { status: 'network' | 'server'; message: string }
+export type LogoutResult =
+  | { status: typeof HttpStatus.NoContent }
+  | { status: typeof HttpStatus.Unauthorized }
+  | { status: 'network' | 'server'; message: string }
 
 export type CurrentUserResult =
-  { status: 200; body: CurrentUser } | { status: 401 } | { status: 'network' | 'server'; message: string }
+  | { status: typeof HttpStatus.Ok; body: CurrentUser }
+  | { status: typeof HttpStatus.Unauthorized }
+  | { status: 'network' | 'server'; message: string }
 
 export async function registerUser(req: RegisterRequest): Promise<RegisterResult> {
   try {
@@ -35,12 +41,12 @@ export async function registerUser(req: RegisterRequest): Promise<RegisterResult
       body: JSON.stringify(req),
     })
 
-    if (res.status === 201) {
+    if (res.status === HttpStatus.Created) {
       const body = (await res.json()) as RegisterResponse201
-      return { status: 201, body }
+      return { status: HttpStatus.Created, body }
     }
 
-    if (res.status === 400 || res.status === 409) {
+    if (res.status === HttpStatus.BadRequest || res.status === HttpStatus.Conflict) {
       const body = (await res.json()) as ProblemDetailsWithErrors
       return { status: res.status, body }
     }
@@ -79,12 +85,16 @@ export async function loginUser(req: LoginRequest): Promise<LoginResult> {
       body: JSON.stringify(req),
     })
 
-    if (res.status === 200) {
+    if (res.status === HttpStatus.Ok) {
       const body = (await res.json()) as LoggedInUser
-      return { status: 200, body }
+      return { status: HttpStatus.Ok, body }
     }
 
-    if (res.status === 400 || res.status === 401 || res.status === 403) {
+    if (
+      res.status === HttpStatus.BadRequest ||
+      res.status === HttpStatus.Unauthorized ||
+      res.status === HttpStatus.Forbidden
+    ) {
       const body = (await res.json()) as ProblemDetailsWithErrors
       return { status: res.status, body }
     }
@@ -103,13 +113,13 @@ export async function getCurrentUser(): Promise<CurrentUserResult> {
       credentials: 'include',
     })
 
-    if (res.status === 200) {
+    if (res.status === HttpStatus.Ok) {
       const body = (await res.json()) as CurrentUser
-      return { status: 200, body }
+      return { status: HttpStatus.Ok, body }
     }
 
-    if (res.status === 401) {
-      return { status: 401 }
+    if (res.status === HttpStatus.Unauthorized) {
+      return { status: HttpStatus.Unauthorized }
     }
 
     return { status: 'server', message: 'Server error' }
@@ -128,12 +138,12 @@ export async function logoutUser(): Promise<LogoutResult> {
       headers: { 'X-CSRF-TOKEN': csrfToken },
     })
 
-    if (res.status === 204) {
-      return { status: 204 }
+    if (res.status === HttpStatus.NoContent) {
+      return { status: HttpStatus.NoContent }
     }
 
-    if (res.status === 401) {
-      return { status: 401 }
+    if (res.status === HttpStatus.Unauthorized) {
+      return { status: HttpStatus.Unauthorized }
     }
 
     return { status: 'server', message: 'Server error' }
