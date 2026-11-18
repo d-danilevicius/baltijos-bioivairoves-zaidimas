@@ -36,8 +36,8 @@ public class LoginService : ILoginService
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
 
-        var email = request.Email ?? string.Empty;
-        var password = request.Password ?? string.Empty;
+        var email = request.Email;
+        var password = request.Password;
 
         var user = await _userManager.FindByEmailAsync(email);
 
