@@ -4,6 +4,11 @@ export const locationRequired = 'Pasirinkite vietovę.'
 export const coordinatesNotNumbers = 'Platuma ir ilguma turi būti skaičiai.'
 export const locationOutsideLithuania = 'Pasirinkite vietovę Lietuvos teritorijoje.'
 export const seasonRequired = 'Pasirinkite metų laiką.'
+export const mapLabel = 'Žemėlapis vietovei pasirinkti'
+export const mapHint = 'Spustelėkite žemėlapyje arba įveskite koordinates.'
+export const latitudeLabel = 'Platuma'
+export const longitudeLabel = 'Ilguma'
+export const seasonTitle = 'Metų laikas'
 export const radiusNote = 'Naudojami stebėjimai ne toliau kaip 10 km nuo vietovės.'
 export const gbifLoading = 'Kraunami stebėjimai iš GBIF…'
 export const gbifFailed = 'Nepavyko gauti stebėjimų iš GBIF. Bandykite dar kartą.'
@@ -13,9 +18,18 @@ export const gbifTasksCreated = 'Užduotys sukurtos.'
 export const createGbifTasksTitle = 'Užduotys iš GBIF'
 export const createGbifTasksSubmit = 'Gauti stebėjimus ir sukurti užduotis'
 export const createGbifTasksRetry = 'Bandyti dar kartą'
+export const backToClass = 'Atgal į klasę'
+export const tasksLink = 'Užduotys'
 export const createFromGbif = 'Sukurti iš GBIF'
 export const classTasksTitle = 'Klasės užduotys'
 export const noTasksYet = 'Klasė dar neturi užduočių.'
+export const typeColumn = 'Tipas'
+export const groupColumn = 'Grupė'
+export const labelColumn = 'Žyma'
+
+export function classSeasonInfo(season: Season): string {
+  return `Metų laikas: ${seasonLabels[season]}`
+}
 
 export const seasonLabels: Record<Season, string> = {
   Spring: 'Pavasaris',
