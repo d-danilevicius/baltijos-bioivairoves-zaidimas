@@ -14,6 +14,7 @@ import { serverError } from '../helpers/stateMessages'
 import type { SchoolClass } from '../types/classes'
 import AccessDeniedPage from './AccessDeniedPage'
 import NotFoundPage from './NotFoundPage'
+import { HttpStatus } from '../helpers/httpStatus'
 
 type DetailsState =
   | { status: 'loading' }
@@ -38,10 +39,10 @@ export default function ClassDetailsPage() {
     async function load() {
       const res = await getClass(id)
       if (cancelled) return
-      if (res.status === 200) setState({ status: 'ready', schoolClass: res.body })
-      else if (res.status === 401) setState({ status: 'expired' })
-      else if (res.status === 403) setState({ status: 'forbidden' })
-      else if (res.status === 404) setState({ status: 'notFound' })
+      if (res.status === HttpStatus.Ok) setState({ status: 'ready', schoolClass: res.body })
+      else if (res.status === HttpStatus.Unauthorized) setState({ status: 'expired' })
+      else if (res.status === HttpStatus.Forbidden) setState({ status: 'forbidden' })
+      else if (res.status === HttpStatus.NotFound) setState({ status: 'notFound' })
       else setState({ status: 'error' })
     }
 
@@ -59,13 +60,13 @@ export default function ClassDetailsPage() {
   async function onConfirmDelete() {
     setConfirmOpen(false)
     const res = await deleteClass(id)
-    if (res.status === 204) {
+    if (res.status === HttpStatus.NoContent) {
       navigate('/classes', { state: { message: classDeleted } })
       return
     }
-    if (res.status === 401) setState({ status: 'expired' })
-    else if (res.status === 403) setState({ status: 'forbidden' })
-    else if (res.status === 404) setState({ status: 'notFound' })
+    if (res.status === HttpStatus.Unauthorized) setState({ status: 'expired' })
+    else if (res.status === HttpStatus.Forbidden) setState({ status: 'forbidden' })
+    else if (res.status === HttpStatus.NotFound) setState({ status: 'notFound' })
     else setDeleteError(true)
   }
 

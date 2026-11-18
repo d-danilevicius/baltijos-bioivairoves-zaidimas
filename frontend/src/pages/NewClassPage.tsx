@@ -10,6 +10,7 @@ import { classCreated, classNameRequired, classNameTooLong } from '../helpers/cl
 import { teacherLinks } from '../helpers/navigationLinks'
 import { serverError } from '../helpers/stateMessages'
 import { validateClassName } from '../helpers/validateClassName'
+import { HttpStatus } from '../helpers/httpStatus'
 
 export default function NewClassPage() {
   const [name, setName] = useState('')
@@ -31,17 +32,17 @@ export default function NewClassPage() {
     const res = await createClass(name.trim())
     setLoading(false)
 
-    if (res.status === 201) {
+    if (res.status === HttpStatus.Created) {
       navigate(`/classes/${res.body.id}`, { state: { message: classCreated } })
       return
     }
 
-    if (res.status === 401) {
+    if (res.status === HttpStatus.Unauthorized) {
       setExpired(true)
       return
     }
 
-    if (res.status === 400) {
+    if (res.status === HttpStatus.BadRequest) {
       const codes = res.body.errors?.name ?? []
       if (codes.includes('Required')) setNameError(classNameRequired)
       else if (codes.includes('TooLong')) setNameError(classNameTooLong)
