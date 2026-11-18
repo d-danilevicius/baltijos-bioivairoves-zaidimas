@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { getCurrentUser } from '../api/authApi'
 import { accessDenied } from '../helpers/stateMessage'
 import { markSessionStarted } from '../helpers/sessionMarker'
-import App from '../App'
+import App from '../app'
 import type { CurrentUser } from '../types/auth'
 
 vi.mock('../api/authApi', () => ({

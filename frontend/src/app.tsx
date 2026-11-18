@@ -6,6 +6,7 @@ import ProfilePage from './pages/ProfilePage'
 import ClassListPage from './pages/ClassListPage'
 import NewClassPage from './pages/NewClassPage'
 import ClassDetailsPage from './pages/ClassDetailsPage'
+import JoinClassPage from './pages/JoinClassPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ProtectedRoute from './components/protectedRoute'
 
@@ -22,6 +23,9 @@ export default function App() {
         <Route path="/classes" element={<ClassListPage />} />
         <Route path="/classes/new" element={<NewClassPage />} />
         <Route path="/classes/:id" element={<ClassDetailsPage />} />
+      </Route>
+      <Route element={<ProtectedRoute allowedRoles={['Student']} />}>
+        <Route path="/join" element={<JoinClassPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
