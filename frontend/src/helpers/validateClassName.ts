@@ -1,4 +1,4 @@
-import { classNameRequired, classNameTooLong } from './classMessages'
+import { classNameRequired, classNameTooLong } from './classMessage'
 
 const maxLength = 50
 
