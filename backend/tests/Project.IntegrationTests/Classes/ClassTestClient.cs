@@ -45,6 +45,26 @@ internal sealed class ClassTestClient
 
     public Task<HttpResponseMessage> DeleteAsync(string id) => SendAsync(HttpMethod.Delete, $"/api/classes/{id}");
 
+    public Task<HttpResponseMessage> ListTasksAsync(string id) => _client.GetAsync($"/api/classes/{id}/tasks");
+
+    public Task<HttpResponseMessage> CreateGbifTasksAsync(string id, object body) =>
+        SendAsync(HttpMethod.Post, $"/api/classes/{id}/gbif-tasks", body);
+
+    public async Task<HttpResponseMessage[]> CreateGbifTasksAtTheSameTimeAsync(string id, object body, int count)
+    {
+        // One CSRF token is used for all requests, because every new token replaces the previous one
+        var token = await _helper.GetCsrfTokenAsync();
+        var requests = Enumerable.Range(0, count).Select(_ =>
+        {
+            var message = new HttpRequestMessage(HttpMethod.Post, $"/api/classes/{id}/gbif-tasks");
+            message.Headers.Add("X-CSRF-TOKEN", token);
+            message.Content = JsonContent.Create(body);
+            return _client.SendAsync(message);
+        });
+
+        return await Task.WhenAll(requests);
+    }
+
     public Task<HttpResponseMessage> JoinAsync(string code, bool confirmChange = false) =>
         SendAsync(HttpMethod.Post, "/api/classes/join", new { code, confirmChange });
 

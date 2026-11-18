@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Project.Api.Data;
 using Project.Api.Entities;
 using Project.Api.Integrations.Gbif;
@@ -7,6 +8,8 @@ namespace Project.Api.Services;
 
 public class GbifTaskService : IGbifTaskService
 {
+    private const string ObservationIndexName = "IX_Observations_ClassId_GbifKey";
+
     private readonly ApplicationDbContext _dbContext;
     private readonly IGbifClient _gbifClient;
     private readonly GbifTaskFactory _taskFactory;
@@ -131,14 +134,19 @@ public class GbifTaskService : IGbifTaskService
         {
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateException ex) when (IsCreatedByAnotherRequest(ex))
         {
-            // Another request set the season of the class first
+            // Another request created the tasks of the class first; this save was rolled back
             return GbifTaskResult.Failed(GbifTaskOutcome.AlreadyCreated);
         }
 
         return GbifTaskResult.Created(tasks.Count);
     }
+
+    // The season of the class was already set (concurrency token) or the same GBIF records were already stored for the class
+    private static bool IsCreatedByAnotherRequest(DbUpdateException exception) =>
+        exception is DbUpdateConcurrencyException
+        || exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: ObservationIndexName };
 
     private sealed record GbifObservations(List<Observation> Chosen, List<Observation> Opposite);
 }
