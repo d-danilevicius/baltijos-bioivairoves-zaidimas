@@ -1,5 +1,5 @@
 import type { ProblemDetailsWithErrors } from '../types/auth'
-import type { SchoolClass } from '../types/classes'
+import type { SchoolClass } from '../types/schoolClass'
 import { fetchCsrfToken } from './authApi'
 import { HttpStatus } from '../helpers/httpStatus'
 

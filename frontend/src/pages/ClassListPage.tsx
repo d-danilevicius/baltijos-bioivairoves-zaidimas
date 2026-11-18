@@ -10,7 +10,7 @@ import PageLayout from '../components/pageLayout'
 import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
 import { createFirstClass, newClass, noClasses } from '../helpers/classMessages'
 import { teacherLinks } from '../helpers/navigationLinks'
-import type { SchoolClass } from '../types/classes'
+import type { SchoolClass } from '../types/schoolClass'
 import { HttpStatus } from '../helpers/httpStatus'
 
 type ListState =
