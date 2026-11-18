@@ -1,6 +1,6 @@
 namespace Project.Api.Entities;
 
-public static class ActionNames
+public static class ActionName
 {
     public static class Login
     {

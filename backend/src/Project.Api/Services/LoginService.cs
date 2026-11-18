@@ -45,7 +45,7 @@ public class LoginService : ILoginService
 
         if (user == null)
         {
-            await _actionLogWriter.WriteAsync(null, ActionNames.Login.Failed, occurred, cancellationToken);
+            await _actionLogWriter.WriteAsync(null, ActionName.Login.Failed, occurred, cancellationToken);
             _logger.LogInformation("Login failed for unknown account");
             return LoginResult.InvalidCredentials();
         }
@@ -53,7 +53,7 @@ public class LoginService : ILoginService
         var check = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
         if (!check.Succeeded)
         {
-            await _actionLogWriter.WriteAsync(user.Id, ActionNames.Login.Failed, occurred, cancellationToken);
+            await _actionLogWriter.WriteAsync(user.Id, ActionName.Login.Failed, occurred, cancellationToken);
             _logger.LogInformation("Login failed for user {UserId}", user.Id);
             return LoginResult.InvalidCredentials();
         }
@@ -61,13 +61,13 @@ public class LoginService : ILoginService
         // password correct
         if (user.IsBlocked)
         {
-            await _actionLogWriter.WriteAsync(user.Id, ActionNames.Login.Failed, occurred, cancellationToken);
+            await _actionLogWriter.WriteAsync(user.Id, ActionName.Login.Failed, occurred, cancellationToken);
             _logger.LogInformation("Login attempt for blocked user {UserId}", user.Id);
             return LoginResult.Blocked();
         }
 
         await _signInManager.SignInAsync(user, isPersistent: false);
-        await _actionLogWriter.WriteAsync(user.Id, ActionNames.Login.Success, occurred, cancellationToken);
+        await _actionLogWriter.WriteAsync(user.Id, ActionName.Login.Success, occurred, cancellationToken);
 
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.FirstOrDefault() ?? string.Empty;
@@ -87,7 +87,7 @@ public class LoginService : ILoginService
     {
         await _signInManager.SignOutAsync();
         var occurred = _timeProvider.GetUtcNow().UtcDateTime;
-        await _actionLogWriter.WriteAsync(userId, ActionNames.Logout, occurred, cancellationToken);
+        await _actionLogWriter.WriteAsync(userId, ActionName.Logout, occurred, cancellationToken);
         _logger.LogInformation("Logout for user {UserId}", userId ?? "<null>");
     }
 }
