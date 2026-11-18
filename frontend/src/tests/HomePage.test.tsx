@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { getCurrentUser } from '../api/authApi'
-import { loading, retry, serverError } from '../helpers/stateMessages'
+import { loading, retry, serverError } from '../helpers/stateMessage'
 import HomePage from '../pages/HomePage'
 
 vi.mock('../api/authApi', () => ({

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import App from '../app'
 import NotFoundPage from '../pages/NotFoundPage'
-import { pageNotFound, toHomePage } from '../helpers/stateMessages'
+import { pageNotFound, toHomePage } from '../helpers/stateMessage'
 
 function renderNotFoundPage() {
   return render(

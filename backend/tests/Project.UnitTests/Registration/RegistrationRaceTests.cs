@@ -55,7 +55,7 @@ public class RegistrationRaceTests
             Email = "race@example.com",
             UserName = "race_user",
             Password = "StrongPassword123",
-            Role = RoleNames.Student
+            Role = RoleName.Student
         };
 
         var result = await service.RegisterAsync(request);

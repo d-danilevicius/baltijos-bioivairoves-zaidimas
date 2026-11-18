@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Button from '../components/button'
 import Card from '../components/card'
 import PageLayout from '../components/pageLayout'
-import { visitorLinks } from '../helpers/navigationLinks'
+import { visitorLinks } from '../helpers/navigationLink'
 import TextField from '../components/textField'
 import { loginUser } from '../api/authApi'
 import {
@@ -12,7 +12,7 @@ import {
   invalidCredentials,
   loginFailedLater,
   passwordRequired,
-} from '../helpers/loginMessages'
+} from '../helpers/loginMessage'
 import { type LoginFieldErrors, validateLogin } from '../helpers/validateLogin'
 import { markSessionStarted } from '../helpers/sessionMarker'
 import { getStartingScreen } from '../helpers/startingScreen'

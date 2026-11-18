@@ -32,7 +32,7 @@ public class AuthMeEndpointTests : IClassFixture<AccessControlApiFixture>
         var userName = LoginTestHelper.Unique("u");
         const string password = "StrongPass123";
 
-        var userId = await helper.CreateUserAsync(email, userName, password, role: RoleNames.Teacher);
+        var userId = await helper.CreateUserAsync(email, userName, password, role: RoleName.Teacher);
 
         var loginResponse = await helper.LoginAsync(email, password);
         Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
@@ -46,7 +46,7 @@ public class AuthMeEndpointTests : IClassFixture<AccessControlApiFixture>
 
         Assert.Equal(userId, root.GetProperty("id").GetString());
         Assert.Equal(userName, root.GetProperty("userName").GetString());
-        Assert.Equal(RoleNames.Teacher, root.GetProperty("role").GetString());
+        Assert.Equal(RoleName.Teacher, root.GetProperty("role").GetString());
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class AuthMeEndpointTests : IClassFixture<AccessControlApiFixture>
         var email = LoginTestHelper.Unique("e") + "@example.com";
         const string password = "StrongPass123";
 
-        await helper.CreateUserAsync(email, LoginTestHelper.Unique("u"), password, role: RoleNames.Student);
+        await helper.CreateUserAsync(email, LoginTestHelper.Unique("u"), password, role: RoleName.Student);
         var loginResponse = await helper.LoginAsync(email, password);
         Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
 
@@ -101,7 +101,7 @@ public class AuthMeEndpointTests : IClassFixture<AccessControlApiFixture>
         var userName = LoginTestHelper.Unique("u");
         const string password = "StrongPass123";
 
-        await helper.CreateUserAsync(email, userName, password, role: RoleNames.Student);
+        await helper.CreateUserAsync(email, userName, password, role: RoleName.Student);
 
         var loginResponse = await helper.LoginAsync(email, password);
         Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);

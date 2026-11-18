@@ -86,12 +86,12 @@ internal class TestServiceFactory : IDisposable
             db.Database.EnsureCreated();
 
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            if (!await roleManager.RoleExistsAsync(RoleNames.Student))
-                await roleManager.CreateAsync(new IdentityRole(RoleNames.Student));
-            if (!await roleManager.RoleExistsAsync(RoleNames.Teacher))
-                await roleManager.CreateAsync(new IdentityRole(RoleNames.Teacher));
-            if (!await roleManager.RoleExistsAsync(RoleNames.Administrator))
-                await roleManager.CreateAsync(new IdentityRole(RoleNames.Administrator));
+            if (!await roleManager.RoleExistsAsync(RoleName.Student))
+                await roleManager.CreateAsync(new IdentityRole(RoleName.Student));
+            if (!await roleManager.RoleExistsAsync(RoleName.Teacher))
+                await roleManager.CreateAsync(new IdentityRole(RoleName.Teacher));
+            if (!await roleManager.RoleExistsAsync(RoleName.Administrator))
+                await roleManager.CreateAsync(new IdentityRole(RoleName.Administrator));
         }
 
         var factory = new TestServiceFactory((ServiceProvider)sp, logs);

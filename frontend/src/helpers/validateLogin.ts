@@ -1,4 +1,4 @@
-import { emailRequired, passwordRequired } from './loginMessages'
+import { emailRequired, passwordRequired } from './loginMessage'
 
 export interface LoginFieldErrors {
   email?: string

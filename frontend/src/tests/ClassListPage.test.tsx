@@ -2,16 +2,16 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { getCurrentUser } from '../api/authApi'
-import { listClasses } from '../api/classesApi'
+import { listClasses } from '../api/classApi'
 import ProtectedRoute from '../components/protectedRoute'
-import { noClasses, createFirstClass, newClass } from '../helpers/classMessages'
+import { noClasses, createFirstClass, newClass } from '../helpers/classMessage'
 import { hadSession, markSessionStarted } from '../helpers/sessionMarker'
-import { accessDenied, loading, retry, serverError, sessionExpired } from '../helpers/stateMessages'
+import { accessDenied, loading, retry, serverError, sessionExpired } from '../helpers/stateMessage'
 import ClassListPage from '../pages/ClassListPage'
 import type { CurrentUser } from '../types/auth'
 
 vi.mock('../api/authApi', () => ({ getCurrentUser: vi.fn() }))
-vi.mock('../api/classesApi', () => ({ listClasses: vi.fn() }))
+vi.mock('../api/classApi', () => ({ listClasses: vi.fn() }))
 
 const teacher: CurrentUser = { id: '1', userName: 'Jonas', email: 'jonas@example.com', role: 'Teacher' }
 

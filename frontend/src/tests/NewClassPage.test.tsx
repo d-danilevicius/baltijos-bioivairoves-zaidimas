@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { createClass } from '../api/classesApi'
-import { classCreated, classNameRequired, classNameTooLong } from '../helpers/classMessages'
+import { createClass } from '../api/classApi'
+import { classCreated, classNameRequired, classNameTooLong } from '../helpers/classMessage'
 import { hadSession, markSessionStarted } from '../helpers/sessionMarker'
-import { serverError, sessionExpired } from '../helpers/stateMessages'
+import { serverError, sessionExpired } from '../helpers/stateMessage'
 import NewClassPage from '../pages/NewClassPage'
 
-vi.mock('../api/classesApi', () => ({ createClass: vi.fn() }))
+vi.mock('../api/classApi', () => ({ createClass: vi.fn() }))
 
 function DetailsStub() {
   const location = useLocation()

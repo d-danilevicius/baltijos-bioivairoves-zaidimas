@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { type ButtonVariant, buttonClass } from '../helpers/buttonStyles'
+import { type ButtonVariant, buttonClass } from '../helpers/buttonStyle'
 
 type LinkButtonProps = { to: string; variant?: ButtonVariant; children: ReactNode }
 

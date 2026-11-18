@@ -11,15 +11,15 @@ namespace Project.UnitTests.AccessControl;
 public class AccessPolicyTests
 {
     [Theory]
-    [InlineData(PolicyNames.Student, RoleNames.Student, true)]
-    [InlineData(PolicyNames.Student, RoleNames.Teacher, false)]
-    [InlineData(PolicyNames.Student, RoleNames.Administrator, false)]
-    [InlineData(PolicyNames.Teacher, RoleNames.Student, false)]
-    [InlineData(PolicyNames.Teacher, RoleNames.Teacher, true)]
-    [InlineData(PolicyNames.Teacher, RoleNames.Administrator, false)]
-    [InlineData(PolicyNames.Administrator, RoleNames.Student, false)]
-    [InlineData(PolicyNames.Administrator, RoleNames.Teacher, false)]
-    [InlineData(PolicyNames.Administrator, RoleNames.Administrator, true)]
+    [InlineData(PolicyName.Student, RoleName.Student, true)]
+    [InlineData(PolicyName.Student, RoleName.Teacher, false)]
+    [InlineData(PolicyName.Student, RoleName.Administrator, false)]
+    [InlineData(PolicyName.Teacher, RoleName.Student, false)]
+    [InlineData(PolicyName.Teacher, RoleName.Teacher, true)]
+    [InlineData(PolicyName.Teacher, RoleName.Administrator, false)]
+    [InlineData(PolicyName.Administrator, RoleName.Student, false)]
+    [InlineData(PolicyName.Administrator, RoleName.Teacher, false)]
+    [InlineData(PolicyName.Administrator, RoleName.Administrator, true)]
     public async Task AuthorizeAsync_RoleAgainstPolicyMatrix_ReturnsExpectedResult(string policyName, string roleName, bool expectedSuccess)
     {
         using var factory = await TestServiceFactory.CreateAsync();
@@ -34,9 +34,9 @@ public class AccessPolicyTests
     }
 
     [Theory]
-    [InlineData(PolicyNames.Student)]
-    [InlineData(PolicyNames.Teacher)]
-    [InlineData(PolicyNames.Administrator)]
+    [InlineData(PolicyName.Student)]
+    [InlineData(PolicyName.Teacher)]
+    [InlineData(PolicyName.Administrator)]
     public async Task AuthorizeAsync_AnonymousUserAgainstAnyPolicy_ReturnsForbidden(string policyName)
     {
         using var factory = await TestServiceFactory.CreateAsync();

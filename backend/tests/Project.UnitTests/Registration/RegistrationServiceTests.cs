@@ -25,7 +25,7 @@ public class RegistrationServiceTests
             Email = "student@example.com",
             UserName = "student_user",
             Password = "StrongPassword123",
-            Role = RoleNames.Student
+            Role = RoleName.Student
         };
 
         var result = await service.RegisterAsync(request);
@@ -33,7 +33,7 @@ public class RegistrationServiceTests
         Assert.True(result.Success);
         Assert.NotNull(result.CreatedUser);
         Assert.Equal(request.UserName, result.CreatedUser.UserName);
-        Assert.Equal(RoleNames.Student, result.CreatedUser.Role);
+        Assert.Equal(RoleName.Student, result.CreatedUser.Role);
 
         var stored = await userManager.FindByIdAsync(result.CreatedUser.Id);
         Assert.NotNull(stored);
@@ -57,7 +57,7 @@ public class RegistrationServiceTests
             Email = "teacher@example.com",
             UserName = "teacher_user",
             Password = "TeacherPass123",
-            Role = RoleNames.Teacher
+            Role = RoleName.Teacher
         };
 
         var result = await service.RegisterAsync(request);
@@ -65,7 +65,7 @@ public class RegistrationServiceTests
         Assert.True(result.Success);
         Assert.NotNull(result.CreatedUser);
         Assert.Equal(request.UserName, result.CreatedUser.UserName);
-        Assert.Equal(RoleNames.Teacher, result.CreatedUser.Role);
+        Assert.Equal(RoleName.Teacher, result.CreatedUser.Role);
 
         var stored = await userManager.FindByIdAsync(result.CreatedUser.Id);
         Assert.NotNull(stored);
@@ -88,7 +88,7 @@ public class RegistrationServiceTests
             Email = "user@example.com",
             UserName = "user1",
             Password = "Password123",
-            Role = RoleNames.Student
+            Role = RoleName.Student
         };
 
         var second = new RegisterRequest
@@ -96,7 +96,7 @@ public class RegistrationServiceTests
             Email = "User@Example.com",
             UserName = "user2",
             Password = "Password123",
-            Role = RoleNames.Student
+            Role = RoleName.Student
         };
 
         var r1 = await service.RegisterAsync(first);
@@ -121,7 +121,7 @@ public class RegistrationServiceTests
             Email = "a1@example.com",
             UserName = "duplicate_user",
             Password = "Password123",
-            Role = RoleNames.Student
+            Role = RoleName.Student
         };
 
         var second = new RegisterRequest
@@ -129,7 +129,7 @@ public class RegistrationServiceTests
             Email = "a2@example.com",
             UserName = "duplicate_user",
             Password = "Password123",
-            Role = RoleNames.Student
+            Role = RoleName.Student
         };
 
         var r1 = await service.RegisterAsync(first);
@@ -154,7 +154,7 @@ public class RegistrationServiceTests
             Email = "admin@example.com",
             UserName = "admin_user",
             Password = "Password123",
-            Role = RoleNames.Administrator
+            Role = RoleName.Administrator
         };
 
         var unknownReq = new RegisterRequest
@@ -190,7 +190,7 @@ public class RegistrationServiceTests
             Email = "hash2@example.com",
             UserName = "hash_user2",
             Password = "SuperSecret123",
-            Role = RoleNames.Student
+            Role = RoleName.Student
         };
 
         var r = await service.RegisterAsync(request);
@@ -215,7 +215,7 @@ public class RegistrationServiceTests
             Email = "nolog2@example.com",
             UserName = "nolog_user2",
             Password = "DoNotLogThis123",
-            Role = RoleNames.Student
+            Role = RoleName.Student
         };
 
         var r = await service.RegisterAsync(request);

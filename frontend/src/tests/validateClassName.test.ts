@@ -1,4 +1,4 @@
-import { classNameRequired, classNameTooLong } from '../helpers/classMessages'
+import { classNameRequired, classNameTooLong } from '../helpers/classMessage'
 import { validateClassName } from '../helpers/validateClassName'
 
 describe('validateClassName', () => {

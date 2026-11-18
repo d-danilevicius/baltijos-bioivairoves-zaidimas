@@ -20,9 +20,9 @@ public class AccessControlEndpointTests : IClassFixture<AccessControlApiFixture>
     }
 
     [Theory]
-    [InlineData(RoleNames.Student, "/api/test-policies/student")]
-    [InlineData(RoleNames.Teacher, "/api/test-policies/teacher")]
-    [InlineData(RoleNames.Administrator, "/api/test-policies/administrator")]
+    [InlineData(RoleName.Student, "/api/test-policies/student")]
+    [InlineData(RoleName.Teacher, "/api/test-policies/teacher")]
+    [InlineData(RoleName.Administrator, "/api/test-policies/administrator")]
     public async Task TestPolicyEndpoint_MatchingRole_Returns200(string userRole, string endpoint)
     {
         var client = _fixture.CreateClient(new WebApplicationFactoryClientOptions
@@ -47,12 +47,12 @@ public class AccessControlEndpointTests : IClassFixture<AccessControlApiFixture>
     }
 
     [Theory]
-    [InlineData(RoleNames.Student, "/api/test-policies/teacher")]
-    [InlineData(RoleNames.Student, "/api/test-policies/administrator")]
-    [InlineData(RoleNames.Teacher, "/api/test-policies/student")]
-    [InlineData(RoleNames.Teacher, "/api/test-policies/administrator")]
-    [InlineData(RoleNames.Administrator, "/api/test-policies/student")]
-    [InlineData(RoleNames.Administrator, "/api/test-policies/teacher")]
+    [InlineData(RoleName.Student, "/api/test-policies/teacher")]
+    [InlineData(RoleName.Student, "/api/test-policies/administrator")]
+    [InlineData(RoleName.Teacher, "/api/test-policies/student")]
+    [InlineData(RoleName.Teacher, "/api/test-policies/administrator")]
+    [InlineData(RoleName.Administrator, "/api/test-policies/student")]
+    [InlineData(RoleName.Administrator, "/api/test-policies/teacher")]
     public async Task TestPolicyEndpoint_NonMatchingRole_Returns403WithAccessDenied(string userRole, string endpoint)
     {
         var client = _fixture.CreateClient(new WebApplicationFactoryClientOptions

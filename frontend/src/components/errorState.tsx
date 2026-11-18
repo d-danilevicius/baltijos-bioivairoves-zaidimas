@@ -1,4 +1,4 @@
-import { retry, serverError } from '../helpers/stateMessages'
+import { retry, serverError } from '../helpers/stateMessage'
 import Button from './button'
 
 type Props = {

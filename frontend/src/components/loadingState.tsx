@@ -1,4 +1,4 @@
-import { loading } from '../helpers/stateMessages'
+import { loading } from '../helpers/stateMessage'
 
 export default function LoadingState() {
   return (

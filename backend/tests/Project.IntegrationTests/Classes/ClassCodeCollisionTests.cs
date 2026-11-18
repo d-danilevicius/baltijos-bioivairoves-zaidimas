@@ -21,7 +21,7 @@ public class ClassCodeCollisionTests : IClassFixture<ClassCodeApiFixture>
     [Fact]
     public async Task PostClasses_WhenGeneratedCodeAlreadyExists_Returns201WithAnotherCode()
     {
-        var teacher = await ClassesTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
         _fixture.Codes.Enqueue("SEQAAA");
         await teacher.CreateAsync("Pirma klasė");
         _fixture.Codes.Enqueue("SEQAAA", "SEQBBB");
@@ -35,8 +35,8 @@ public class ClassCodeCollisionTests : IClassFixture<ClassCodeApiFixture>
     [Fact]
     public async Task PostClasses_WhenTwoTeachersCreateAtTheSameTimeWithTheSameCode_BothGetDifferentCodes()
     {
-        var first = await ClassesTestClient.LoginAsync(_fixture, RoleNames.Teacher);
-        var second = await ClassesTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var first = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
+        var second = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
         _fixture.Codes.Enqueue("RACEAA", "RACEAA", "RACEBB");
 
         var responses = await Task.WhenAll(first.CreateAsync("Pirma"), second.CreateAsync("Antra"));

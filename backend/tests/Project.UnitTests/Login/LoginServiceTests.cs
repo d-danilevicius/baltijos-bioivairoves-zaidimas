@@ -26,7 +26,7 @@ public class LoginServiceTests
 
         var user = new ApplicationUser { UserName = "user1", Email = "user1@example.com" };
         await userManager.CreateAsync(user, "CorrectPassword1!");
-        await userManager.AddToRoleAsync(user, RoleNames.Student);
+        await userManager.AddToRoleAsync(user, RoleName.Student);
 
         var loginService = scope.ServiceProvider.GetRequiredService<ILoginService>();
         var request = new LoginRequest { Email = "user1@example.com", Password = "WrongPassword" };
@@ -60,7 +60,7 @@ public class LoginServiceTests
 
         var user = new ApplicationUser { UserName = "blocked", Email = "blocked@example.com", IsBlocked = true };
         await userManager.CreateAsync(user, "CorrectPassword1!");
-        await userManager.AddToRoleAsync(user, RoleNames.Student);
+        await userManager.AddToRoleAsync(user, RoleName.Student);
 
         var loginService = scope.ServiceProvider.GetRequiredService<ILoginService>();
         var request = new LoginRequest { Email = "blocked@example.com", Password = "WrongPassword" };
@@ -81,7 +81,7 @@ public class LoginServiceTests
 
         var user = new ApplicationUser { UserName = "blocked2", Email = "blocked2@example.com", IsBlocked = true };
         await userManager.CreateAsync(user, "CorrectPassword1!");
-        await userManager.AddToRoleAsync(user, RoleNames.Student);
+        await userManager.AddToRoleAsync(user, RoleName.Student);
 
         var loginService = scope.ServiceProvider.GetRequiredService<ILoginService>();
         var request = new LoginRequest { Email = "blocked2@example.com", Password = "CorrectPassword1!" };

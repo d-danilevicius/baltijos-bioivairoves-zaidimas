@@ -1,4 +1,4 @@
-import { messageFor, messages } from '../helpers/registrationMessages'
+import { messageFor, messages } from '../helpers/registrationMessage'
 
 describe('registrationMessages', () => {
   it('returns field messages for codes', () => {

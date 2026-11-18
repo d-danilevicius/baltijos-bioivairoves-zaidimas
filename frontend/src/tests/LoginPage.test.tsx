@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import LoginPage from '../pages/LoginPage'
 import { loginUser } from '../api/authApi'
 import { markSessionStarted } from '../helpers/sessionMarker'
-import { accountBlocked, invalidCredentials, loginFailedLater } from '../helpers/loginMessages'
+import { accountBlocked, invalidCredentials, loginFailedLater } from '../helpers/loginMessage'
 
 vi.mock('../api/authApi', () => ({
   loginUser: vi.fn(),
