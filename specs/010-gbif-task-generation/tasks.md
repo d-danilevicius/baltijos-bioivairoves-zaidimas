@@ -11,7 +11,7 @@ Do the tasks in order. Each phase depends on the previous one. Tests are written
 
 - [ ] T001 Add the enums `Season` (with `Months()` and `Opposite()`) and `TaskType` – `backend/src/Project.Api/Entities/Season.cs`, `backend/src/Project.Api/Entities/TaskType.cs`
 - [ ] T002 Add the entities `Observation` and `ClassTask`, add `Latitude`, `Longitude` and `Season` to `SchoolClass` – `backend/src/Project.Api/Entities/`
-- [ ] T003 Add the configurations of `Observation` and `ClassTask` (foreign keys with cascade delete, unique index on class and GBIF key), the `xmin` concurrency token of the class, and the `DbSet`s – `backend/src/Project.Api/Data/Configurations/`, `backend/src/Project.Api/Data/ApplicationDbContext.cs`
+- [ ] T003 Add the configurations of `Observation` and `ClassTask` (foreign keys with cascade delete, unique index on class and GBIF key), `Season` as the concurrency token of the class, and the `DbSet`s – `backend/src/Project.Api/Data/Configurations/`, `backend/src/Project.Api/Data/ApplicationDbContext.cs`
 - [ ] T004 Create the migration `CreateObservationsAndTasksTables` – `backend/src/Project.Api/Migrations/`
 
 ## Tests (written first) (depends on: Data)

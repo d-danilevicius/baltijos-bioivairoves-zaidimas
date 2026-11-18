@@ -26,7 +26,7 @@ A teacher chooses a point in Lithuania and a season for an own class. The server
   - `Entities/TaskType.cs` – enum `RecogniseSpeciesGroup`, `CommonSpecies`, `SeasonalComparison`, `ObservationQuestion`.
   - `Entities/Observation.cs` – the stored copy of an observation (see Data Model Changes).
   - `Entities/ClassTask.cs` – the task (type, difficulty group, question, correct answer, options, observation).
-  - `Entities/SchoolClass.cs` – new nullable `Latitude`, `Longitude`, `Season`; `Data/Configurations/SchoolClassConfiguration.cs` – xmin concurrency token.
+  - `Entities/SchoolClass.cs` – new nullable `Latitude`, `Longitude`, `Season`; `Data/Configurations/SchoolClassConfiguration.cs` – `Season` is a concurrency token.
   - `Data/Configurations/ObservationConfiguration.cs`, `ClassTaskConfiguration.cs`; `Data/ApplicationDbContext.cs` – `DbSet<Observation> Observations`, `DbSet<ClassTask> ClassTasks`.
   - `Integrations/Gbif/GbifOptions.cs` – `BaseUrl`, `TimeoutSeconds` (10).
   - `Integrations/Gbif/IGbifClient.cs`, `GbifClient.cs` – one call: observations of a country, with coordinates, in the months of a season, inside the square around the point; maps the JSON to `GbifOccurrence` and throws `GbifUnavailableException` on timeout, network error or a non-success status.
@@ -80,7 +80,7 @@ A teacher chooses a point in Lithuania and a season for an own class. The server
 - The two GBIF calls (chosen and opposite season) run in parallel; each has the 10-second timeout, so the whole request stays below the 30 seconds of NFR-016.
 - GBIF has no search by distance in kilometres, so the client asks for the square around the point and the server removes what is farther than 10 km. The request parameters are checked against the GBIF Occurrence API documentation when the client tests are written.
 - Winter spans two calendar years; the months of a season are sent as a list, not a range.
-- The concurrency conflict of two requests for one class is detected by the PostgreSQL `xmin` concurrency token of the class row; the second save fails and the service returns `AlreadyCreated`.
+- The concurrency conflict of two requests for one class is detected by making `Season` of the class a concurrency token: both requests read the class with an empty season, the second update finds the season already set, fails, and the service returns `AlreadyCreated`. This works in PostgreSQL and in the in-memory test provider, and needs no extra column.
 - Lithuania is checked as a rectangle (latitude 53.9–56.5, longitude 20.9–26.9); the server is the authority, the frontend repeats the check only for the message. The rectangle is an approximation of the territory; it is stated in the README.
 - GBIF failures are logged with `ILogger` without the request body; the teacher gets a general message, never the technical details.
 - The hiding of coordinates of protected species for students (VT-020) is not done here; the stored IUCN category is what feature 013 needs.
