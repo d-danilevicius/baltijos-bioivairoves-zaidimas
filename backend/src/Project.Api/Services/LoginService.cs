@@ -66,8 +66,9 @@ public class LoginService : ILoginService
             return LoginResult.Blocked();
         }
 
-        await _signInManager.SignInAsync(user, isPersistent: false);
+        // NFR-023: the audit entry is written before the cookie is issued, so a login is never granted without a record.
         await _actionLogWriter.WriteAsync(user.Id, ActionName.Login.Success, occurred, cancellationToken);
+        await _signInManager.SignInAsync(user, isPersistent: false);
 
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.FirstOrDefault() ?? string.Empty;
