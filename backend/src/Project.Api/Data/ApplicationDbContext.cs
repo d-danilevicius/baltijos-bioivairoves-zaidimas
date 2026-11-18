@@ -28,11 +28,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-        // Ensure unique index on NormalizedEmail as required by the plan
-        builder.Entity<ApplicationUser>()
-            .HasIndex(u => u.NormalizedEmail)
-            .IsUnique();
-
         // Seed roles with fixed ids and concurrency stamps
         builder.Entity<IdentityRole>().HasData(
             new IdentityRole
