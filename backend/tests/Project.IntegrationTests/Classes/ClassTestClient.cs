@@ -45,6 +45,9 @@ internal sealed class ClassTestClient
 
     public Task<HttpResponseMessage> DeleteAsync(string id) => SendAsync(HttpMethod.Delete, $"/api/classes/{id}");
 
+    public Task<HttpResponseMessage> JoinAsync(string code, bool confirmChange = false) =>
+        SendAsync(HttpMethod.Post, "/api/classes/join", new { code, confirmChange });
+
     public async Task<HttpResponseMessage> SendWithoutCsrfTokenAsync(HttpMethod method, string url, object? body = null)
     {
         var message = new HttpRequestMessage(method, url);
@@ -61,6 +64,13 @@ internal sealed class ClassTestClient
         var response = await CreateAsync(name);
         response.EnsureSuccessStatusCode();
         return JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.GetProperty("id").GetString()!;
+    }
+
+    public async Task<string> CreateAndGetCodeAsync(string name)
+    {
+        var response = await CreateAsync(name);
+        response.EnsureSuccessStatusCode();
+        return JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.GetProperty("code").GetString()!;
     }
 
     private async Task<HttpResponseMessage> SendAsync(HttpMethod method, string url, object? body = null)

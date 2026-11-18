@@ -25,7 +25,7 @@ A student enters a class code, the server normalizes and checks it, and the stud
   - `Entities/ClassMembership.cs` – the entity: `Id`, `StudentId`, `ClassId`, `StartedAtUtc`, `EndedAtUtc` (empty while the student belongs to the class).
   - `Data/Configurations/ClassMembershipConfiguration.cs` – table `ClassMemberships`; foreign keys to the user and to `Classes` with cascade delete (a deleted class or student account removes the memberships, VT-009); a unique index on `StudentId` where `EndedAtUtc` is empty, so a student has one active membership (VT-025).
   - `DTOs/Requests/JoinClassRequest.cs` – `Code` (spaces removed and letters converted to uppercase when the value is set; `Required` and a 6-character `A–Z0–9` pattern) and `ConfirmChange` (the student confirmed the class change).
-  - `DTOs/Responses/JoinClassResponse.cs` – the name of the joined class; `DTOs/Responses/ClassChangeConfirmationResponse.cs` – the names of the current and the new class.
+  - `DTOs/Responses/JoinClassResponse.cs` – the name of the class and `AlreadyMember`; `DTOs/Responses/ClassChangeConfirmationResponse.cs` – the names of the current and the new class.
   - `Services/IClassMembershipService.cs`, `Services/ClassMembershipService.cs` – finds the class by the code; returns `ClassNotFound`, `AlreadyMember`, `ConfirmationRequired` or `Joined`; on `Joined` ends the active membership (if any) and adds the new one in one save; when the unique index rejects the save (two requests at the same time), it evaluates the request again once.
   - `Services/JoinClassResult.cs`, `Services/JoinClassOutcome.cs` – the result type, same style as `ClassResult`.
   - `Controllers/ClassMembershipController.cs` – route `api/classes/join`, `[Authorize(Policy = PolicyName.Student)]`; the student is taken from the session; translates the result to 200, 400 (error for the field `code` when the class is not found), 409 and the existing 401/403 responses.
@@ -42,7 +42,7 @@ A student enters a class code, the server normalizes and checks it, and the stud
 ## Server Request Changes
 
 - `POST /api/classes/join` – body `{ code, confirmChange }`:
-  - 200 – joined (or already a member of this class); the body has the class name;
+  - 200 – joined (or already a member of this class); the body has the class name and `alreadyMember` (true when the student was already in this class);
   - 400 – empty or wrong code format, or the class is not found; the errors are per field `code`;
   - 409 – the student belongs to another class and `confirmChange` is false; the body has the current and the new class name;
   - 401 – visitor; 403 – teacher or administrator.
