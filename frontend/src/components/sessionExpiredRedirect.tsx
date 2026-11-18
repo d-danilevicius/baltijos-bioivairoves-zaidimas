@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
-import { loginRequired } from '../helpers/loginMessages'
+import { loginRequired } from '../helpers/loginMessage'
 import { clearSessionMarker, hadSession } from '../helpers/sessionMarker'
 import { sessionExpired } from '../helpers/stateMessages'
 

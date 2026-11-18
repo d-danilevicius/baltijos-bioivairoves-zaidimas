@@ -1,4 +1,4 @@
-import { emailRequired, passwordRequired } from '../helpers/loginMessages'
+import { emailRequired, passwordRequired } from '../helpers/loginMessage'
 import { validateLogin } from '../helpers/validateLogin'
 
 describe('validateLogin', () => {

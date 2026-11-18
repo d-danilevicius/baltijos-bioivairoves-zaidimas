@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getCurrentUser } from '../api/authApi'
-import { loginRequired } from '../helpers/loginMessages'
+import { loginRequired } from '../helpers/loginMessage'
 import { clearSessionMarker, hadSession } from '../helpers/sessionMarker'
 import { sessionExpired } from '../helpers/stateMessages'
 import type { CurrentUser } from '../types/auth'

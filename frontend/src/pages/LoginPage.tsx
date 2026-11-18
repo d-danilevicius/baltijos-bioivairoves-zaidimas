@@ -12,7 +12,7 @@ import {
   invalidCredentials,
   loginFailedLater,
   passwordRequired,
-} from '../helpers/loginMessages'
+} from '../helpers/loginMessage'
 import { type LoginFieldErrors, validateLogin } from '../helpers/validateLogin'
 import { markSessionStarted } from '../helpers/sessionMarker'
 import { getStartingScreen } from '../helpers/startingScreen'
