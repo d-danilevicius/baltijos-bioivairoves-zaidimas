@@ -1,20 +1,34 @@
 import type { ProblemDetailsWithErrors } from '../types/auth'
 import type { SchoolClass } from '../types/classes'
 import { fetchCsrfToken } from './authApi'
+import { HttpStatus } from '../helpers/httpStatus'
 
 const base = (import.meta.env.VITE_API_URL ?? '') as string
 
 type Failure = { status: 'network' | 'server'; message: string }
 
-export type ListClassesResult = { status: 200; body: SchoolClass[] } | { status: 401 } | Failure
+export type ListClassesResult =
+  { status: typeof HttpStatus.Ok; body: SchoolClass[] } | { status: typeof HttpStatus.Unauthorized } | Failure
 
 export type GetClassResult =
-  { status: 200; body: SchoolClass } | { status: 401 } | { status: 403 } | { status: 404 } | Failure
+  | { status: typeof HttpStatus.Ok; body: SchoolClass }
+  | { status: typeof HttpStatus.Unauthorized }
+  | { status: typeof HttpStatus.Forbidden }
+  | { status: typeof HttpStatus.NotFound }
+  | Failure
 
 export type CreateClassResult =
-  { status: 201; body: SchoolClass } | { status: 400; body: ProblemDetailsWithErrors } | { status: 401 } | Failure
+  | { status: typeof HttpStatus.Created; body: SchoolClass }
+  | { status: typeof HttpStatus.BadRequest; body: ProblemDetailsWithErrors }
+  | { status: typeof HttpStatus.Unauthorized }
+  | Failure
 
-export type DeleteClassResult = { status: 204 } | { status: 401 } | { status: 403 } | { status: 404 } | Failure
+export type DeleteClassResult =
+  | { status: typeof HttpStatus.NoContent }
+  | { status: typeof HttpStatus.Unauthorized }
+  | { status: typeof HttpStatus.Forbidden }
+  | { status: typeof HttpStatus.NotFound }
+  | Failure
 
 function toFailure(e: unknown): Failure {
   const message = (e as Error | undefined)?.message ?? 'Network error'
@@ -24,11 +38,11 @@ function toFailure(e: unknown): Failure {
 export async function listClasses(): Promise<ListClassesResult> {
   try {
     const res = await fetch(base + '/api/classes', { credentials: 'include' })
-    if (res.status === 200) {
-      return { status: 200, body: (await res.json()) as SchoolClass[] }
+    if (res.status === HttpStatus.Ok) {
+      return { status: HttpStatus.Ok, body: (await res.json()) as SchoolClass[] }
     }
-    if (res.status === 401) {
-      return { status: 401 }
+    if (res.status === HttpStatus.Unauthorized) {
+      return { status: HttpStatus.Unauthorized }
     }
     return { status: 'server', message: 'Server error' }
   } catch (e) {
@@ -39,10 +53,14 @@ export async function listClasses(): Promise<ListClassesResult> {
 export async function getClass(id: string): Promise<GetClassResult> {
   try {
     const res = await fetch(base + `/api/classes/${encodeURIComponent(id)}`, { credentials: 'include' })
-    if (res.status === 200) {
-      return { status: 200, body: (await res.json()) as SchoolClass }
+    if (res.status === HttpStatus.Ok) {
+      return { status: HttpStatus.Ok, body: (await res.json()) as SchoolClass }
     }
-    if (res.status === 401 || res.status === 403 || res.status === 404) {
+    if (
+      res.status === HttpStatus.Unauthorized ||
+      res.status === HttpStatus.Forbidden ||
+      res.status === HttpStatus.NotFound
+    ) {
       return { status: res.status }
     }
     return { status: 'server', message: 'Server error' }
@@ -59,14 +77,14 @@ export async function createClass(name: string): Promise<CreateClassResult> {
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': await fetchCsrfToken() },
       body: JSON.stringify({ name }),
     })
-    if (res.status === 201) {
-      return { status: 201, body: (await res.json()) as SchoolClass }
+    if (res.status === HttpStatus.Created) {
+      return { status: HttpStatus.Created, body: (await res.json()) as SchoolClass }
     }
-    if (res.status === 400) {
-      return { status: 400, body: (await res.json()) as ProblemDetailsWithErrors }
+    if (res.status === HttpStatus.BadRequest) {
+      return { status: HttpStatus.BadRequest, body: (await res.json()) as ProblemDetailsWithErrors }
     }
-    if (res.status === 401) {
-      return { status: 401 }
+    if (res.status === HttpStatus.Unauthorized) {
+      return { status: HttpStatus.Unauthorized }
     }
     return { status: 'server', message: 'Server error' }
   } catch (e) {
@@ -81,10 +99,14 @@ export async function deleteClass(id: string): Promise<DeleteClassResult> {
       credentials: 'include',
       headers: { 'X-CSRF-TOKEN': await fetchCsrfToken() },
     })
-    if (res.status === 204) {
-      return { status: 204 }
+    if (res.status === HttpStatus.NoContent) {
+      return { status: HttpStatus.NoContent }
     }
-    if (res.status === 401 || res.status === 403 || res.status === 404) {
+    if (
+      res.status === HttpStatus.Unauthorized ||
+      res.status === HttpStatus.Forbidden ||
+      res.status === HttpStatus.NotFound
+    ) {
       return { status: res.status }
     }
     return { status: 'server', message: 'Server error' }

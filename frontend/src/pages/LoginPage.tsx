@@ -16,6 +16,7 @@ import {
 import { type LoginFieldErrors, validateLogin } from '../helpers/validateLogin'
 import { markSessionStarted } from '../helpers/sessionMarker'
 import { getStartingScreen } from '../helpers/startingScreen'
+import { HttpStatus } from '../helpers/httpStatus'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -43,7 +44,7 @@ export default function LoginPage() {
     const res = await loginUser({ email, password })
     setLoading(false)
 
-    if (res.status === 200) {
+    if (res.status === HttpStatus.Ok) {
       markSessionStarted()
       navigate(getStartingScreen(res.body.role))
       return
@@ -51,17 +52,17 @@ export default function LoginPage() {
 
     setPassword('')
 
-    if (res.status === 401) {
+    if (res.status === HttpStatus.Unauthorized) {
       setTopError(invalidCredentials)
       return
     }
 
-    if (res.status === 403) {
+    if (res.status === HttpStatus.Forbidden) {
       setTopError(accountBlocked)
       return
     }
 
-    if (res.status === 400) {
+    if (res.status === HttpStatus.BadRequest) {
       const errors = res.body.errors ?? {}
       const mapped: Record<string, string> = {}
       if (errors.email?.includes('Required')) mapped.email = emailRequired

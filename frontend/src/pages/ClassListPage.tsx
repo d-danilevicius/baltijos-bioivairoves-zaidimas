@@ -11,6 +11,7 @@ import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
 import { createFirstClass, newClass, noClasses } from '../helpers/classMessages'
 import { teacherLinks } from '../helpers/navigationLinks'
 import type { SchoolClass } from '../types/classes'
+import { HttpStatus } from '../helpers/httpStatus'
 
 type ListState =
   { status: 'loading' } | { status: 'ready'; classes: SchoolClass[] } | { status: 'expired' } | { status: 'error' }
@@ -26,8 +27,8 @@ export default function ClassListPage() {
     async function load() {
       const res = await listClasses()
       if (cancelled) return
-      if (res.status === 200) setState({ status: 'ready', classes: res.body })
-      else if (res.status === 401) setState({ status: 'expired' })
+      if (res.status === HttpStatus.Ok) setState({ status: 'ready', classes: res.body })
+      else if (res.status === HttpStatus.Unauthorized) setState({ status: 'expired' })
       else setState({ status: 'error' })
     }
 
