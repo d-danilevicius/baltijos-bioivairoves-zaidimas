@@ -11,11 +11,11 @@ namespace Project.Api.Controllers;
 [ApiController]
 [Route("api/classes")]
 [Authorize(Policy = PolicyNames.Teacher)]
-public class ClassesController : ControllerBase
+public class ClassController : ControllerBase
 {
     private readonly IClassService _classService;
 
-    public ClassesController(IClassService classService)
+    public ClassController(IClassService classService)
     {
         _classService = classService;
     }
