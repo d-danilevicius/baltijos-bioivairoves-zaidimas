@@ -44,6 +44,7 @@ Schema changes are EF Core migrations stored in `backend/src/Project.Api/Migrati
 The first migration CreateIdentityTables exists (ASP.NET Core Identity tables and the seeded roles Student, Teacher, Administrator) and is applied with `dotnet ef database update --project backend/src/Project.Api`.
 The migration CreateClassesTable adds the table Classes (name, unique 6-character code, owner, creation time).
 The migration CreateClassMembershipsTable adds the table ClassMemberships (student, class, start time, end time; a student has one active membership).
+The migration CreateObservationsAndTasksTables adds the tables Observations (copies of GBIF observations) and ClassTasks, and the location and season of a class.
 
 ## Run
 
@@ -85,6 +86,8 @@ Frontend: the teacher's starting screen is the class list http://localhost:5173/
 Joining a class (student only): POST /api/classes/join with the body `{ "code": "ab12cd", "confirmChange": false }`. The server removes spaces and converts letters to uppercase; the code must be 6 letters or digits. The answers: 200 (joined, or `alreadyMember` is true when the student is already in this class), 400 (empty or wrong code, or the class is not found; the error is for the field `code`), 409 (the student belongs to another class; the body has `currentClassName` and `newClassName`, and the request is sent again with `confirmChange` true to change the class), 401 for a visitor and 403 for a teacher or an administrator. POST needs the X-CSRF-TOKEN header.
 Frontend: a student joins a class at http://localhost:5173/join (menu link “Prisijungti prie klasės”); after joining, the profile opens with the message.
 
+GBIF tasks: a teacher opens a class, chooses “Užduotys” and “Sukurti iš GBIF”, selects a location on the map (Leaflet, OpenStreetMap tiles) or enters coordinates, and chooses a season. Observations are taken from GBIF within 10 km of the location (Lithuania only). Endpoints: `POST /api/classes/{id}/gbif-tasks`, `GET /api/classes/{id}/tasks`.
+
 ## API documentation
 
 The backend generates the OpenAPI document from the code (controllers and `ProducesResponseType` attributes).
@@ -112,6 +115,8 @@ Other checks: `dotnet format backend/Project.slnx --verify-no-changes --exclude 
 |---|---|---|
 | `ConnectionStrings:Default` | user secrets or environment variable `ConnectionStrings__Default` | PostgreSQL connection |
 | `Cors:AllowedOrigins` | `appsettings.json` or `Cors__AllowedOrigins__0` | Allowed browser origins |
+| `Gbif:BaseUrl` | `appsettings.json` | GBIF API address (default https://api.gbif.org/v1/) |
+| `Gbif:TimeoutSeconds` | `appsettings.json` | GBIF request timeout (default 10) |
 | `POSTGRES_*` | `.env` | Local database container |
 | `API_URL` | environment, optional | Backend address for the frontend dev proxy |
 
