@@ -5,10 +5,10 @@ public class JoinClassResult
     public JoinClassOutcome Outcome { get; private init; }
 
     // The class the student joins or tries to join
-    public string? ClassName { get; private init; }
+    public string ClassName { get; private init; } = string.Empty;
 
     // The class the student belongs to now (set when the confirmation is required)
-    public string? CurrentClassName { get; private init; }
+    public string CurrentClassName { get; private init; } = string.Empty;
 
     public static JoinClassResult Joined(string className) =>
         new() { Outcome = JoinClassOutcome.Joined, ClassName = className };
