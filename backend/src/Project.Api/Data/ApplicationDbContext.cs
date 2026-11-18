@@ -57,20 +57,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 ConcurrencyStamp = AdministratorConcurrencyStamp
             }
         );
-
-        // SchoolClass entity configuration (table Classes)
-        builder.Entity<SchoolClass>(e =>
-        {
-            e.ToTable("Classes");
-            e.Property(c => c.Name).HasMaxLength(50).IsRequired();
-            e.Property(c => c.Code).HasMaxLength(6).IsFixedLength().IsRequired();
-            e.HasIndex(c => c.Code).IsUnique();
-
-            // When the teacher account is deleted, the classes are deleted too
-            e.HasOne<ApplicationUser>()
-                .WithMany()
-                .HasForeignKey(c => c.OwnerId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
     }
 }
