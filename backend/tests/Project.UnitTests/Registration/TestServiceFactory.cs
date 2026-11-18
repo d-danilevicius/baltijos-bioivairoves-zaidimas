@@ -76,6 +76,7 @@ internal class TestServiceFactory : IDisposable
 
         // Identity and application services
         services.AddProjectIdentity(new ConfigurationBuilder().Build());
+        services.AddApplicationServices();
 
         var sp = services.BuildServiceProvider();
 

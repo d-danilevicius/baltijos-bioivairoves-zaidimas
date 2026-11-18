@@ -18,6 +18,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Identity and application services
 builder.Services.AddProjectIdentity(builder.Configuration);
+builder.Services.AddApplicationServices();
 
 // Antiforgery configuration
 builder.Services.AddCsrfProtection();
