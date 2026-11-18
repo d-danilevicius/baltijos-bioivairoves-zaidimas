@@ -36,7 +36,11 @@ public static class ServiceCollectionExtensions
         // Role policies: Student, Teacher, Administrator
         services.AddRolePolicies();
 
-        // Register application services
+        return services;
+    }
+
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
         services.AddScoped<IRegistrationService, RegistrationService>();
         services.AddScoped<IActionLogWriter, ActionLogWriter>();
         services.AddScoped<ILoginService, LoginService>();

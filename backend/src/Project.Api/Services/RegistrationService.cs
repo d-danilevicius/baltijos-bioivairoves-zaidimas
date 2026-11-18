@@ -68,7 +68,11 @@ public class RegistrationService : IRegistrationService
         if (!roleResult.Succeeded)
         {
             // rollback: delete the created user
-            await _userManager.DeleteAsync(user);
+            var deleteResult = await _userManager.DeleteAsync(user);
+            if (!deleteResult.Succeeded)
+            {
+                _logger.LogError("Registration rollback failed: user {UserId} was not deleted after role assignment failed", user.Id);
+            }
 
             var errors = new Dictionary<string, string[]> { ["role"] = new[] { "NotAllowed" } };
             return RegistrationResult.Invalid(errors);

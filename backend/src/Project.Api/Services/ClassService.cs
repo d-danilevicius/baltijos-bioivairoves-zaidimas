@@ -56,6 +56,7 @@ public class ClassService : IClassService
     public async Task<IReadOnlyList<ClassResponse>> ListAsync(string ownerId, CancellationToken cancellationToken)
     {
         var classes = await _dbContext.Classes
+            .AsNoTracking()
             .Where(c => c.OwnerId == ownerId)
             .OrderByDescending(c => c.CreatedAtUtc)
             .ToListAsync(cancellationToken);
