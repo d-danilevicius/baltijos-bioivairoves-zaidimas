@@ -11,15 +11,15 @@ namespace Project.UnitTests.AccessControl;
 public class AccessPolicyTests
 {
     [Theory]
-    [InlineData(PolicyName.Student, RoleNames.Student, true)]
-    [InlineData(PolicyName.Student, RoleNames.Teacher, false)]
-    [InlineData(PolicyName.Student, RoleNames.Administrator, false)]
-    [InlineData(PolicyName.Teacher, RoleNames.Student, false)]
-    [InlineData(PolicyName.Teacher, RoleNames.Teacher, true)]
-    [InlineData(PolicyName.Teacher, RoleNames.Administrator, false)]
-    [InlineData(PolicyName.Administrator, RoleNames.Student, false)]
-    [InlineData(PolicyName.Administrator, RoleNames.Teacher, false)]
-    [InlineData(PolicyName.Administrator, RoleNames.Administrator, true)]
+    [InlineData(PolicyName.Student, RoleName.Student, true)]
+    [InlineData(PolicyName.Student, RoleName.Teacher, false)]
+    [InlineData(PolicyName.Student, RoleName.Administrator, false)]
+    [InlineData(PolicyName.Teacher, RoleName.Student, false)]
+    [InlineData(PolicyName.Teacher, RoleName.Teacher, true)]
+    [InlineData(PolicyName.Teacher, RoleName.Administrator, false)]
+    [InlineData(PolicyName.Administrator, RoleName.Student, false)]
+    [InlineData(PolicyName.Administrator, RoleName.Teacher, false)]
+    [InlineData(PolicyName.Administrator, RoleName.Administrator, true)]
     public async Task AuthorizeAsync_RoleAgainstPolicyMatrix_ReturnsExpectedResult(string policyName, string roleName, bool expectedSuccess)
     {
         using var factory = await TestServiceFactory.CreateAsync();

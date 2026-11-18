@@ -22,7 +22,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task PostClasses_WithValidName_Returns201WithSixCharacterCode()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
 
         var response = await teacher.CreateAsync("7a klasė");
 
@@ -35,7 +35,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task PostClasses_WithFiftyCharactersAndSpacesAround_Returns201WithTrimmedName()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
         var name = new string('a', 50);
 
         var response = await teacher.CreateAsync($"  {name}  ");
@@ -47,7 +47,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task PostClasses_WithEmptyName_Returns400WithRequiredErrorForName()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
 
         var response = await teacher.CreateAsync("   ");
 
@@ -59,7 +59,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task PostClasses_WithFiftyOneCharacterName_Returns400WithTooLongErrorForName()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
 
         var response = await teacher.CreateAsync(new string('a', 51));
 
@@ -71,7 +71,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task PostClasses_WithoutCsrfToken_Returns400()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
 
         var response = await teacher.SendWithoutCsrfTokenAsync(HttpMethod.Post, "/api/classes", new { name = "7a" });
 
@@ -81,8 +81,8 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task GetClasses_AfterCreatingClass_ListsOnlyClassesOfLoggedInTeacher()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
-        var otherTeacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
+        var otherTeacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
         await teacher.CreateAsync("Mano klasė");
         await otherTeacher.CreateAsync("Kito mokytojo klasė");
 
@@ -97,7 +97,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task GetClassById_ForOwnClass_Returns200WithCode()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
         var id = await teacher.CreateAndGetIdAsync("7a");
 
         var response = await teacher.GetAsync(id);
@@ -111,8 +111,8 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task GetClassById_ForClassOfAnotherTeacher_Returns403()
     {
-        var owner = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
-        var otherTeacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var owner = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
+        var otherTeacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
         var id = await owner.CreateAndGetIdAsync("7a");
 
         var response = await otherTeacher.GetAsync(id);
@@ -123,7 +123,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task GetClassById_WhenClassDoesNotExist_Returns404()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
 
         var response = await teacher.GetAsync(Guid.NewGuid().ToString());
 
@@ -133,7 +133,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task DeleteClass_ForOwnClass_Returns204AndClassIsNoLongerListed()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
         var id = await teacher.CreateAndGetIdAsync("Ištrinama klasė");
 
         var response = await teacher.DeleteAsync(id);
@@ -146,8 +146,8 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task DeleteClass_ForClassOfAnotherTeacher_Returns403AndKeepsClass()
     {
-        var owner = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
-        var otherTeacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var owner = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
+        var otherTeacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
         var id = await owner.CreateAndGetIdAsync("7a");
 
         var response = await otherTeacher.DeleteAsync(id);
@@ -159,7 +159,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task DeleteClass_WhenClassDoesNotExist_Returns404()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
 
         var response = await teacher.DeleteAsync(Guid.NewGuid().ToString());
 
@@ -169,7 +169,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task DeleteClass_WithoutCsrfToken_Returns400AndKeepsClass()
     {
-        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleNames.Teacher);
+        var teacher = await ClassTestClient.LoginAsync(_fixture, RoleName.Teacher);
         var id = await teacher.CreateAndGetIdAsync("7a");
 
         var response = await teacher.SendWithoutCsrfTokenAsync(HttpMethod.Delete, $"/api/classes/{id}");
@@ -181,7 +181,7 @@ public class ClassEndpointTests : IClassFixture<LoginApiFixture>
     [Fact]
     public async Task ClassEndpoints_AsStudent_Return403WithAccessDenied()
     {
-        var student = await ClassTestClient.LoginAsync(_fixture, RoleNames.Student);
+        var student = await ClassTestClient.LoginAsync(_fixture, RoleName.Student);
         var id = Guid.NewGuid().ToString();
 
         var responses = new[]

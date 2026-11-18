@@ -4,7 +4,7 @@ using Project.Api.Entities;
 
 public static class PolicyName
 {
-    public const string Student = RoleNames.Student;
-    public const string Teacher = RoleNames.Teacher;
-    public const string Administrator = RoleNames.Administrator;
+    public const string Student = RoleName.Student;
+    public const string Teacher = RoleName.Teacher;
+    public const string Administrator = RoleName.Administrator;
 }

@@ -23,7 +23,7 @@ public class RegistrationService : IRegistrationService
     public async Task<RegistrationResult> RegisterAsync(RegisterRequest request)
     {
         // Guard: allowed roles only
-        if (request.Role != RoleNames.Student && request.Role != RoleNames.Teacher)
+        if (request.Role != RoleName.Student && request.Role != RoleName.Teacher)
         {
             return RegistrationResult.Invalid(new Dictionary<string, string[]>
             {

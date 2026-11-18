@@ -28,7 +28,7 @@ internal sealed class LoginTestHelper
         string userName,
         string password,
         bool isBlocked = false,
-        string role = RoleNames.Student)
+        string role = RoleName.Student)
     {
         using var scope = _fixture.Services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>>();
