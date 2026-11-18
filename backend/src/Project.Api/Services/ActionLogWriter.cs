@@ -7,11 +7,6 @@ using Project.Api.Entities;
 
 namespace Project.Api.Services;
 
-public interface IActionLogWriter
-{
-    Task WriteAsync(string? userId, string action, DateTime occurredAtUtc, CancellationToken cancellationToken);
-}
-
 public class ActionLogWriter : IActionLogWriter
 {
     private readonly ApplicationDbContext _db;
