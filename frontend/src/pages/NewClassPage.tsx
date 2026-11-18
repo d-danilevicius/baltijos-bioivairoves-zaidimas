@@ -8,7 +8,7 @@ import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
 import TextField from '../components/textField'
 import { classCreated, classNameRequired, classNameTooLong } from '../helpers/classMessage'
 import { teacherLinks } from '../helpers/navigationLinks'
-import { serverError } from '../helpers/stateMessages'
+import { serverError } from '../helpers/stateMessage'
 import { validateClassName } from '../helpers/validateClassName'
 import { HttpStatus } from '../helpers/httpStatus'
 

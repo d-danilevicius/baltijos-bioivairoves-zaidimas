@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { createClass } from '../api/classApi'
 import { classCreated, classNameRequired, classNameTooLong } from '../helpers/classMessage'
 import { hadSession, markSessionStarted } from '../helpers/sessionMarker'
-import { serverError, sessionExpired } from '../helpers/stateMessages'
+import { serverError, sessionExpired } from '../helpers/stateMessage'
 import NewClassPage from '../pages/NewClassPage'
 
 vi.mock('../api/classApi', () => ({ createClass: vi.fn() }))

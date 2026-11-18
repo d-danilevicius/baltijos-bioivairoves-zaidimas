@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import LoadingState from '../components/loadingState'
 import ErrorState from '../components/errorState'
 import EmptyState from '../components/emptyState'
-import { loading, retry, serverError } from '../helpers/stateMessages'
+import { loading, retry, serverError } from '../helpers/stateMessage'
 
 describe('Common state components', () => {
   it('LoadingState shows the loading text in a status element', () => {

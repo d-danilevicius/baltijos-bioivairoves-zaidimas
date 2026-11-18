@@ -6,7 +6,7 @@ import { listClasses } from '../api/classApi'
 import ProtectedRoute from '../components/protectedRoute'
 import { noClasses, createFirstClass, newClass } from '../helpers/classMessage'
 import { hadSession, markSessionStarted } from '../helpers/sessionMarker'
-import { accessDenied, loading, retry, serverError, sessionExpired } from '../helpers/stateMessages'
+import { accessDenied, loading, retry, serverError, sessionExpired } from '../helpers/stateMessage'
 import ClassListPage from '../pages/ClassListPage'
 import type { CurrentUser } from '../types/auth'
 

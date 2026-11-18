@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { deleteClass, getClass } from '../api/classApi'
 import { classCreated, classDeleted } from '../helpers/classMessage'
 import { hadSession, markSessionStarted } from '../helpers/sessionMarker'
-import { accessDenied, loading, pageNotFound, retry, serverError, sessionExpired } from '../helpers/stateMessages'
+import { accessDenied, loading, pageNotFound, retry, serverError, sessionExpired } from '../helpers/stateMessage'
 import ClassDetailsPage from '../pages/ClassDetailsPage'
 
 vi.mock('../api/classApi', () => ({ getClass: vi.fn(), deleteClass: vi.fn() }))
