@@ -43,6 +43,7 @@ Schema changes are EF Core migrations stored in `backend/src/Project.Api/Migrati
 
 The first migration CreateIdentityTables exists (ASP.NET Core Identity tables and the seeded roles Student, Teacher, Administrator) and is applied with `dotnet ef database update --project backend/src/Project.Api`.
 The migration CreateClassesTable adds the table Classes (name, unique 6-character code, owner, creation time).
+The migration CreateClassMembershipsTable adds the table ClassMemberships (student, class, start time, end time; a student has one active membership).
 
 ## Run
 
@@ -81,6 +82,8 @@ Apply the new migration with: dotnet ef database update --project backend/src/Pr
 Classes (teacher only): GET /api/classes lists the classes of the logged-in teacher, POST /api/classes creates a class (body `{ "name": "7a" }`, name 1–50 characters; the server generates the 6-character code), GET /api/classes/{id} returns one class and DELETE /api/classes/{id} deletes it.
 A student gets 403, a teacher who is not the owner gets 403, an unknown class gets 404 and a visitor gets 401. POST and DELETE need the X-CSRF-TOKEN header.
 Frontend: the teacher's starting screen is the class list http://localhost:5173/classes; a new class is created at /classes/new and the class information with the code is at /classes/{id}. Students keep /profile as the starting screen.
+Joining a class (student only): POST /api/classes/join with the body `{ "code": "ab12cd", "confirmChange": false }`. The server removes spaces and converts letters to uppercase; the code must be 6 letters or digits. The answers: 200 (joined, or `alreadyMember` is true when the student is already in this class), 400 (empty or wrong code, or the class is not found; the error is for the field `code`), 409 (the student belongs to another class; the body has `currentClassName` and `newClassName`, and the request is sent again with `confirmChange` true to change the class), 401 for a visitor and 403 for a teacher or an administrator. POST needs the X-CSRF-TOKEN header.
+Frontend: a student joins a class at http://localhost:5173/join (menu link “Prisijungti prie klasės”); after joining, the profile opens with the message.
 
 ## API documentation
 
