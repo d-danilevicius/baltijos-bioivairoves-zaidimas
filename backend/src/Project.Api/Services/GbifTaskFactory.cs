@@ -87,7 +87,7 @@ public class GbifTaskFactory
             ClassId = classId,
             Type = TaskType.CommonSpecies,
             DifficultyGroup = 2,
-            Question = "Kuri rūšis šioje vietovėje pastebėta dažniausiai?",
+            Question = "Kuri rūšis tarp gautų stebėjimų pastebėta dažniausiai?",
             CorrectAnswer = correct.Species,
             Options = Shuffle(others.Append(correct.Species)).ToArray(),
             ObservationId = correct.First.Id

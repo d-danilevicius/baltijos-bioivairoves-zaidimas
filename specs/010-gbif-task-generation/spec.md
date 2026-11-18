@@ -51,7 +51,7 @@
 - **FR-025:** The system MUST allow a teacher to choose a location in Lithuania and a season for own class.
 - **FR-026:** The system MUST retrieve from the GBIF Occurrence API observations near the chosen location in the chosen season according to VT-011.
 - **FR-027:** The system MUST create the task “Atpažink rūšių grupę” from a retrieved observation: the student chooses the species group (for example birds, mammals, insects, plants) from 4 options; the options come from the GBIF class of the retrieved observations.
-- **FR-028:** The system MUST create the task “Rask dažnos vietinės rūšies požymių” from the retrieved observations: the question is “Kuri rūšis šioje vietoje pastebėta dažniausiai?”, and the correct answer is the species with the most observations.
+- **FR-028:** The system MUST create the task “Rask dažnos vietinės rūšies požymių” from the retrieved observations: the question is “Kuri rūšis tarp gautų stebėjimų pastebėta dažniausiai?”, and the correct answer is the species with the most observations among the received observations (see Assumptions).
 - **FR-029:** The system MUST create the task “Palygink sezoninius stebėjimus” from observations of the same location in the chosen season and the opposite season.
 - **FR-030:** The system MUST create the task “Atsakyk į klausimą” from an observation card: the question is in which month the observation was made, and the answer comes from the observation date.
 - **FR-036:** The system MUST NOT create tasks and MUST show the teacher a message if GBIF returns fewer observations than VT-011 requires.
@@ -101,6 +101,7 @@ No unresolved clarification markers remain.
 
 ## Assumptions
 
+- Only the first 300 GBIF records of the chosen season are read (one request, no paging). Tasks are created from this sample, so the answer of the common-species task describes the received observations, not all observations near the location.
 - The assumptions and constraints of `docs/requirements.md` (section 11) apply.
 - The question of “Palygink sezoninius stebėjimus” compares the number of observations of one species in the chosen and the opposite season; the exact text is fixed in the plan. This is an assumption, because `docs/` only says that observations of two seasons are compared.
 - The opposite season needs at least 10 suitable observations, as VT-011 requires for the chosen one. This is an assumption.
