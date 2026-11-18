@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { listClasses } from '../api/classesApi'
+import { listClasses } from '../api/classApi'
 import Card from '../components/card'
 import EmptyState from '../components/emptyState'
 import ErrorState from '../components/errorState'

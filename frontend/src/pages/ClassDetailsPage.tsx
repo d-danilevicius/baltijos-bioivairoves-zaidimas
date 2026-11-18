@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { deleteClass, getClass } from '../api/classesApi'
+import { deleteClass, getClass } from '../api/classApi'
 import Button from '../components/button'
 import Card from '../components/card'
 import ConfirmDialog from '../components/confirmDialog'

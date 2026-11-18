@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createClass } from '../api/classesApi'
+import { createClass } from '../api/classApi'
 import Button from '../components/button'
 import Card from '../components/card'
 import PageLayout from '../components/pageLayout'

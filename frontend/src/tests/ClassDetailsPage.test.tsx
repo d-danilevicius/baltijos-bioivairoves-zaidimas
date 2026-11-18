@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { deleteClass, getClass } from '../api/classesApi'
+import { deleteClass, getClass } from '../api/classApi'
 import { classCreated, classDeleted } from '../helpers/classMessages'
 import { hadSession, markSessionStarted } from '../helpers/sessionMarker'
 import { accessDenied, loading, pageNotFound, retry, serverError, sessionExpired } from '../helpers/stateMessages'
 import ClassDetailsPage from '../pages/ClassDetailsPage'
 
-vi.mock('../api/classesApi', () => ({ getClass: vi.fn(), deleteClass: vi.fn() }))
+vi.mock('../api/classApi', () => ({ getClass: vi.fn(), deleteClass: vi.fn() }))
 
 const schoolClass = { id: 'abc', name: '7a klasė', code: 'AB12CD', createdAtUtc: '2026-10-19T10:00:00Z' }
 
