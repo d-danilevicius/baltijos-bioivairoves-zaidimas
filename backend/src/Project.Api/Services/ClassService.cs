@@ -115,6 +115,9 @@ public class ClassService : IClassService
         Id = schoolClass.Id,
         Name = schoolClass.Name,
         Code = schoolClass.Code,
-        CreatedAtUtc = schoolClass.CreatedAtUtc
+        CreatedAtUtc = schoolClass.CreatedAtUtc,
+        Latitude = schoolClass.Latitude,
+        Longitude = schoolClass.Longitude,
+        Season = schoolClass.Season
     };
 }

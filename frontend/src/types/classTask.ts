@@ -1,0 +1,20 @@
+export type Season = 'Spring' | 'Summer' | 'Autumn' | 'Winter'
+
+export type TaskType = 'RecogniseSpeciesGroup' | 'CommonSpecies' | 'SeasonalComparison' | 'ObservationQuestion'
+
+export interface ClassTask {
+  id: string
+  type: TaskType
+  difficultyGroup: number
+  label: string
+}
+
+export interface GbifTasksResponse {
+  createdCount: number
+}
+
+export interface GbifTasksRequest {
+  latitude: number
+  longitude: number
+  season: Season
+}

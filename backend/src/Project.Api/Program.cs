@@ -1,6 +1,8 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Project.Api.Data;
+using Project.Api.Integrations.Gbif;
 using Project.Api.Middleware;
 using Project.Api.Services;
 using Scalar.AspNetCore;
@@ -11,7 +13,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddControllers()
-    .AddJsonOptions(opts => opts.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase);
+    .AddJsonOptions(opts =>
+    {
+        opts.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+        opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -19,6 +25,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // Identity and application services
 builder.Services.AddProjectIdentity(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddGbifClient(builder.Configuration);
 
 // Antiforgery configuration
 builder.Services.AddCsrfProtection();

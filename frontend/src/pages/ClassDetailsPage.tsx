@@ -5,10 +5,12 @@ import Button from '../components/button'
 import Card from '../components/card'
 import ConfirmDialog from '../components/confirmDialog'
 import ErrorState from '../components/errorState'
+import LinkButton from '../components/linkButton'
 import LoadingState from '../components/loadingState'
 import PageLayout from '../components/pageLayout'
 import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
 import { classDeleted } from '../helpers/classMessage'
+import { tasksLink } from '../helpers/gbifTaskMessage'
 import { teacherLinks } from '../helpers/navigationLink'
 import { serverError } from '../helpers/stateMessage'
 import type { SchoolClass } from '../types/schoolClass'
@@ -93,9 +95,12 @@ export default function ClassDetailsPage() {
           <p className="mb-6">
             <strong>Klasės kodas:</strong> <span className="font-mono text-lg">{state.schoolClass.code}</span>
           </p>
-          <Button type="button" variant="secondary" onClick={() => setConfirmOpen(true)}>
-            Ištrinti klasę
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            <LinkButton to={`/classes/${id}/tasks`}>{tasksLink}</LinkButton>
+            <Button type="button" variant="secondary" onClick={() => setConfirmOpen(true)}>
+              Ištrinti klasę
+            </Button>
+          </div>
           <ConfirmDialog
             open={confirmOpen}
             message={`Ištrinti klasę „${state.schoolClass.name}“?`}

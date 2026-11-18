@@ -47,6 +47,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IClassCodeGenerator, ClassCodeGenerator>();
         services.AddScoped<IClassService, ClassService>();
         services.AddScoped<IClassMembershipService, ClassMembershipService>();
+        services.AddSingleton(Random.Shared);
+        services.AddSingleton<GbifTaskFactory>();
+        services.AddSingleton<SeasonalTaskFactory>();
+        services.AddScoped<IGbifTaskService, GbifTaskService>();
+        services.AddScoped<IClassTaskService, ClassTaskService>();
 
         return services;
     }
