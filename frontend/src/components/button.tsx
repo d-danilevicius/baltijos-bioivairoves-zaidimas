@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react'
-import { type ButtonVariant, buttonClass } from '../helpers/buttonStyles'
+import { type ButtonVariant, buttonClass } from '../helpers/buttonStyle'
 
 type ButtonProps = ComponentProps<'button'> & { variant?: ButtonVariant; fullWidth?: boolean }
 
