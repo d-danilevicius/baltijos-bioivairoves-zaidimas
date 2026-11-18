@@ -16,6 +16,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<ClassMembership> ClassMemberships { get; set; }
 
+    public DbSet<Observation> Observations { get; set; }
+
+    public DbSet<ClassTask> ClassTasks { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
