@@ -1,4 +1,5 @@
 import type { Season, TaskType } from '../types/classTask'
+import { teacherTaskLabel } from './teacherTaskMessage'
 
 export const locationRequired = 'Pasirinkite vietovę.'
 export const coordinatesNotNumbers = 'Platuma ir ilguma turi būti skaičiai.'
@@ -45,4 +46,5 @@ export const taskTypeLabels: Record<TaskType, string> = {
   CommonSpecies: 'Rask dažnos vietinės rūšies požymių',
   SeasonalComparison: 'Palygink sezoninius stebėjimus',
   ObservationQuestion: 'Atsakyk į klausimą',
+  TeacherTask: teacherTaskLabel,
 }
