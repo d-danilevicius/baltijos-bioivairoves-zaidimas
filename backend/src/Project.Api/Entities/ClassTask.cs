@@ -11,6 +11,11 @@ public class ClassTask
     // 1–3 (VT-013)
     public int DifficultyGroup { get; set; }
 
+    // Used by teacher tasks only (VT-018)
+    public string? Title { get; set; }
+
+    public TaskSource Source { get; set; } = TaskSource.Gbif;
+
     public required string Question { get; set; }
 
     public required string CorrectAnswer { get; set; }
