@@ -11,6 +11,7 @@ export const visitorLinks: NavigationLink[] = [
 export const userLinks: NavigationLink[] = [{ to: '/profile', label: 'Profilis' }]
 
 export const studentLinks: NavigationLink[] = [
+  { to: '/tasks', label: 'Užduotys' },
   { to: '/join', label: 'Prisijungti prie klasės' },
   { to: '/profile', label: 'Profilis' },
 ]
