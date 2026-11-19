@@ -10,6 +10,7 @@ export const saveButton = 'Išsaugoti'
 export const taskSaved = 'Užduotis išsaugota.'
 export const saveFailed = 'Nepavyko išsaugoti. Bandykite dar kartą.'
 export const deleteTaskButton = 'Ištrinti'
+export const actionsColumn = 'Veiksmai'
 export const deleteTaskQuestion = 'Ištrinti užduotį? Mokinių jau gauti taškai išliks.'
 
 export const titleRequired = 'Įveskite užduoties pavadinimą.'
