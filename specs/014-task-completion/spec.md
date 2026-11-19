@@ -17,13 +17,13 @@
 
 **Acceptance scenarios:**
 
-1. **Answer form (GBIF task):** **Given** a student and an unlocked GBIF task of the student’s class, **when** the student opens the task (E06), **then** below the question the form shows the given options to choose one, the evidence field with the counter “0 / 500”, the note „Pateikto atsakymo pakeisti nebus galima.“ and the button “Pateikti atsakymą”.
-2. **Answer form (teacher task):** **Given** a teacher task, **when** the student opens it, **then** the answer is entered as text of up to 100 characters instead of chosen from options.
+1. **Answer form (task with options):** **Given** a student and an unlocked task of the student’s class that has answer options (a GBIF task of the type species group, common species or seasonal comparison), **when** the student opens the task (E06), **then** below the question the form shows the given options to choose one, the evidence field with the counter “0 / 500”, the note „Pateikto atsakymo pakeisti nebus galima.“ and the button “Pateikti atsakymą”.
+2. **Answer form (task without options):** **Given** a task that has no answer options (a teacher task or a GBIF question from the observation card, whose answer is the number of a month), **when** the student opens it, **then** the answer is entered as text of up to 100 characters instead of chosen from options.
 3. **Submission:** **Given** the answer form, **when** the student chooses or enters an answer, enters the evidence and presses “Pateikti atsakymą”, **then** the server saves the submission (the answer, the evidence, the time) and the task result (E07) opens.
 4. **Task result:** **Given** a submitted task, **when** the result (E07) opens, **then** it shows the answer and the evidence submitted by the student under the label “Mokinio pateikti duomenys” (FR-044); the data are never shown as a confirmed observation (VT-019). The points and the correct answer are added to E07 by feature 016.
-5. **Answer validation:** **Given** the form, **when** the answer is not chosen or is empty, **then** nothing is saved and the error is shown next to the field: „Pasirinkite arba įrašykite atsakymą.“; **when** the text answer of a teacher task is longer than 100 characters, **then** „Atsakymas negali būti ilgesnis nei 100 simbolių.“
+5. **Answer validation:** **Given** the form, **when** the answer is not chosen or is empty, **then** nothing is saved and the error is shown next to the field: „Pasirinkite arba įrašykite atsakymą.“; **when** the text answer is longer than 100 characters, **then** „Atsakymas negali būti ilgesnis nei 100 simbolių.“
 6. **Evidence validation:** **Given** the form, **when** the evidence is empty (or only spaces), **then** nothing is saved and „Įrašykite įrodymą.“ is shown next to the field; **when** it is longer than 500 characters, **then** „Įrodymas negali būti ilgesnis nei 500 simbolių.“
-7. **Option check:** **Given** a GBIF task, **when** the server receives an answer that is not one of the options of the task, **then** it rejects the request with 400 and an error for the answer field.
+7. **Option check:** **Given** a task with options, **when** the server receives an answer that is not one of the options of the task, **then** it rejects the request with 400 and an error for the answer field.
 8. **Answer cannot be changed:** **Given** a task that the student already submitted, **when** the student submits it again (or opens it), **then** the server returns 409 for the new submission, the first answer stays unchanged (VT-015) and the task screen shows the saved answer and evidence instead of the form.
 9. **Locked task:** **Given** a task in a locked group of the student’s class, **when** the student sends a submission, **then** the server rejects it with 403 and nothing is saved.
 10. **Task not found:** **Given** a task that does not exist, was deleted (also while the student had it open) or belongs to another class, **when** the student sends a submission, **then** the server returns 404, nothing is saved and the screen shows “Puslapis nerastas” (NFR-027).
@@ -52,7 +52,7 @@
 - **FR-001:** The server MUST provide `POST /api/my/tasks/{id}/submissions` for a student; the request contains the answer and the evidence, the response contains the saved submission (the answer, the evidence, the label, the time).
 - **FR-002:** The server MUST allow only a student to call the endpoint (a teacher and an administrator get 403, a visitor 401). The student and the class are taken from the session, never from the request; POST uses the existing CSRF protection.
 - **FR-003:** The server MUST return 404 when the task does not exist or does not belong to the student’s current class, and 403 when the task belongs to a locked group (the same rule as in feature 013).
-- **FR-004:** The server MUST validate the answer and the evidence and return the errors per field (400); a GBIF task accepts only one of its options, a teacher task accepts a text of up to 100 characters.
+- **FR-004:** The server MUST validate the answer and the evidence and return the errors per field (400); a task with options accepts only one of its options, a task without options accepts a text of up to 100 characters.
 - **FR-005:** The server MUST save at most one submission of a task by a student and return 409 for another one; the saved answer is never changed (VT-015).
 - **FR-006:** The server MUST show the status “Padaryta” in `GET /api/my/tasks` for a task the student has submitted.
 
@@ -81,12 +81,15 @@
 - Q: What does the task result (E07) show in this feature, because the points and the correctness (VT-016) belong to feature 016? → A: Only the submitted data under “Mokinio pateikti duomenys”; feature 016 adds the points and the correct answer to E07.
 - Q: When is the leave dialog (E21) shown? → A: Only when the student has already chosen or entered an answer or evidence; an empty form is left without the dialog.
 
+- Q: `docs/ux.md` says a GBIF task has options and a teacher task has a text answer, but the GBIF question from the observation card has no options. → A: The form follows the task data: options present – choose one; options absent – enter text up to 100 characters.
+
 No unresolved clarification markers remain.
 
 ## Assumptions
 
 - The assumptions and constraints of `docs/requirements.md` (section 11) apply.
-- The answer of a GBIF task is saved as the text of the chosen option; the server compares it with the options of the task.
+- The answer of a task with options is saved as the text of the chosen option; the server compares it with the options of the task. Whether the answer is chosen or entered depends on whether the task has options (the observation card question of feature 010 has none), not on the source of the task.
+- Whether an entered answer is correct is decided by feature 016.
 - The 1-second display of points (NFR-015) and saving points (NFR-018) belong to feature 016; this feature saves the submission before the response is returned.
 
 ## Dependencies
