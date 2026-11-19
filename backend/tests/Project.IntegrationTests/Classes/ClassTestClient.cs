@@ -93,6 +93,24 @@ internal sealed class ClassTestClient
         return await Task.WhenAll(requests);
     }
 
+    public Task<HttpResponseMessage> SubmitAnswerAsync(string taskId, object body) =>
+        SendAsync(HttpMethod.Post, $"/api/my/tasks/{taskId}/submissions", body);
+
+    public async Task<HttpResponseMessage[]> SubmitAnswerAtTheSameTimeAsync(string taskId, object body, int count)
+    {
+        // One CSRF token is used for all requests, because every new token replaces the previous one
+        var token = await _helper.GetCsrfTokenAsync();
+        var requests = Enumerable.Range(0, count).Select(_ =>
+        {
+            var message = new HttpRequestMessage(HttpMethod.Post, $"/api/my/tasks/{taskId}/submissions");
+            message.Headers.Add("X-CSRF-TOKEN", token);
+            message.Content = JsonContent.Create(body);
+            return _client.SendAsync(message);
+        });
+
+        return await Task.WhenAll(requests);
+    }
+
     public async Task<HttpResponseMessage> SendWithoutCsrfTokenAsync(HttpMethod method, string url, object? body = null)
     {
         var message = new HttpRequestMessage(method, url);
