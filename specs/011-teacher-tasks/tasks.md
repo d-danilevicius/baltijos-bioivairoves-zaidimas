@@ -15,7 +15,7 @@ Do the tasks in order. Each phase depends on the previous one. Tests are written
 ## Tests (written first) (depends on: Data)
 
 - [ ] T003 [US1] Unit tests of `CreateTeacherTaskRequest`: required fields, limits 100 / 500 / 100, spaces removed, difficulty group 1–3, confirmation – `backend/tests/Project.UnitTests/TeacherTasks/CreateTeacherTaskRequestValidationTests.cs`
-- [ ] T004 [US1] Unit tests of `TeacherTaskService`: create, non-owner, missing class, delete, task of another class, GBIF task, already removed – `backend/tests/Project.UnitTests/TeacherTasks/TeacherTaskServiceTests.cs`
+- [ ] T004 [US1] Unit tests of `TeacherTaskService`: create, non-owner, missing class, delete, task of another class, GBIF task, already removed, removed by another request before the save – `backend/tests/Project.UnitTests/TeacherTasks/TeacherTaskServiceTests.cs`, `TeacherTaskDeletionRaceTests.cs`
 - [ ] T005 [US1] Unit tests of the list labels “Mokytojo užduotis” and “GBIF” – `backend/tests/Project.UnitTests/Gbif/ClassTaskServiceTests.cs`
 - [ ] T006 [US1] Integration tests of `POST` and `DELETE` tasks: create, list label, validation 400, student 403, other teacher 403, visitor 401, 404, delete 204, GBIF task 409, task of another class 404 – `backend/tests/Project.IntegrationTests/TeacherTasks/TeacherTaskEndpointTests.cs`
 - [ ] T007 [US1] Frontend tests of the teacher task form (validation, confirmation, success message, server error) and of the access of a student – `frontend/src/tests/CreateTeacherTaskPage.test.tsx`

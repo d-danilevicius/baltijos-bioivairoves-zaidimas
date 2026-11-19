@@ -69,7 +69,7 @@ A teacher creates own task for own class (title, question, correct answer, diffi
 ## Technical Notes
 
 - The source and the type of a teacher task are set by the server; the request has no fields for them, for the class owner or for the identifier.
-- The delete uses `ExecuteDeleteAsync` after the checks, so two requests deleting the same task at the same time give 204 and 404, not an error.
+- The delete removes the loaded task and saves; when another request already removed it, `DbUpdateConcurrencyException` is caught and the result is `NotFound` (the same way as deleting a class in feature 007), so two requests deleting the same task at the same time give 204 and 404, not an error.
 - The correct answer is stored as entered (after removing the spaces at the beginning and end); the comparison of student answers belongs to feature 014.
 - The class tasks and their points: when feature 014–016 add answers and points, they MUST keep the points when a task is deleted (VT-018); the foreign key of the later results must not cascade from the task.
 - The frontend wrappers keep the status 401; the pages open the login page with the session message through `SessionExpiredRedirect`.
