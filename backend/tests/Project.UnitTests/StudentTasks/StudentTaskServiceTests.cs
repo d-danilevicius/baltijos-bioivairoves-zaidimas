@@ -210,6 +210,30 @@ public class StudentTaskServiceTests
     }
 
     [Fact]
+    public async Task GetAsync_WithTasksOfSameGroupTypeAndQuestion_ReturnsThemOrderedByIdAndContinuesFromTheFirst()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var ids = new[]
+        {
+            Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Guid.Parse("00000000-0000-0000-0000-000000000002"),
+            Guid.Parse("00000000-0000-0000-0000-000000000003")
+        };
+        foreach (var id in ids.Reverse())
+        {
+            await AddTaskAsync(db, classId, 1, id: id);
+        }
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        Assert.Equal(ids, result.Groups.Single().Tasks.Select(t => t.Id));
+        Assert.Equal(ids[0], result.ContinueTaskId);
+    }
+
+    [Fact]
     public void StudentTaskResponse_HasOnlyIdentifierTypeLabelAndStatus()
     {
         var properties = typeof(StudentTaskResponse).GetProperties().Select(p => p.Name);
@@ -243,11 +267,12 @@ public class StudentTaskServiceTests
         int group,
         string question = "Question",
         TaskSource source = TaskSource.Gbif,
-        TaskType type = TaskType.CommonSpecies)
+        TaskType type = TaskType.CommonSpecies,
+        Guid? id = null)
     {
         var task = new ClassTask
         {
-            Id = Guid.NewGuid(),
+            Id = id ?? Guid.NewGuid(),
             ClassId = classId,
             Type = type,
             Source = source,
