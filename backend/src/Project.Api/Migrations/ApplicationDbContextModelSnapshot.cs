@@ -464,6 +464,42 @@ namespace Project.Api.Migrations
                     b.ToTable("Classes", (string)null);
                 });
 
+            modelBuilder.Entity("Project.Api.Entities.Submission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid?>("ClassTaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Evidence")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SubmittedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("ClassTaskId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("Submissions", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -566,6 +602,20 @@ namespace Project.Api.Migrations
                     b.HasOne("Project.Api.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Project.Api.Entities.Submission", b =>
+                {
+                    b.HasOne("Project.Api.Entities.ClassTask", null)
+                        .WithMany()
+                        .HasForeignKey("ClassTaskId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Project.Api.Entities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
