@@ -50,6 +50,12 @@ internal sealed class ClassTestClient
     public Task<HttpResponseMessage> CreateGbifTasksAsync(string id, object body) =>
         SendAsync(HttpMethod.Post, $"/api/classes/{id}/gbif-tasks", body);
 
+    public Task<HttpResponseMessage> CreateTeacherTaskAsync(string id, object body) =>
+        SendAsync(HttpMethod.Post, $"/api/classes/{id}/tasks", body);
+
+    public Task<HttpResponseMessage> DeleteTaskAsync(string classId, string taskId) =>
+        SendAsync(HttpMethod.Delete, $"/api/classes/{classId}/tasks/{taskId}");
+
     public async Task<HttpResponseMessage[]> CreateGbifTasksAtTheSameTimeAsync(string id, object body, int count)
     {
         // One CSRF token is used for all requests, because every new token replaces the previous one
