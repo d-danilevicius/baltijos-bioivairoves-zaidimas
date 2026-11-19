@@ -42,7 +42,7 @@ export default function JoinClassPage() {
   function showResult(res: JoinClassResult) {
     if (res.status === HttpStatus.Ok) {
       const message = res.body.alreadyMember ? alreadyInClass : joinedClass(res.body.className)
-      navigate('/profile', { state: { message } })
+      navigate('/tasks', { state: { message } })
     } else if (res.status === HttpStatus.Conflict) {
       setConfirmation(res.body)
     } else if (res.status === HttpStatus.Unauthorized) {

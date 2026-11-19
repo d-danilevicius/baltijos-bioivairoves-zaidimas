@@ -111,7 +111,8 @@ describe('StudentTasksPage', () => {
     renderPage()
 
     expect(await screen.findByText(noClassText)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: joinClassButton })).toHaveAttribute('href', '/join')
+    const joinLinks = screen.getAllByRole('link', { name: joinClassButton })
+    expect(joinLinks.map((link) => link.getAttribute('href'))).toEqual(['/join', '/join'])
     expect(screen.queryByRole('link', { name: continueButton })).not.toBeInTheDocument()
   })
 
