@@ -34,6 +34,7 @@ public class StudentTaskService : IStudentTaskService
             .OrderBy(t => t.DifficultyGroup)
             .ThenBy(t => t.Type)
             .ThenBy(t => t.Question)
+            .ThenBy(t => t.Id)
             .ToListAsync(cancellationToken);
 
         var groups = BuildGroups(tasks);
