@@ -39,9 +39,12 @@ public class StudentTaskDetailsService : IStudentTaskDetailsService
             return StudentTaskDetailsResult.Locked();
         }
 
-        var observation = await _dbContext.Observations
-            .AsNoTracking()
-            .FirstOrDefaultAsync(o => o.Id == task.ObservationId, cancellationToken);
+        // A teacher task has no observation
+        var observation = task.ObservationId is null
+            ? null
+            : await _dbContext.Observations
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.Id == task.ObservationId, cancellationToken);
 
         return StudentTaskDetailsResult.Found(task.ToDetails(observation));
     }
