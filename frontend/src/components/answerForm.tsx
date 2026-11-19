@@ -106,8 +106,8 @@ export default function AnswerForm({ taskId, options, onSubmitted, onRejected, o
         value={evidence}
         onChange={setEvidence}
         error={errors.evidence}
+        hint={`${evidence.length} / ${maxEvidenceLength}`}
       />
-      <p className="-mt-2 mb-4 text-right text-sm">{`${evidence.length} / ${maxEvidenceLength}`}</p>
       <p className="mb-4">{submitNote}</p>
       {saveError && (
         <div role="alert" className="mb-4 text-error">
