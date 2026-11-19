@@ -22,6 +22,11 @@ export const answerTooLong = 'Atsakymas negali būti ilgesnis nei 100 simbolių.
 export const groupRequired = 'Pasirinkite sudėtingumo grupę.'
 export const confirmationRequired = 'Pažymėkite, kad užduotis nereikalauja rinkti, liesti ar trikdyti organizmų.'
 
+// The accessible name of a delete button; the row number tells the buttons apart for screen readers
+export function deleteTaskRowLabel(row: number): string {
+  return `${deleteTaskButton}, ${row} eilutė`
+}
+
 export function groupLabel(group: number): string {
   return `${group} grupė`
 }

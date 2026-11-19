@@ -9,6 +9,7 @@ import {
   createTeacherTaskLink,
   deleteTaskButton,
   deleteTaskQuestion,
+  deleteTaskRowLabel,
   teacherTaskLabel,
 } from '../helpers/teacherTaskMessage'
 import ClassTasksPage from '../pages/ClassTasksPage'
@@ -89,14 +90,23 @@ describe('ClassTasksPage', () => {
     vi.mocked(listClassTasks).mockResolvedValue({ status: 200, body: [task, teacherTask] })
     renderPage()
     await screen.findByText('GBIF')
-    expect(screen.getAllByRole('button', { name: deleteTaskButton })).toHaveLength(1)
+    expect(screen.getAllByRole('button', { name: /^Ištrinti/ })).toHaveLength(1)
+    expect(screen.getByRole('button', { name: deleteTaskRowLabel(2) })).toBeInTheDocument()
+  })
+
+  it('gives every delete button a different accessible name', async () => {
+    vi.mocked(getClass).mockResolvedValue({ status: 200, body: schoolClass })
+    vi.mocked(listClassTasks).mockResolvedValue({ status: 200, body: [teacherTask, { ...teacherTask, id: 't3' }] })
+    renderPage()
+    expect(await screen.findByRole('button', { name: deleteTaskRowLabel(1) })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: deleteTaskRowLabel(2) })).toBeInTheDocument()
   })
 
   it('asks for confirmation before deleting a teacher task', async () => {
     vi.mocked(getClass).mockResolvedValue({ status: 200, body: schoolClass })
     vi.mocked(listClassTasks).mockResolvedValue({ status: 200, body: [teacherTask] })
     renderPage()
-    await userEvent.click(await screen.findByRole('button', { name: deleteTaskButton }))
+    await userEvent.click(await screen.findByRole('button', { name: deleteTaskRowLabel(1) }))
     expect(screen.getByRole('dialog')).toHaveTextContent(deleteTaskQuestion)
     expect(deleteClassTask).not.toHaveBeenCalled()
   })
@@ -105,7 +115,7 @@ describe('ClassTasksPage', () => {
     vi.mocked(getClass).mockResolvedValue({ status: 200, body: schoolClass })
     vi.mocked(listClassTasks).mockResolvedValue({ status: 200, body: [teacherTask] })
     renderPage()
-    await userEvent.click(await screen.findByRole('button', { name: deleteTaskButton }))
+    await userEvent.click(await screen.findByRole('button', { name: deleteTaskRowLabel(1) }))
     await userEvent.click(screen.getByRole('button', { name: 'Atšaukti' }))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(deleteClassTask).not.toHaveBeenCalled()
@@ -119,7 +129,7 @@ describe('ClassTasksPage', () => {
       .mockResolvedValue({ status: 200, body: [] })
     vi.mocked(deleteClassTask).mockResolvedValue({ status: 204 })
     renderPage()
-    await userEvent.click(await screen.findByRole('button', { name: deleteTaskButton }))
+    await userEvent.click(await screen.findByRole('button', { name: deleteTaskRowLabel(1) }))
     await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: deleteTaskButton }))
     expect(deleteClassTask).toHaveBeenCalledWith('abc', 't2')
     expect(await screen.findByText(noTasksYet)).toBeInTheDocument()
@@ -131,7 +141,7 @@ describe('ClassTasksPage', () => {
     vi.mocked(deleteClassTask).mockResolvedValue({ status: 204 })
     renderPage({ message: 'Užduotis išsaugota.' })
     expect(await screen.findByText('Užduotis išsaugota.')).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('button', { name: deleteTaskButton }))
+    await userEvent.click(screen.getByRole('button', { name: deleteTaskRowLabel(1) }))
     await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: deleteTaskButton }))
     expect(await screen.findByText(noTasksYet)).toBeInTheDocument()
     expect(screen.queryByText('Užduotis išsaugota.')).not.toBeInTheDocument()
@@ -142,7 +152,7 @@ describe('ClassTasksPage', () => {
     vi.mocked(listClassTasks).mockResolvedValue({ status: 200, body: [teacherTask] })
     vi.mocked(deleteClassTask).mockResolvedValue({ status: 'server', message: 'x' })
     renderPage()
-    await userEvent.click(await screen.findByRole('button', { name: deleteTaskButton }))
+    await userEvent.click(await screen.findByRole('button', { name: deleteTaskRowLabel(1) }))
     await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: deleteTaskButton }))
     expect(await screen.findByRole('alert')).toHaveTextContent(serverError)
     expect(screen.getAllByText(teacherTaskLabel)).not.toHaveLength(0)
@@ -153,7 +163,7 @@ describe('ClassTasksPage', () => {
     vi.mocked(listClassTasks).mockResolvedValue({ status: 200, body: [teacherTask] })
     vi.mocked(deleteClassTask).mockResolvedValue({ status: 404 })
     renderPage()
-    await userEvent.click(await screen.findByRole('button', { name: deleteTaskButton }))
+    await userEvent.click(await screen.findByRole('button', { name: deleteTaskRowLabel(1) }))
     await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: deleteTaskButton }))
     expect(await screen.findByText(pageNotFound)).toBeInTheDocument()
   })

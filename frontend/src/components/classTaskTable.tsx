@@ -1,6 +1,6 @@
 import Button from './button'
 import { groupColumn, labelColumn, taskTypeLabels, typeColumn } from '../helpers/gbifTaskMessage'
-import { actionsColumn, deleteTaskButton } from '../helpers/teacherTaskMessage'
+import { actionsColumn, deleteTaskButton, deleteTaskRowLabel } from '../helpers/teacherTaskMessage'
 import type { ClassTask } from '../types/classTask'
 
 type Props = {
@@ -27,14 +27,19 @@ export default function ClassTaskTable({ tasks, onDelete }: Props) {
         </tr>
       </thead>
       <tbody>
-        {tasks.map((task) => (
+        {tasks.map((task, index) => (
           <tr key={task.id}>
             <td className="py-1 pr-2">{taskTypeLabels[task.type]}</td>
             <td className="py-1 pr-2">{task.difficultyGroup}</td>
             <td className="py-1 pr-2">{task.label}</td>
             <td className="py-1">
               {canDelete(task) && (
-                <Button type="button" variant="secondary" onClick={() => onDelete(task.id)}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  aria-label={deleteTaskRowLabel(index + 1)}
+                  onClick={() => onDelete(task.id)}
+                >
                   {deleteTaskButton}
                 </Button>
               )}
