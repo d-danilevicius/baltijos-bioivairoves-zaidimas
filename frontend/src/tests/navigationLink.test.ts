@@ -9,8 +9,9 @@ describe('getUserLinks', () => {
     expect(teacherLinks).toEqual(getUserLinks('Teacher'))
   })
 
-  it('returns the join class and profile links for a student', () => {
+  it('returns the task list, join class and profile links for a student', () => {
     expect(getUserLinks('Student')).toEqual([
+      { to: '/tasks', label: 'Užduotys' },
       { to: '/join', label: 'Prisijungti prie klasės' },
       { to: '/profile', label: 'Profilis' },
     ])

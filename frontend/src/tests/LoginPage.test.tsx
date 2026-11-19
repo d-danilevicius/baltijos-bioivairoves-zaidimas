@@ -14,9 +14,9 @@ vi.mock('../helpers/sessionMarker', () => ({
   markSessionStarted: vi.fn(),
 }))
 
-function ProfilePageStub() {
+function TaskListStub() {
   const location = useLocation()
-  return <div>Profile page {location.state === null ? 'without state' : 'with state'}</div>
+  return <div>Task list {location.state === null ? 'without state' : 'with state'}</div>
 }
 
 function renderLoginPage(initialEntry: string | { pathname: string; state?: { message?: string } } = '/login') {
@@ -24,7 +24,7 @@ function renderLoginPage(initialEntry: string | { pathname: string; state?: { me
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/profile" element={<ProfilePageStub />} />
+        <Route path="/tasks" element={<TaskListStub />} />
         <Route path="/classes" element={<div>Classes page</div>} />
       </Routes>
     </MemoryRouter>,
@@ -101,10 +101,10 @@ describe('LoginPage', () => {
     expect(screen.getByRole('button', { name: /Prisijungti/i })).toBeDisabled()
 
     resolve({ status: 200, body: { id: '1', userName: 'Jonas', role: 'Student' } })
-    await waitFor(() => expect(screen.getByText(/Profile page/)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/Task list/)).toBeInTheDocument())
   })
 
-  it('marks the session started and navigates a student to profile without router state on successful login', async () => {
+  it('marks the session started and navigates a student to the task list without router state on successful login', async () => {
     const mockLoginUser = vi.mocked(loginUser)
     mockLoginUser.mockResolvedValue({ status: 200, body: { id: '1', userName: 'Jonas', role: 'Student' } })
     renderLoginPage()
@@ -113,7 +113,7 @@ describe('LoginPage', () => {
     await userEvent.type(screen.getByLabelText(/Slaptažodis/), 'secret123')
     await userEvent.click(screen.getByRole('button', { name: /Prisijungti/i }))
 
-    expect(await screen.findByText(/Profile page without state/)).toBeInTheDocument()
+    expect(await screen.findByText(/Task list without state/)).toBeInTheDocument()
     expect(markSessionStarted).toHaveBeenCalledTimes(1)
   })
 
