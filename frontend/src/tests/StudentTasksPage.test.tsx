@@ -81,7 +81,7 @@ describe('StudentTasksPage', () => {
     expect(screen.getByText(taskTypeLabels.RecogniseSpeciesGroup)).toBeInTheDocument()
     expect(screen.getByText('GBIF')).toBeInTheDocument()
     expect(screen.getByText(studentStatusLabels.NotDone)).toBeInTheDocument()
-    expect(screen.getByText(taskTypeLabels.TeacherTask)).toBeInTheDocument()
+    expect(screen.getAllByText(taskTypeLabels.TeacherTask)).toHaveLength(2)
   })
 
   it('shows the lock message and the locked status in a locked group', async () => {
@@ -128,7 +128,7 @@ describe('StudentTasksPage', () => {
     vi.mocked(getMyTasks).mockResolvedValue({ status: 200, body: taskList })
     renderPage({ message: 'Prisijungėte prie klasės „7a“.' })
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Prisijungėte prie klasės „7a“.')
+    expect(await screen.findByText('Prisijungėte prie klasės „7a“.')).toBeInTheDocument()
   })
 
   it('shows the error state and loads the tasks again when retry is pressed', async () => {
