@@ -4,10 +4,9 @@ type Props = {
   value: string
   onChange: (v: string) => void
   error?: string | undefined
-  rows?: number
 }
 
-export default function TextAreaField({ id, label, value, onChange, error, rows = 4 }: Props) {
+export default function TextAreaField({ id, label, value, onChange, error }: Props) {
   const describedBy = error ? `${id}-error` : undefined
   return (
     <div className="mb-4">
@@ -16,7 +15,7 @@ export default function TextAreaField({ id, label, value, onChange, error, rows 
       </label>
       <textarea
         id={id}
-        rows={rows}
+        rows={4}
         value={value}
         aria-invalid={!!error}
         aria-describedby={describedBy}
