@@ -17,4 +17,16 @@ public static class ClassTaskExtensions
         DifficultyGroup = task.DifficultyGroup,
         Label = task.ToLabel()
     };
+
+    public static StudentTaskDetailsResponse ToDetails(this ClassTask task, Observation? observation) => new()
+    {
+        Id = task.Id,
+        Type = task.Type,
+        DifficultyGroup = task.DifficultyGroup,
+        Label = task.ToLabel(),
+        Title = task.Title,
+        Question = task.Question,
+        Options = task.Options ?? [],
+        Observation = observation?.ToCard()
+    };
 }
