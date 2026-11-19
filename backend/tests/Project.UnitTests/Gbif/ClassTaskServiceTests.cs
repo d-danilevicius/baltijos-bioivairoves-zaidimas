@@ -66,6 +66,25 @@ public class ClassTaskServiceTests
         Assert.Empty(result.Tasks);
     }
 
+    [Fact]
+    public async Task ListAsync_WithTeacherAndGbifTasks_LabelsEachTaskBySource()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithTasksAsync(db);
+        var teacherTask = CreateTask(classId, 1, TaskType.TeacherTask);
+        teacherTask.Source = TaskSource.Teacher;
+        teacherTask.Title = "Mokyklos kiemas";
+        db.ClassTasks.Add(teacherTask);
+        await db.SaveChangesAsync();
+
+        var result = await new ClassTaskService(db).ListAsync("teacher-1", classId, CancellationToken.None);
+
+        Assert.Equal("Mokytojo užduotis", Assert.Single(result.Tasks, t => t.Id == teacherTask.Id).Label);
+        Assert.Equal(3, result.Tasks.Count(t => t.Label == "GBIF"));
+    }
+
     private static async Task<Guid> AddClassWithTasksAsync(ApplicationDbContext db)
     {
         var schoolClass = new SchoolClass { Id = Guid.NewGuid(), Name = "7a", Code = "AB12CD", OwnerId = "teacher-1", CreatedAtUtc = DateTime.UtcNow };

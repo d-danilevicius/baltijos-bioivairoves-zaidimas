@@ -5,5 +5,6 @@ public enum TaskType
     RecogniseSpeciesGroup,
     CommonSpecies,
     SeasonalComparison,
-    ObservationQuestion
+    ObservationQuestion,
+    TeacherTask
 }

@@ -1,27 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { getClass } from '../api/classApi'
-import { listClassTasks } from '../api/classTaskApi'
+import { deleteClassTask, listClassTasks } from '../api/classTaskApi'
 import Card from '../components/card'
+import ClassTaskTable from '../components/classTaskTable'
+import ConfirmDialog from '../components/confirmDialog'
 import EmptyState from '../components/emptyState'
 import ErrorState from '../components/errorState'
 import LinkButton from '../components/linkButton'
 import LoadingState from '../components/loadingState'
 import PageLayout from '../components/pageLayout'
 import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
-import {
-  backToClass,
-  classSeasonInfo,
-  classTasksTitle,
-  createFromGbif,
-  groupColumn,
-  labelColumn,
-  noTasksYet,
-  taskTypeLabels,
-  typeColumn,
-} from '../helpers/gbifTaskMessage'
+import { backToClass, classSeasonInfo, classTasksTitle, createFromGbif, noTasksYet } from '../helpers/gbifTaskMessage'
 import { HttpStatus } from '../helpers/httpStatus'
 import { teacherLinks } from '../helpers/navigationLink'
+import { serverError } from '../helpers/stateMessage'
+import { createTeacherTaskLink, deleteTaskButton, deleteTaskQuestion } from '../helpers/teacherTaskMessage'
 import type { ClassTask } from '../types/classTask'
 import type { SchoolClass } from '../types/schoolClass'
 import AccessDeniedPage from './AccessDeniedPage'
@@ -44,9 +38,12 @@ function failureState(status: number | string): TasksState {
 
 export default function ClassTasksPage() {
   const { id = '' } = useParams()
-  const message = (useLocation().state as { message?: string } | null)?.message
+  const savedMessage = (useLocation().state as { message?: string } | null)?.message
+  const [message, setMessage] = useState(savedMessage)
   const [state, setState] = useState<TasksState>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
+  const [taskToDelete, setTaskToDelete] = useState<string | undefined>(undefined)
+  const [deleteError, setDeleteError] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     let cancelled = false
@@ -70,6 +67,27 @@ export default function ClassTasksPage() {
     setAttempt((value) => value + 1)
   }
 
+  async function confirmDelete() {
+    const taskId = taskToDelete
+    setTaskToDelete(undefined)
+    if (taskId === undefined) return
+
+    const res = await deleteClassTask(id, taskId)
+    if (res.status === HttpStatus.NoContent) {
+      setMessage(undefined)
+      setDeleteError(undefined)
+      setState((current) =>
+        current.status === 'ready' ? { ...current, tasks: current.tasks.filter((t) => t.id !== taskId) } : current,
+      )
+    } else if (
+      res.status === HttpStatus.Unauthorized ||
+      res.status === HttpStatus.Forbidden ||
+      res.status === HttpStatus.NotFound
+    ) {
+      setState(failureState(res.status))
+    } else setDeleteError(serverError)
+  }
+
   if (state.status === 'expired') return <SessionExpiredRedirect />
   if (state.status === 'forbidden') return <AccessDeniedPage />
   if (state.status === 'notFound') return <NotFoundPage />
@@ -85,36 +103,32 @@ export default function ClassTasksPage() {
               {message}
             </div>
           )}
+          {deleteError && (
+            <div role="alert" className="mb-4 text-error">
+              {deleteError}
+            </div>
+          )}
           <p className="mb-2 font-semibold">{state.schoolClass.name}</p>
           {state.schoolClass.season && <p className="mb-4">{classSeasonInfo(state.schoolClass.season)}</p>}
           {state.tasks.length === 0 ? (
             <EmptyState message={noTasksYet} />
           ) : (
-            <table className="mb-4 w-full text-left">
-              <thead>
-                <tr>
-                  <th className="pb-2">{typeColumn}</th>
-                  <th className="pb-2">{groupColumn}</th>
-                  <th className="pb-2">{labelColumn}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {state.tasks.map((task) => (
-                  <tr key={task.id}>
-                    <td className="py-1 pr-2">{taskTypeLabels[task.type]}</td>
-                    <td className="py-1 pr-2">{task.difficultyGroup}</td>
-                    <td className="py-1">{task.label}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <ClassTaskTable tasks={state.tasks} onDelete={setTaskToDelete} />
           )}
           <div className="flex flex-wrap gap-3">
             {!state.schoolClass.season && <LinkButton to={`/classes/${id}/tasks/gbif`}>{createFromGbif}</LinkButton>}
+            <LinkButton to={`/classes/${id}/tasks/new`}>{createTeacherTaskLink}</LinkButton>
             <LinkButton to={`/classes/${id}`} variant="secondary">
               {backToClass}
             </LinkButton>
           </div>
+          <ConfirmDialog
+            open={taskToDelete !== undefined}
+            message={deleteTaskQuestion}
+            confirmLabel={deleteTaskButton}
+            onConfirm={() => void confirmDelete()}
+            onCancel={() => setTaskToDelete(undefined)}
+          />
         </Card>
       )}
     </PageLayout>

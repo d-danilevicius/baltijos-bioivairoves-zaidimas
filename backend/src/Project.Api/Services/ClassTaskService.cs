@@ -1,14 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Project.Api.Data;
-using Project.Api.DTOs.Responses;
 
 namespace Project.Api.Services;
 
 public class ClassTaskService : IClassTaskService
 {
-    // The only tasks that exist now come from GBIF; the later features add other labels
-    private const string GbifLabel = "GBIF";
-
     private readonly ApplicationDbContext _dbContext;
 
     public ClassTaskService(ApplicationDbContext dbContext)
@@ -37,12 +33,6 @@ public class ClassTaskService : IClassTaskService
             .ThenBy(t => t.Question)
             .ToListAsync(cancellationToken);
 
-        return ClassTasksResult.Succeeded(tasks.Select(t => new ClassTaskResponse
-        {
-            Id = t.Id,
-            Type = t.Type,
-            DifficultyGroup = t.DifficultyGroup,
-            Label = GbifLabel
-        }).ToList());
+        return ClassTasksResult.Succeeded(tasks.Select(t => t.ToResponse()).ToList());
     }
 }

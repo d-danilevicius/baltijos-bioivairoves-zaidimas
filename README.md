@@ -45,6 +45,7 @@ The first migration CreateIdentityTables exists (ASP.NET Core Identity tables an
 The migration CreateClassesTable adds the table Classes (name, unique 6-character code, owner, creation time).
 The migration CreateClassMembershipsTable adds the table ClassMemberships (student, class, start time, end time; a student has one active membership).
 The migration CreateObservationsAndTasksTables adds the tables Observations (copies of GBIF observations) and ClassTasks, and the location and season of a class.
+The migration AddTeacherTaskFields adds the columns Title and Source to ClassTasks (existing tasks get the source Gbif).
 
 ## Run
 
@@ -87,6 +88,8 @@ Joining a class (student only): POST /api/classes/join with the body `{ "code": 
 Frontend: a student joins a class at http://localhost:5173/join (menu link “Prisijungti prie klasės”); after joining, the profile opens with the message.
 
 GBIF tasks: a teacher opens a class, chooses “Užduotys” and “Sukurti iš GBIF”, selects a location on the map (Leaflet, OpenStreetMap tiles) or enters coordinates, and chooses a season. Observations are taken from GBIF within 10 km of the location (Lithuania only); only the first 300 GBIF records of the season are read. Endpoints: `POST /api/classes/{id}/gbif-tasks`, `GET /api/classes/{id}/tasks`.
+
+Teacher tasks: on the class tasks screen the teacher chooses “Sukurti savo užduotį” and enters a title (up to 100 characters), a question (up to 500), a correct answer (up to 100), a difficulty group (1–3) and ticks the confirmation that the task does not require collecting, touching or disturbing organisms. The task is shown with the label “Mokytojo užduotis”. The teacher can delete only own tasks (confirmation first); GBIF tasks cannot be deleted. Endpoints (teacher of the class only): `POST /api/classes/{id}/tasks` with the body `{ "title", "question", "correctAnswer", "difficultyGroup", "noOrganismDisturbanceConfirmed" }` (201, 400 with the errors per field, 401, 403, 404) and `DELETE /api/classes/{id}/tasks/{taskId}` (204, 401, 403, 404, 409 for a GBIF task). POST and DELETE need the X-CSRF-TOKEN header. Frontend: `/classes/{id}/tasks/new`.
 
 ## API documentation
 

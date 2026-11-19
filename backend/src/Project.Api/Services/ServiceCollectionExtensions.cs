@@ -52,6 +52,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<SeasonalTaskFactory>();
         services.AddScoped<IGbifTaskService, GbifTaskService>();
         services.AddScoped<IClassTaskService, ClassTaskService>();
+        services.AddScoped<ITeacherTaskService, TeacherTaskService>();
 
         return services;
     }

@@ -10,6 +10,8 @@ public class ClassTaskConfiguration : IEntityTypeConfiguration<ClassTask>
     {
         builder.ToTable("ClassTasks");
         builder.Property(t => t.Type).HasConversion<string>().HasMaxLength(30);
+        builder.Property(t => t.Source).HasConversion<string>().HasMaxLength(10).HasDefaultValue(TaskSource.Gbif);
+        builder.Property(t => t.Title).HasMaxLength(100);
         builder.Property(t => t.Question).HasMaxLength(500).IsRequired();
         builder.Property(t => t.CorrectAnswer).HasMaxLength(200).IsRequired();
 

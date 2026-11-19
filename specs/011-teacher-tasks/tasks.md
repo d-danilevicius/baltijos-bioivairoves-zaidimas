@@ -2,35 +2,40 @@
 
 **Specification:** `specs/011-teacher-tasks/spec.md`
 **Plan:** `specs/011-teacher-tasks/plan.md`
-**Depends on features:** 003-access-control, 006-confirmation-dialog
+**Depends on features:** 003-access-control, 006-confirmation-dialog, 007-class-create-and-delete, 010-gbif-task-generation, 024-page-styling
 **Tags:** `[US1]` – belongs to user story 1; no tag – setup or verification task.
 
 Do the tasks in order. Each phase depends on the previous one. Tests are written before the implementation.
 
 ## Data
 
-- [ ] T001 Check that no schema change is needed for this feature (see the plan)
+- [x] T001 Add the enum `TaskSource`, the value `TaskType.TeacherTask` and the properties `Title` and `Source` of `ClassTask`; update `ClassTaskConfiguration` (`Source` as text with the default `Gbif`, `Title` up to 100 characters) – `backend/src/Project.Api/Entities/TaskSource.cs`, `backend/src/Project.Api/Entities/TaskType.cs`, `backend/src/Project.Api/Entities/ClassTask.cs`, `backend/src/Project.Api/Data/Configurations/ClassTaskConfiguration.cs`
+- [x] T002 Create the migration `AddTeacherTaskFields` – `backend/src/Project.Api/Migrations/`
 
 ## Tests (written first) (depends on: Data)
 
-- [ ] T002 [US1] Test case: field limits – `backend/tests/Project.UnitTests/TeacherTasks/TeacherTaskServiceTests.cs`
-- [ ] T003 [US1] Test case: confirmation – `backend/tests/Project.UnitTests/TeacherTasks/TeacherTaskServiceTests.cs`
-- [ ] T004 [US1] Test case: another class’s task – `backend/tests/Project.UnitTests/TeacherTasks/TeacherTaskServiceTests.cs`
-- [ ] T005 [US1] Test case: points remain after deletion – `backend/tests/Project.UnitTests/TeacherTasks/TeacherTaskServiceTests.cs`
-- [ ] T006 [US1] Authorization test for FR-024: a user without permission or a non-owner is rejected – `backend/tests/Project.IntegrationTests/TeacherTasks/TeacherTasksEndpointTests.cs`
-- [ ] T007 [US1] Frontend test: the screens of this feature (E12 Class tasks, E14 Teacher task form) show the loading, empty, error and success states – `frontend/src/tests/ClassTasksPage.test.tsx`
+- [x] T003 [US1] Unit tests of `CreateTeacherTaskRequest`: required fields, limits 100 / 500 / 100, spaces removed, difficulty group 1–3, confirmation – `backend/tests/Project.UnitTests/TeacherTasks/CreateTeacherTaskRequestValidationTests.cs`
+- [x] T004 [US1] Unit tests of `TeacherTaskService`: create, non-owner, missing class, delete, task of another class, GBIF task, already removed, removed by another request before the save – `backend/tests/Project.UnitTests/TeacherTasks/TeacherTaskServiceTests.cs`, `TeacherTaskDeletionRaceTests.cs`
+- [x] T005 [US1] Unit tests of the list labels “Mokytojo užduotis” and “GBIF” – `backend/tests/Project.UnitTests/Gbif/ClassTaskServiceTests.cs`
+- [x] T006 [US1] Integration tests of `POST` and `DELETE` tasks: create, list label, validation 400, student 403, other teacher 403, visitor 401, 404, delete 204, GBIF task 409, task of another class 404 – `backend/tests/Project.IntegrationTests/TeacherTasks/TeacherTaskEndpointTests.cs`
+- [x] T007 [US1] Frontend tests of the teacher task form (validation, confirmation, success message, server error) and of the access of a student – `frontend/src/tests/CreateTeacherTaskPage.test.tsx`
+- [x] T008 [US1] Frontend tests of E12: the label, the “Ištrinti” button only for teacher tasks, the deletion with the confirmation and the cancel – `frontend/src/tests/ClassTasksPage.test.tsx`
+- [x] T009 [US1] Frontend tests of the validation of the form – `frontend/src/tests/validateTeacherTask.test.ts`
 
 ## Implementation (depends on: Tests)
 
-- [ ] T008 [US1] Create the request and response DTOs and the validation attributes for: GET, POST /api/classes/{id}/tasks, DELETE /api/classes/{id}/tasks/{taskId} – `backend/src/Project.Api/DTOs/`
-- [ ] T009 [US1] Implement the business rules and server components: ClassTasksController, TeacherTaskService – `backend/src/Project.Api/Services/`
-- [ ] T010 [US1] Add the endpoints: GET, POST /api/classes/{id}/tasks, DELETE /api/classes/{id}/tasks/{taskId} – `backend/src/Project.Api/Controllers/`
-- [ ] T011 [US1] Ask for confirmation before deleting a teacher task using the confirmation dialog (FR-053, VT-029) – `frontend/src/`
-- [ ] T012 [US1] Build the screens: ClassTasksPage, TeacherTaskPage – `frontend/src/pages/, frontend/src/components/`
-- [ ] T013 [US1] Add the API calls and types for the screens – `frontend/src/api/, frontend/src/types/`
+- [x] T010 [US1] Create `CreateTeacherTaskRequest` – `backend/src/Project.Api/DTOs/Requests/CreateTeacherTaskRequest.cs`
+- [x] T011 [US1] Add `ClassTaskExtensions.ToResponse()` and use it in `ClassTaskService` – `backend/src/Project.Api/Services/ClassTaskExtensions.cs`, `backend/src/Project.Api/Services/ClassTaskService.cs`
+- [x] T012 [US1] Implement `TeacherTaskOutcome`, `TeacherTaskResult`, `ITeacherTaskService` and `TeacherTaskService` and register them – `backend/src/Project.Api/Services/`
+- [x] T013 [US1] Add the actions `POST tasks` and `DELETE tasks/{taskId}` to `ClassTaskController` – `backend/src/Project.Api/Controllers/ClassTaskController.cs`
+- [x] T014 [US1] Add the types and the API calls `createTeacherTask` and `deleteClassTask` – `frontend/src/types/classTask.ts`, `frontend/src/api/classTaskApi.ts`
+- [x] T015 [US1] Add `teacherTaskMessage`, `validateTeacherTask` and the label of `TeacherTask` – `frontend/src/helpers/teacherTaskMessage.ts`, `frontend/src/helpers/validateTeacherTask.ts`, `frontend/src/helpers/gbifTaskMessage.ts`
+- [x] T016 [US1] Add the components `difficultyChoice`, `textAreaField` and `classTaskTable` – `frontend/src/components/`
+- [x] T017 [US1] Build `CreateTeacherTaskPage` (E14) – `frontend/src/pages/CreateTeacherTaskPage.tsx`
+- [x] T018 [US1] Update `ClassTasksPage` (table component, button “Sukurti savo užduotį”, deletion with the dialog) and add the route `/classes/:id/tasks/new` – `frontend/src/pages/ClassTasksPage.tsx`, `frontend/src/app.tsx`
 
 ## Verification (depends on: Implementation)
 
-- [ ] T014 Run `dotnet build`, `dotnet test`, `npm run lint`, `npm test` and `npm run build`
-- [ ] T015 Update README and `docs/` if the behaviour, setup or configuration changed
-- [ ] T016 Review `git diff` and open the Pull Request with the separate AI review evidence
+- [x] T019 Run `dotnet build backend/Project.slnx`, `dotnet test backend/Project.slnx`, `npm run lint`, `npm test` and `npm run build`
+- [x] T020 Update README (the endpoints, the migration, the teacher task screen), `docs/architecture.md` (the entity `ClassTask`, the type “Mokytojo užduotis”) and check the OpenAPI document
+- [ ] T021 Review `git diff` and open the Pull Request with screenshots and the separate AI review evidence
