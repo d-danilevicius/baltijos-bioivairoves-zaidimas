@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { createTeacherTask } from '../api/classTaskApi'
@@ -91,9 +91,10 @@ describe('CreateTeacherTaskPage', () => {
   it('shows the too long errors for the title, the question and the answer', async () => {
     renderPage()
     await fillValidForm()
-    await userEvent.type(screen.getByLabelText(titleLabel), 'a'.repeat(100))
-    await userEvent.type(screen.getByLabelText(questionLabel), 'b'.repeat(500))
-    await userEvent.type(screen.getByLabelText(answerLabel), 'c'.repeat(100))
+    // Long texts are set at once; typing 700 characters one by one is too slow
+    fireEvent.change(screen.getByLabelText(titleLabel), { target: { value: 'a'.repeat(101) } })
+    fireEvent.change(screen.getByLabelText(questionLabel), { target: { value: 'b'.repeat(501) } })
+    fireEvent.change(screen.getByLabelText(answerLabel), { target: { value: 'c'.repeat(101) } })
     await userEvent.click(screen.getByRole('button', { name: saveButton }))
     expect(screen.getByText(titleTooLong)).toBeInTheDocument()
     expect(screen.getByText(questionTooLong)).toBeInTheDocument()
