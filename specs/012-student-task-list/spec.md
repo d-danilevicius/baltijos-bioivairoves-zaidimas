@@ -48,7 +48,7 @@
 - **FR-042:** The system MUST unlock the next difficulty group when the student reaches the share of points set by VT-014 (this feature shows the locked state; the points come with features 014–016).
 - **FR-001:** The server MUST provide `GET /api/my/tasks` for a student; it returns the tasks of the student’s current class in three groups, the status of each group and task, and the task to continue from.
 - **FR-002:** The server MUST allow only a student to call the endpoint (a teacher and an administrator get 403, a visitor 401). The class is taken from the student’s membership in the session, never from the request.
-- **FR-003:** The server MUST return only the identifier, the type, the label and the status of each task; the title, the question, the correct answer and the options MUST NOT be returned.
+- **FR-003:** The server MUST return only the identifier, the type, the difficulty group, the label and the status of each task; the title, the question, the correct answer and the options MUST NOT be returned.
 - **FR-004:** The server MUST decide the status of a task: “not done” in an unlocked group and “locked” in a locked group (VT-014). The status “done” is added by feature 014.
 
 ### Non-functional Requirements
@@ -63,7 +63,7 @@
 
 ### Validation Rules
 
-- **VT-013:** There are four task types and three difficulty groups: group 1 – species group recognition and a question from an observation card; group 2 – features of a common local species; group 3 – comparison of seasonal observations.
+- **VT-013:** There are four GBIF task types, one additional teacher task type and three difficulty groups: group 1 – species group recognition and a question from an observation card; group 2 – features of a common local species; group 3 – comparison of seasonal observations.
 - **VT-014:** The first difficulty group is unlocked for every student of the class. Each next group is unlocked when the student earns at least 60 % of the maximum possible points of the previous group.
 - **VT-026:** A student without a class can log in and view the profile but does not see tasks until joining a class.
 
@@ -74,7 +74,7 @@
 
 ## Clarifications
 
-- Q: Which status does a task have before the table of submissions exists (feature 014)? → A: Until feature 014, no task is done and no points exist: all tasks of group 1 are “not done”, groups 2 and 3 are locked (VT-014 with 0 points). Features 014 and 016 extend the same endpoint with the status “done” and the real unlocking. Decision of the student; `docs/` lists “Submission (read)” for this feature, but the entity is created by feature 014.
+- Q: Which status does a task have before the table of submissions exists (feature 014)? → A: Until feature 014, no task is done and no points exist. All tasks in unlocked groups are “not done”. Groups 2 and 3 remain locked when the previous group contains tasks, but are unlocked when the previous group is empty. Features 014 and 016 add the status “done” and unlocking based on earned points. Decision of the student; `docs/` lists “Submission (read)” for this feature, but the entity is created by feature 014.
 - Q: What does the button “Tęsti” do before the task screen (E06) exists? → A: The button is shown and opens the address of the task (`/tasks/{id}`) created by feature 013; before feature 013 is merged the address shows “Puslapis nerastas”. The tests of this feature check the address of the link. Decision of the student.
 - Q: What happens when the previous group has no tasks (for example a class with only teacher tasks of group 2)? → A: The formula of VT-014 is applied as written: 0 points of 0 possible points is at least 60 %, so the next group is unlocked at once. A group without tasks is not shown to the student. Decision of the student; `docs/` does not describe this case.
 - Q: Does the student task list show the title of a teacher task? → A: No. `docs/ux.md` (E04) lists the type, the status, the label and the best result. The title is decided in feature 013 (task screen E06). Decision of the student.
