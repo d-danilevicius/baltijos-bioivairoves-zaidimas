@@ -66,7 +66,7 @@ public class SubmissionService : ISubmissionService
             return SubmissionResult.Failed(SubmissionOutcome.AlreadySubmitted);
         }
 
-        return SubmissionResult.Created(submission.ToResponse());
+        return SubmissionResult.Created(submission.ToResponse(taskId));
     }
 
     private static bool IsStudentTaskCollision(DbUpdateException exception) =>

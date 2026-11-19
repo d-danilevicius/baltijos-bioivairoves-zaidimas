@@ -7,10 +7,10 @@ public static class SubmissionExtensions
 {
     private const string SubmittedLabel = "Mokinio pateikti duomenys";
 
-    public static SubmissionResponse ToResponse(this Submission submission) => new()
+    public static SubmissionResponse ToResponse(this Submission submission, Guid taskId) => new()
     {
         Id = submission.Id,
-        TaskId = submission.ClassTaskId!.Value,
+        TaskId = taskId,
         Answer = submission.Answer,
         Evidence = submission.Evidence,
         Label = SubmittedLabel,
