@@ -1,4 +1,5 @@
 import type { TaskType } from './classTask'
+import type { Submission } from './submission'
 
 export interface ObservationCard {
   label: string
@@ -20,4 +21,5 @@ export interface StudentTaskDetails {
   question: string
   options: string[]
   observation: ObservationCard | null
+  submission: Submission | null
 }

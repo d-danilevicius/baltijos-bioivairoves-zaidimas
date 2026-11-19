@@ -1,6 +1,6 @@
 import type { TaskType } from './classTask'
 
-export type StudentTaskStatus = 'NotDone' | 'Locked'
+export type StudentTaskStatus = 'NotDone' | 'Done' | 'Locked'
 
 export interface StudentTask {
   id: string
