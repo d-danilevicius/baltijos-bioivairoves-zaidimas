@@ -16,12 +16,7 @@ public class StudentTaskService : IStudentTaskService
 
     public async Task<StudentTaskListResponse> GetAsync(string studentId, CancellationToken cancellationToken)
     {
-        // The current class is the membership that has not ended (VT-026: no class, no tasks)
-        var classId = await _dbContext.ClassMemberships
-            .AsNoTracking()
-            .Where(m => m.StudentId == studentId && m.EndedAtUtc == null)
-            .Select(m => (Guid?)m.ClassId)
-            .FirstOrDefaultAsync(cancellationToken);
+        var classId = await _dbContext.FindCurrentClassIdAsync(studentId, cancellationToken);
 
         if (classId is null)
         {
