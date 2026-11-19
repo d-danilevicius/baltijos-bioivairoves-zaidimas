@@ -11,6 +11,7 @@ import ClassTasksPage from './pages/ClassTasksPage'
 import CreateGbifTasksPage from './pages/CreateGbifTasksPage'
 import CreateTeacherTaskPage from './pages/CreateTeacherTaskPage'
 import NotFoundPage from './pages/NotFoundPage'
+import StudentTaskPage from './pages/StudentTaskPage'
 import StudentTasksPage from './pages/StudentTasksPage'
 import ProtectedRoute from './components/protectedRoute'
 
@@ -34,6 +35,7 @@ export default function App() {
       <Route element={<ProtectedRoute allowedRoles={['Student']} />}>
         <Route path="/join" element={<JoinClassPage />} />
         <Route path="/tasks" element={<StudentTasksPage />} />
+        <Route path="/tasks/:id" element={<StudentTaskPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
