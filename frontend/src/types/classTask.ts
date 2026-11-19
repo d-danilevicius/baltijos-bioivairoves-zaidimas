@@ -18,3 +18,11 @@ export interface GbifTasksRequest {
   longitude: number
   season: Season
 }
+
+export interface TeacherTaskRequest {
+  title: string
+  question: string
+  correctAnswer: string
+  difficultyGroup: number
+  noOrganismDisturbanceConfirmed: boolean
+}
