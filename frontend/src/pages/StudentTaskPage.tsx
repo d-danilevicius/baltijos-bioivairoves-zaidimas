@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getMyTask } from '../api/studentTaskApi'
-import AnswerForm from '../components/answerForm'
+import AnswerForm, { type RejectedStatus } from '../components/answerForm'
 import Card from '../components/card'
 import ConfirmDialog from '../components/confirmDialog'
 import ErrorState from '../components/errorState'
@@ -59,11 +59,11 @@ export default function StudentTaskPage() {
   }
 
   // 409: the task was already submitted, so it is loaded again to show the saved data
-  function onRejected(status: number) {
+  function onRejected(status: RejectedStatus) {
     if (status === HttpStatus.Unauthorized) setState({ status: 'expired' })
     else if (status === HttpStatus.Forbidden) setState({ status: 'forbidden' })
     else if (status === HttpStatus.NotFound) setState({ status: 'notFound' })
-    else retry()
+    else if (status === HttpStatus.Conflict) retry()
   }
 
   if (state.status === 'expired') return <SessionExpiredRedirect />
@@ -79,7 +79,7 @@ export default function StudentTaskPage() {
   )
 }
 
-function TaskContent({ task, onRejected }: { task: StudentTaskDetails; onRejected: (status: number) => void }) {
+function TaskContent({ task, onRejected }: { task: StudentTaskDetails; onRejected: (status: RejectedStatus) => void }) {
   const [submission, setSubmission] = useState<Submission | null>(task.submission)
   const [dirty, setDirty] = useState(false)
   const leave = useLeaveConfirmation(dirty && submission === null)

@@ -20,7 +20,7 @@ import OptionChoice from './optionChoice'
 import TextAreaField from './textAreaField'
 import TextField from './textField'
 
-type RejectedStatus =
+export type RejectedStatus =
   typeof HttpStatus.Unauthorized | typeof HttpStatus.Forbidden | typeof HttpStatus.NotFound | typeof HttpStatus.Conflict
 
 type Props = {
