@@ -8,11 +8,13 @@ public static class ClassTaskExtensions
     private const string GbifLabel = "GBIF";
     private const string TeacherLabel = "Mokytojo užduotis";
 
+    public static string ToLabel(this ClassTask task) => task.Source == TaskSource.Teacher ? TeacherLabel : GbifLabel;
+
     public static ClassTaskResponse ToResponse(this ClassTask task) => new()
     {
         Id = task.Id,
         Type = task.Type,
         DifficultyGroup = task.DifficultyGroup,
-        Label = task.Source == TaskSource.Teacher ? TeacherLabel : GbifLabel
+        Label = task.ToLabel()
     };
 }
