@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { createMemoryRouter, RouterProvider, useLocation } from 'react-router-dom'
 import { getCurrentUser } from '../api/authApi'
 import { getMyTask } from '../api/studentTaskApi'
 import App from '../app'
@@ -42,6 +42,7 @@ const gbifTask: StudentTaskDetails = {
   question: 'Kuri rūšis tarp gautų stebėjimų pastebėta dažniausiai?',
   options: ['Pilkoji pelėda', 'Paprastoji lapė'],
   observation: card,
+  submission: null,
 }
 
 const teacherTask: StudentTaskDetails = {
@@ -53,6 +54,7 @@ const teacherTask: StudentTaskDetails = {
   question: 'Kokį paukštį matote ant stogo?',
   options: [],
   observation: null,
+  submission: null,
 }
 
 function LoginStub() {
@@ -61,14 +63,14 @@ function LoginStub() {
 }
 
 function renderPage() {
-  return render(
-    <MemoryRouter initialEntries={['/tasks/task-1']}>
-      <Routes>
-        <Route path="/tasks/:id" element={<StudentTaskPage />} />
-        <Route path="/login" element={<LoginStub />} />
-      </Routes>
-    </MemoryRouter>,
+  const router = createMemoryRouter(
+    [
+      { path: '/tasks/:id', element: <StudentTaskPage /> },
+      { path: '/login', element: <LoginStub /> },
+    ],
+    { initialEntries: ['/tasks/task-1'] },
   )
+  return render(<RouterProvider router={router} />)
 }
 
 describe('StudentTaskPage', () => {
@@ -196,11 +198,8 @@ describe('Student task route', () => {
       body: { id: '1', userName: 'Ona', email: 'ona@example.com', role },
     })
     vi.mocked(getMyTask).mockResolvedValue({ status: 200, body: gbifTask })
-    return render(
-      <MemoryRouter initialEntries={['/tasks/task-1']}>
-        <App />
-      </MemoryRouter>,
-    )
+    const router = createMemoryRouter([{ path: '*', element: <App /> }], { initialEntries: ['/tasks/task-1'] })
+    return render(<RouterProvider router={router} />)
   }
 
   it('shows the task when a student opens the route', async () => {
