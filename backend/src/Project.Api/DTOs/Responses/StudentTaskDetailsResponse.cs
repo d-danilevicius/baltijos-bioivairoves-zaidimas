@@ -22,4 +22,7 @@ public class StudentTaskDetailsResponse
 
     // Empty for a teacher task
     public ObservationCardResponse? Observation { get; set; }
+
+    // Empty until the student submits the task
+    public SubmissionResponse? Submission { get; set; }
 }
