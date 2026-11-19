@@ -3,8 +3,7 @@ import type { SchoolClass } from '../types/schoolClass'
 import { fetchCsrfToken } from './authApi'
 import { toFailure, type Failure } from './apiFailure'
 import { HttpStatus } from '../helpers/httpStatus'
-
-const base = (import.meta.env.VITE_API_URL ?? '') as string
+import { apiBase } from './apiBase'
 
 export type ListClassesResult =
   { status: typeof HttpStatus.Ok; body: SchoolClass[] } | { status: typeof HttpStatus.Unauthorized } | Failure
@@ -31,7 +30,7 @@ export type DeleteClassResult =
 
 export async function listClasses(): Promise<ListClassesResult> {
   try {
-    const res = await fetch(base + '/api/classes', { credentials: 'include' })
+    const res = await fetch(apiBase + '/api/classes', { credentials: 'include' })
     if (res.status === HttpStatus.Ok) {
       return { status: HttpStatus.Ok, body: (await res.json()) as SchoolClass[] }
     }
@@ -46,7 +45,7 @@ export async function listClasses(): Promise<ListClassesResult> {
 
 export async function getClass(id: string): Promise<GetClassResult> {
   try {
-    const res = await fetch(base + `/api/classes/${encodeURIComponent(id)}`, { credentials: 'include' })
+    const res = await fetch(apiBase + `/api/classes/${encodeURIComponent(id)}`, { credentials: 'include' })
     if (res.status === HttpStatus.Ok) {
       return { status: HttpStatus.Ok, body: (await res.json()) as SchoolClass }
     }
@@ -65,7 +64,7 @@ export async function getClass(id: string): Promise<GetClassResult> {
 
 export async function createClass(name: string): Promise<CreateClassResult> {
   try {
-    const res = await fetch(base + '/api/classes', {
+    const res = await fetch(apiBase + '/api/classes', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': await fetchCsrfToken() },
@@ -88,7 +87,7 @@ export async function createClass(name: string): Promise<CreateClassResult> {
 
 export async function deleteClass(id: string): Promise<DeleteClassResult> {
   try {
-    const res = await fetch(base + `/api/classes/${encodeURIComponent(id)}`, {
+    const res = await fetch(apiBase + `/api/classes/${encodeURIComponent(id)}`, {
       method: 'DELETE',
       credentials: 'include',
       headers: { 'X-CSRF-TOKEN': await fetchCsrfToken() },

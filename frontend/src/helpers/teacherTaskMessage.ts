@@ -26,7 +26,3 @@ export const confirmationRequired = 'Pažymėkite, kad užduotis nereikalauja ri
 export function deleteTaskRowLabel(row: number): string {
   return `${deleteTaskButton}, ${row} eilutė`
 }
-
-export function groupLabel(group: number): string {
-  return `${group} grupė`
-}

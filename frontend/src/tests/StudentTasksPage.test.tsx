@@ -15,7 +15,7 @@ import {
   noTasksForStudent,
   studentStatusLabels,
 } from '../helpers/studentTaskMessage'
-import { groupLabel } from '../helpers/teacherTaskMessage'
+import { groupLabel } from '../helpers/groupLabel'
 import StudentTasksPage from '../pages/StudentTasksPage'
 import type { StudentTaskList } from '../types/studentTask'
 

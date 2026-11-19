@@ -1,6 +1,6 @@
 import { taskTypeLabels } from '../helpers/gbifTaskMessage'
+import { groupLabel } from '../helpers/groupLabel'
 import { lockedGroupMessage, studentStatusLabels } from '../helpers/studentTaskMessage'
-import { groupLabel } from '../helpers/teacherTaskMessage'
 import type { StudentTaskGroup as StudentTaskGroupData } from '../types/studentTask'
 
 type Props = {

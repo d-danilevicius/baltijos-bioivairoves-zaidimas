@@ -1,8 +1,7 @@
 import { HttpStatus } from '../helpers/httpStatus'
 import type { StudentTaskList } from '../types/studentTask'
 import { toFailure, type Failure } from './apiFailure'
-
-const base = (import.meta.env.VITE_API_URL ?? '') as string
+import { apiBase } from './apiBase'
 
 export type GetMyTasksResult =
   | { status: typeof HttpStatus.Ok; body: StudentTaskList }
@@ -12,7 +11,7 @@ export type GetMyTasksResult =
 
 export async function getMyTasks(): Promise<GetMyTasksResult> {
   try {
-    const res = await fetch(base + '/api/my/tasks', { credentials: 'include' })
+    const res = await fetch(apiBase + '/api/my/tasks', { credentials: 'include' })
     if (res.status === HttpStatus.Ok) {
       return { status: HttpStatus.Ok, body: (await res.json()) as StudentTaskList }
     }

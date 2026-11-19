@@ -1,4 +1,5 @@
-import { groupLabel, groupTitle } from '../helpers/teacherTaskMessage'
+import { groupLabel } from '../helpers/groupLabel'
+import { groupTitle } from '../helpers/teacherTaskMessage'
 
 const groups = [1, 2, 3]
 

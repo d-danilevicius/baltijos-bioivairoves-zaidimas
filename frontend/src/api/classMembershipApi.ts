@@ -3,8 +3,7 @@ import type { ClassChangeConfirmation, JoinClassResponse } from '../types/classM
 import { fetchCsrfToken } from './authApi'
 import { toFailure, type Failure } from './apiFailure'
 import { HttpStatus } from '../helpers/httpStatus'
-
-const base = (import.meta.env.VITE_API_URL ?? '') as string
+import { apiBase } from './apiBase'
 
 export type JoinClassResult =
   | { status: typeof HttpStatus.Ok; body: JoinClassResponse }
@@ -15,7 +14,7 @@ export type JoinClassResult =
 
 export async function joinClass(code: string, confirmChange: boolean): Promise<JoinClassResult> {
   try {
-    const res = await fetch(base + '/api/classes/join', {
+    const res = await fetch(apiBase + '/api/classes/join', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': await fetchCsrfToken() },
