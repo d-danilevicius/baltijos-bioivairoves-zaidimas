@@ -121,6 +121,8 @@ public class StudentTaskDetailsEndpointTests : IClassFixture<GbifApiFixture>
         Assert.DoesNotContain(Latitude, text);
         Assert.DoesNotContain(Longitude, text);
         var card = JsonDocument.Parse(text).RootElement.GetProperty("observation");
+        Assert.False(card.TryGetProperty("latitude", out _));
+        Assert.False(card.TryGetProperty("longitude", out _));
         Assert.Equal("Verkių regioninis parkas", card.GetProperty("locality").GetString());
         Assert.True(card.GetProperty("coordinatesHidden").GetBoolean());
     }

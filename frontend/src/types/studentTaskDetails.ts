@@ -6,8 +6,8 @@ export interface ObservationCard {
   license: string | null
   gbifUrl: string
   locality: string | null
-  latitude: number | null
-  longitude: number | null
+  latitude?: number
+  longitude?: number
   coordinatesHidden: boolean
 }
 

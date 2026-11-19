@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Project.Api.DTOs.Responses;
 
 // The card of a confirmed GBIF observation (FR-043). It has no species name and no observation date,
@@ -14,8 +16,11 @@ public class ObservationCardResponse
 
     public string? Locality { get; set; }
 
+    // Left out of the JSON when null, so a protected species has no coordinate fields at all (FR-005)
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Latitude { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Longitude { get; set; }
 
     public bool CoordinatesHidden { get; set; }

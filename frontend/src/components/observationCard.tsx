@@ -30,7 +30,7 @@ function CardRow({ caption, value }: RowProps) {
 
 export default function ObservationCard({ card }: Props) {
   const coordinates =
-    !card.coordinatesHidden && card.latitude !== null && card.longitude !== null
+    !card.coordinatesHidden && card.latitude !== undefined && card.longitude !== undefined
       ? `${card.latitude}, ${card.longitude}`
       : null
 

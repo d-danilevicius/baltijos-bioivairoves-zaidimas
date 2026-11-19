@@ -126,7 +126,7 @@ describe('StudentTaskPage', () => {
   })
 
   it('shows only the place name and the note for a protected species', async () => {
-    const protectedCard = { ...card, latitude: null, longitude: null, coordinatesHidden: true }
+    const protectedCard = { ...card, latitude: undefined, longitude: undefined, coordinatesHidden: true }
     vi.mocked(getMyTask).mockResolvedValue({ status: 200, body: { ...gbifTask, observation: protectedCard } })
     renderPage()
 
