@@ -49,6 +49,8 @@ internal sealed class ClassTestClient
 
     public Task<HttpResponseMessage> ListMyTasksAsync() => _client.GetAsync("/api/my/tasks");
 
+    public Task<HttpResponseMessage> GetMyTaskAsync(string taskId) => _client.GetAsync($"/api/my/tasks/{taskId}");
+
     public Task<HttpResponseMessage> CreateGbifTasksAsync(string id, object body) =>
         SendAsync(HttpMethod.Post, $"/api/classes/{id}/gbif-tasks", body);
 
