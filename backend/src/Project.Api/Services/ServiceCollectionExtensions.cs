@@ -53,6 +53,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGbifTaskService, GbifTaskService>();
         services.AddScoped<IClassTaskService, ClassTaskService>();
         services.AddScoped<ITeacherTaskService, TeacherTaskService>();
+        services.AddScoped<IStudentTaskService, StudentTaskService>();
 
         return services;
     }

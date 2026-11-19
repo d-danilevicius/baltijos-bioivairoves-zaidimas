@@ -3,8 +3,7 @@ import type { ClassTask, GbifTasksRequest, GbifTasksResponse, TeacherTaskRequest
 import { fetchCsrfToken } from './authApi'
 import { toFailure, type Failure } from './apiFailure'
 import { HttpStatus } from '../helpers/httpStatus'
-
-const base = (import.meta.env.VITE_API_URL ?? '') as string
+import { apiBase } from './apiBase'
 
 export type ListClassTasksResult =
   | { status: typeof HttpStatus.Ok; body: ClassTask[] }
@@ -42,7 +41,7 @@ export type DeleteClassTaskResult =
 
 export async function listClassTasks(classId: string): Promise<ListClassTasksResult> {
   try {
-    const res = await fetch(base + `/api/classes/${encodeURIComponent(classId)}/tasks`, { credentials: 'include' })
+    const res = await fetch(apiBase + `/api/classes/${encodeURIComponent(classId)}/tasks`, { credentials: 'include' })
     if (res.status === HttpStatus.Ok) {
       return { status: HttpStatus.Ok, body: (await res.json()) as ClassTask[] }
     }
@@ -61,7 +60,7 @@ export async function listClassTasks(classId: string): Promise<ListClassTasksRes
 
 export async function createGbifTasks(classId: string, request: GbifTasksRequest): Promise<CreateGbifTasksResult> {
   try {
-    const res = await fetch(base + `/api/classes/${encodeURIComponent(classId)}/gbif-tasks`, {
+    const res = await fetch(apiBase + `/api/classes/${encodeURIComponent(classId)}/gbif-tasks`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': await fetchCsrfToken() },
@@ -94,7 +93,7 @@ export async function createTeacherTask(
   request: TeacherTaskRequest,
 ): Promise<CreateTeacherTaskResult> {
   try {
-    const res = await fetch(base + `/api/classes/${encodeURIComponent(classId)}/tasks`, {
+    const res = await fetch(apiBase + `/api/classes/${encodeURIComponent(classId)}/tasks`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': await fetchCsrfToken() },
@@ -121,11 +120,14 @@ export async function createTeacherTask(
 
 export async function deleteClassTask(classId: string, taskId: string): Promise<DeleteClassTaskResult> {
   try {
-    const res = await fetch(base + `/api/classes/${encodeURIComponent(classId)}/tasks/${encodeURIComponent(taskId)}`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: { 'X-CSRF-TOKEN': await fetchCsrfToken() },
-    })
+    const res = await fetch(
+      apiBase + `/api/classes/${encodeURIComponent(classId)}/tasks/${encodeURIComponent(taskId)}`,
+      {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'X-CSRF-TOKEN': await fetchCsrfToken() },
+      },
+    )
     if (
       res.status === HttpStatus.NoContent ||
       res.status === HttpStatus.Unauthorized ||

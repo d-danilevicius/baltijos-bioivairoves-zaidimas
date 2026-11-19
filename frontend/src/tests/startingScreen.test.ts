@@ -5,7 +5,11 @@ describe('getStartingScreen', () => {
     expect(getStartingScreen('Teacher')).toBe('/classes')
   })
 
-  it.each(['Student', 'Administrator'] as const)('returns the profile for the role %s', (role) => {
-    expect(getStartingScreen(role)).toBe('/profile')
+  it('returns the task list for a student', () => {
+    expect(getStartingScreen('Student')).toBe('/tasks')
+  })
+
+  it('returns the profile for an administrator', () => {
+    expect(getStartingScreen('Administrator')).toBe('/profile')
   })
 })

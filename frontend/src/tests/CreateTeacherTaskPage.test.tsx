@@ -5,13 +5,13 @@ import { createTeacherTask } from '../api/classTaskApi'
 import { getCurrentUser } from '../api/authApi'
 import { markSessionStarted } from '../helpers/sessionMarker'
 import { accessDenied, pageNotFound } from '../helpers/stateMessage'
+import { groupLabel } from '../helpers/groupLabel'
 import {
   answerLabel,
   answerRequired,
   answerTooLong,
   confirmationLabel,
   confirmationRequired,
-  groupLabel,
   groupRequired,
   questionLabel,
   questionRequired,

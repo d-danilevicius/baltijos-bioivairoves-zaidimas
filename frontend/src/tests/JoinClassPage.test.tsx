@@ -16,10 +16,10 @@ import JoinClassPage from '../pages/JoinClassPage'
 
 vi.mock('../api/classMembershipApi', () => ({ joinClass: vi.fn() }))
 
-function ProfileStub() {
+function TaskListStub() {
   const location = useLocation()
   const message = (location.state as { message?: string } | null)?.message
-  return <div>Profile stub {message}</div>
+  return <div>Task list stub {message}</div>
 }
 
 function LoginStub() {
@@ -33,7 +33,7 @@ function renderJoinClass() {
     <MemoryRouter initialEntries={['/join']}>
       <Routes>
         <Route path="/join" element={<JoinClassPage />} />
-        <Route path="/profile" element={<ProfileStub />} />
+        <Route path="/tasks" element={<TaskListStub />} />
         <Route path="/login" element={<LoginStub />} />
       </Routes>
     </MemoryRouter>,
@@ -71,23 +71,23 @@ describe('JoinClassPage', () => {
     expect(joinClass).not.toHaveBeenCalled()
   })
 
-  it('sends the normalized code and opens the profile with the joined message', async () => {
+  it('sends the normalized code and opens the task list with the joined message', async () => {
     vi.mocked(joinClass).mockResolvedValue({ status: 200, body: { className: '7a', alreadyMember: false } })
     renderJoinClass()
 
     await submitCode(' ab 12 cd ')
 
     expect(joinClass).toHaveBeenCalledWith('AB12CD', false)
-    expect(await screen.findByText(new RegExp(`Profile stub ${joinedClass('7a')}`))).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(`Task list stub ${joinedClass('7a')}`))).toBeInTheDocument()
   })
 
-  it('opens the profile with the already in class message when the student is already in the class', async () => {
+  it('opens the task list with the already in class message when the student is already in the class', async () => {
     vi.mocked(joinClass).mockResolvedValue({ status: 200, body: { className: '7a', alreadyMember: true } })
     renderJoinClass()
 
     await submitCode('AB12CD')
 
-    expect(await screen.findByText(new RegExp(`Profile stub ${alreadyInClass}`))).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(`Task list stub ${alreadyInClass}`))).toBeInTheDocument()
   })
 
   it('shows the not found message next to the field when the server does not find the class', async () => {
@@ -110,7 +110,7 @@ describe('JoinClassPage', () => {
     expect(joinClass).toHaveBeenCalledTimes(1)
   })
 
-  it('sends the code again with the confirmation and opens the profile when the student presses Pakeisti', async () => {
+  it('sends the code again with the confirmation and opens the task list when the student presses Pakeisti', async () => {
     vi.mocked(joinClass)
       .mockResolvedValueOnce({ status: 409, body: { currentClassName: '7b', newClassName: '7a' } })
       .mockResolvedValueOnce({ status: 200, body: { className: '7a', alreadyMember: false } })
@@ -120,7 +120,7 @@ describe('JoinClassPage', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Pakeisti' }))
 
     expect(joinClass).toHaveBeenLastCalledWith('AB12CD', true)
-    expect(await screen.findByText(new RegExp(`Profile stub ${joinedClass('7a')}`))).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(`Task list stub ${joinedClass('7a')}`))).toBeInTheDocument()
   })
 
   it('does not send anything and stays on the page when the student presses Atšaukti', async () => {

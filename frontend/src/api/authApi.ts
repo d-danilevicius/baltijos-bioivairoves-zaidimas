@@ -7,8 +7,7 @@ import {
   RegisterResponse201,
 } from '../types/auth'
 import { HttpStatus } from '../helpers/httpStatus'
-
-const base = (import.meta.env.VITE_API_URL ?? '') as string
+import { apiBase } from './apiBase'
 
 export type RegisterResult =
   | { status: typeof HttpStatus.Created; body: RegisterResponse201 }
@@ -35,7 +34,7 @@ export type CurrentUserResult =
 
 export async function registerUser(req: RegisterRequest): Promise<RegisterResult> {
   try {
-    const res = await fetch(base + '/api/auth/register', {
+    const res = await fetch(apiBase + '/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req),
@@ -59,7 +58,7 @@ export async function registerUser(req: RegisterRequest): Promise<RegisterResult
 }
 
 export async function fetchCsrfToken(): Promise<string> {
-  const res = await fetch(base + '/api/auth/csrf', {
+  const res = await fetch(apiBase + '/api/auth/csrf', {
     method: 'GET',
     credentials: 'include',
   })
@@ -78,7 +77,7 @@ export async function fetchCsrfToken(): Promise<string> {
 
 export async function loginUser(req: LoginRequest): Promise<LoginResult> {
   try {
-    const res = await fetch(base + '/api/auth/login', {
+    const res = await fetch(apiBase + '/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -108,7 +107,7 @@ export async function loginUser(req: LoginRequest): Promise<LoginResult> {
 
 export async function getCurrentUser(): Promise<CurrentUserResult> {
   try {
-    const res = await fetch(base + '/api/auth/me', {
+    const res = await fetch(apiBase + '/api/auth/me', {
       method: 'GET',
       credentials: 'include',
     })
@@ -132,7 +131,7 @@ export async function getCurrentUser(): Promise<CurrentUserResult> {
 export async function logoutUser(): Promise<LogoutResult> {
   try {
     const csrfToken = await fetchCsrfToken()
-    const res = await fetch(base + '/api/auth/logout', {
+    const res = await fetch(apiBase + '/api/auth/logout', {
       method: 'POST',
       credentials: 'include',
       headers: { 'X-CSRF-TOKEN': csrfToken },
