@@ -234,11 +234,91 @@ public class StudentTaskServiceTests
     }
 
     [Fact]
+    public async Task GetAsync_ForSubmittedTask_ReturnsStatusDoneAndKeepsOtherTasksNotDone()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var doneTaskId = await AddTaskAsync(db, classId, 1, question: "A");
+        var openTaskId = await AddTaskAsync(db, classId, 1, question: "B");
+        await AddSubmissionAsync(db, doneTaskId, StudentId);
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        var tasks = result.Groups.Single().Tasks;
+        Assert.Equal(StudentTaskStatus.Done, tasks.Single(t => t.Id == doneTaskId).Status);
+        Assert.Equal(StudentTaskStatus.NotDone, tasks.Single(t => t.Id == openTaskId).Status);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenAnotherStudentSubmittedTheTask_DoesNotMarkItDone()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var taskId = await AddTaskAsync(db, classId, 1);
+        await AddSubmissionAsync(db, taskId, "another-student");
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        Assert.Equal(StudentTaskStatus.NotDone, result.Groups.Single().Tasks.Single().Status);
+        Assert.Equal(taskId, result.ContinueTaskId);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenFirstTaskIsDone_ContinuesFromTheNextTask()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var firstTaskId = await AddTaskAsync(db, classId, 1, id: new Guid("00000000-0000-0000-0000-000000000001"));
+        var secondTaskId = await AddTaskAsync(db, classId, 1, id: new Guid("00000000-0000-0000-0000-000000000002"));
+        await AddSubmissionAsync(db, firstTaskId, StudentId);
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        Assert.Equal(secondTaskId, result.ContinueTaskId);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenAllTasksOfUnlockedGroupsAreDone_HasNothingToContinueFrom()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var taskId = await AddTaskAsync(db, classId, 1);
+        await AddTaskAsync(db, classId, 2);
+        await AddSubmissionAsync(db, taskId, StudentId);
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        Assert.Null(result.ContinueTaskId);
+    }
+
+    [Fact]
     public void StudentTaskResponse_HasOnlyIdentifierTypeLabelAndStatus()
     {
         var properties = typeof(StudentTaskResponse).GetProperties().Select(p => p.Name);
 
         Assert.Equal(new[] { "Id", "Label", "Status", "Type" }, properties.OrderBy(name => name));
+    }
+
+    private static async Task AddSubmissionAsync(ApplicationDbContext db, Guid taskId, string studentId)
+    {
+        db.Submissions.Add(new Submission
+        {
+            Id = Guid.NewGuid(),
+            ClassTaskId = taskId,
+            StudentId = studentId,
+            Answer = "Answer",
+            Evidence = "Evidence",
+            SubmittedAtUtc = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync();
     }
 
     private static async Task<Guid> AddClassWithMemberAsync(
