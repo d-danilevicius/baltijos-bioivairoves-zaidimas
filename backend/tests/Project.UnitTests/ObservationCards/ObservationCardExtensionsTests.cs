@@ -82,17 +82,17 @@ public class ObservationCardExtensionsTests
         string? locality = "Vilnius",
         double latitude = 54.7,
         double longitude = 25.3) => new()
-    {
-        Id = Guid.NewGuid(),
-        ClassId = Guid.NewGuid(),
-        GbifKey = gbifKey,
-        Species = "Parus major",
-        Latitude = latitude,
-        Longitude = longitude,
-        Locality = locality,
-        ObservedOn = new DateOnly(2026, 5, 12),
-        DatasetName = datasetName,
-        License = license,
-        IucnCategory = iucnCategory
-    };
+        {
+            Id = Guid.NewGuid(),
+            ClassId = Guid.NewGuid(),
+            GbifKey = gbifKey,
+            Species = "Parus major",
+            Latitude = latitude,
+            Longitude = longitude,
+            Locality = locality,
+            ObservedOn = new DateOnly(2026, 5, 12),
+            DatasetName = datasetName,
+            License = license,
+            IucnCategory = iucnCategory
+        };
 }
