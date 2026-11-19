@@ -89,7 +89,10 @@ export async function createGbifTasks(classId: string, request: GbifTasksRequest
   }
 }
 
-export async function createTeacherTask(classId: string, request: TeacherTaskRequest): Promise<CreateTeacherTaskResult> {
+export async function createTeacherTask(
+  classId: string,
+  request: TeacherTaskRequest,
+): Promise<CreateTeacherTaskResult> {
   try {
     const res = await fetch(base + `/api/classes/${encodeURIComponent(classId)}/tasks`, {
       method: 'POST',

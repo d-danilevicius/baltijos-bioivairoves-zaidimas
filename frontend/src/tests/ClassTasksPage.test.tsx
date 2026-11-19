@@ -5,7 +5,12 @@ import { getClass } from '../api/classApi'
 import { deleteClassTask, listClassTasks } from '../api/classTaskApi'
 import { classSeasonInfo, createFromGbif, noTasksYet, taskTypeLabels } from '../helpers/gbifTaskMessage'
 import { accessDenied, pageNotFound, serverError } from '../helpers/stateMessage'
-import { createTeacherTaskLink, deleteTaskButton, deleteTaskQuestion, teacherTaskLabel } from '../helpers/teacherTaskMessage'
+import {
+  createTeacherTaskLink,
+  deleteTaskButton,
+  deleteTaskQuestion,
+  teacherTaskLabel,
+} from '../helpers/teacherTaskMessage'
 import ClassTasksPage from '../pages/ClassTasksPage'
 
 vi.mock('../api/classApi', () => ({ getClass: vi.fn() }))
@@ -109,7 +114,9 @@ describe('ClassTasksPage', () => {
 
   it('deletes the teacher task after the confirmation and removes it from the list', async () => {
     vi.mocked(getClass).mockResolvedValue({ status: 200, body: schoolClass })
-    vi.mocked(listClassTasks).mockResolvedValueOnce({ status: 200, body: [teacherTask] }).mockResolvedValue({ status: 200, body: [] })
+    vi.mocked(listClassTasks)
+      .mockResolvedValueOnce({ status: 200, body: [teacherTask] })
+      .mockResolvedValue({ status: 200, body: [] })
     vi.mocked(deleteClassTask).mockResolvedValue({ status: 204 })
     renderPage()
     await userEvent.click(await screen.findByRole('button', { name: deleteTaskButton }))

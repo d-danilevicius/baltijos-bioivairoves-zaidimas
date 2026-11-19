@@ -11,13 +11,7 @@ import LinkButton from '../components/linkButton'
 import LoadingState from '../components/loadingState'
 import PageLayout from '../components/pageLayout'
 import SessionExpiredRedirect from '../components/sessionExpiredRedirect'
-import {
-  backToClass,
-  classSeasonInfo,
-  classTasksTitle,
-  createFromGbif,
-  noTasksYet,
-} from '../helpers/gbifTaskMessage'
+import { backToClass, classSeasonInfo, classTasksTitle, createFromGbif, noTasksYet } from '../helpers/gbifTaskMessage'
 import { HttpStatus } from '../helpers/httpStatus'
 import { teacherLinks } from '../helpers/navigationLink'
 import { serverError } from '../helpers/stateMessage'

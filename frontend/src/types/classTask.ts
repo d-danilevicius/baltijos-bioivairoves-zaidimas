@@ -1,11 +1,7 @@
 export type Season = 'Spring' | 'Summer' | 'Autumn' | 'Winter'
 
 export type TaskType =
-  | 'RecogniseSpeciesGroup'
-  | 'CommonSpecies'
-  | 'SeasonalComparison'
-  | 'ObservationQuestion'
-  | 'TeacherTask'
+  'RecogniseSpeciesGroup' | 'CommonSpecies' | 'SeasonalComparison' | 'ObservationQuestion' | 'TeacherTask'
 
 export interface ClassTask {
   id: string

@@ -74,6 +74,12 @@ describe('validateTeacherTask', () => {
 
   it('returns an error for each wrong field', () => {
     const errors = validate({ title: '', question: '', correctAnswer: '', difficultyGroup: '', confirmed: false })
-    expect(Object.keys(errors).sort()).toEqual(['confirmation', 'correctAnswer', 'difficultyGroup', 'question', 'title'])
+    expect(Object.keys(errors).sort()).toEqual([
+      'confirmation',
+      'correctAnswer',
+      'difficultyGroup',
+      'question',
+      'title',
+    ])
   })
 })
