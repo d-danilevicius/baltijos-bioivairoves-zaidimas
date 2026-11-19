@@ -54,6 +54,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClassTaskService, ClassTaskService>();
         services.AddScoped<ITeacherTaskService, TeacherTaskService>();
         services.AddScoped<IStudentTaskService, StudentTaskService>();
+        services.AddScoped<IStudentTaskDetailsService, StudentTaskDetailsService>();
 
         return services;
     }
