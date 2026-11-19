@@ -44,7 +44,8 @@ function failureState(status: number | string): TasksState {
 
 export default function ClassTasksPage() {
   const { id = '' } = useParams()
-  const message = (useLocation().state as { message?: string } | null)?.message
+  const savedMessage = (useLocation().state as { message?: string } | null)?.message
+  const [message, setMessage] = useState(savedMessage)
   const [state, setState] = useState<TasksState>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
   const [taskToDelete, setTaskToDelete] = useState<string | undefined>(undefined)
@@ -79,6 +80,7 @@ export default function ClassTasksPage() {
 
     const res = await deleteClassTask(id, taskId)
     if (res.status === HttpStatus.NoContent) {
+      setMessage(undefined)
       setDeleteError(undefined)
       setState((current) =>
         current.status === 'ready' ? { ...current, tasks: current.tasks.filter((t) => t.id !== taskId) } : current,

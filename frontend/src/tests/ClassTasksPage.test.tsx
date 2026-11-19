@@ -15,9 +15,9 @@ const schoolClass = { id: 'abc', name: '7a klasė', code: 'AB12CD', createdAtUtc
 const task = { id: 't1', type: 'CommonSpecies' as const, difficultyGroup: 2, label: 'GBIF' }
 const teacherTask = { id: 't2', type: 'TeacherTask' as const, difficultyGroup: 1, label: teacherTaskLabel }
 
-function renderPage() {
+function renderPage(state?: { message: string }) {
   return render(
-    <MemoryRouter initialEntries={['/classes/abc/tasks']}>
+    <MemoryRouter initialEntries={[{ pathname: '/classes/abc/tasks', state }]}>
       <Routes>
         <Route path="/classes/:id/tasks" element={<ClassTasksPage />} />
       </Routes>
@@ -116,6 +116,18 @@ describe('ClassTasksPage', () => {
     await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: deleteTaskButton }))
     expect(deleteClassTask).toHaveBeenCalledWith('abc', 't2')
     expect(await screen.findByText(noTasksYet)).toBeInTheDocument()
+  })
+
+  it('removes the saved message after a task is deleted', async () => {
+    vi.mocked(getClass).mockResolvedValue({ status: 200, body: schoolClass })
+    vi.mocked(listClassTasks).mockResolvedValue({ status: 200, body: [teacherTask] })
+    vi.mocked(deleteClassTask).mockResolvedValue({ status: 204 })
+    renderPage({ message: 'Užduotis išsaugota.' })
+    expect(await screen.findByText('Užduotis išsaugota.')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: deleteTaskButton }))
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: deleteTaskButton }))
+    expect(await screen.findByText(noTasksYet)).toBeInTheDocument()
+    expect(screen.queryByText('Užduotis išsaugota.')).not.toBeInTheDocument()
   })
 
   it('shows the server error and keeps the task when deleting fails', async () => {
