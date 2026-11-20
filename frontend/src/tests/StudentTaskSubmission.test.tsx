@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider, useLocation } from 'react-router-dom'
 import { getMyTask } from '../api/studentTaskApi'
@@ -59,6 +59,7 @@ function renderPage() {
     { initialEntries: ['/tasks/task-1'] },
   )
   render(<RouterProvider router={router} />)
+  return router
 }
 
 async function fillAndSubmit() {
@@ -83,6 +84,19 @@ describe('StudentTaskPage submission', () => {
 
     expect(await screen.findByRole('button', { name: submitButton })).toBeInTheDocument()
     expect(screen.getAllByRole('radio')).toHaveLength(2)
+  })
+
+  it('shows the form of the other task when the address changes after a submission', async () => {
+    vi.mocked(getMyTask).mockImplementation(async (id) => ({ status: 200, body: { ...openTask, id } }))
+    vi.mocked(submitAnswer).mockResolvedValue({ status: HttpStatus.Created, body: saved })
+    const router = renderPage()
+    await fillAndSubmit()
+    await screen.findByText(submittedLabel)
+
+    await act(() => router.navigate('/tasks/task-2'))
+
+    expect(await screen.findByRole('button', { name: submitButton })).toBeInTheDocument()
+    expect(screen.queryByText(submittedLabel)).not.toBeInTheDocument()
   })
 
   it('shows the saved answer with the label instead of the form when the task is already submitted', async () => {

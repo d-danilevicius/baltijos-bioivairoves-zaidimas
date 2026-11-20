@@ -74,7 +74,7 @@ export default function StudentTaskPage() {
     <PageLayout links={studentLinks}>
       {state.status === 'loading' && <LoadingState />}
       {state.status === 'error' && <ErrorState onRetry={retry} />}
-      {state.status === 'ready' && <TaskContent task={state.task} onRejected={onRejected} />}
+      {state.status === 'ready' && <TaskContent key={state.task.id} task={state.task} onRejected={onRejected} />}
     </PageLayout>
   )
 }
