@@ -29,8 +29,13 @@ type TaskState =
   | { status: 'notFound' }
   | { status: 'error' }
 
+// key={id}: a new address starts with a fresh state, so the previous task is never shown for it
 export default function StudentTaskPage() {
   const id = useParams().id as string
+  return <StudentTaskScreen key={id} id={id} />
+}
+
+function StudentTaskScreen({ id }: { id: string }) {
   const [state, setState] = useState<TaskState>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
 

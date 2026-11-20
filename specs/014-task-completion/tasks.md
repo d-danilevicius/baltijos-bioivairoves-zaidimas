@@ -41,4 +41,4 @@
 - [x] T023 Run `dotnet build backend/Project.slnx`, `dotnet test backend/Project.slnx`, `dotnet format` check, `npm run lint`, `npm run format:check` (only on the changed files), `npm test` and `npm run build`
 - [x] T024 Open E06 and E07 in the browser (a task with options, a task without options, the validation errors, the result, the saved answer after a second visit, the leave dialog, the task list with “Padaryta”) and take the screenshots
 - [x] T025 Update README (the endpoint, the answer form and the migration) and `docs/architecture.md` (the endpoint) and check the OpenAPI document
-- [ ] T026 Review `git diff` and open the Pull Request with screenshots and the separate AI review evidence
+- [x] T026 Review `git diff` and open the Pull Request with screenshots and the separate AI review evidence
