@@ -4,6 +4,7 @@ import { submitAnswer } from '../api/submissionApi'
 import AnswerForm from '../components/answerForm'
 import { HttpStatus } from '../helpers/httpStatus'
 import {
+  answerInvalid,
   answerLabel,
   answerRequired,
   answerTooLong,
@@ -134,7 +135,8 @@ describe('AnswerForm', () => {
     await userEvent.click(screen.getByRole('radio', { name: 'Zylė' }))
     await userEvent.type(screen.getByLabelText(evidenceLabel), 'Mačiau')
     await userEvent.click(screen.getByRole('button', { name: submitButton }))
-    expect(await screen.findByText(answerRequired)).toBeInTheDocument()
+    expect(await screen.findByText(answerInvalid)).toBeInTheDocument()
+    expect(screen.queryByText(answerRequired)).not.toBeInTheDocument()
     expect(screen.getByText(evidenceTooLong)).toBeInTheDocument()
   })
 

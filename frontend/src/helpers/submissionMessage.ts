@@ -6,6 +6,7 @@ export const submitNote = 'Pateikto atsakymo pakeisti nebus galima.'
 export const retryButton = 'Bandyti dar kartą'
 
 export const answerRequired = 'Pasirinkite arba įrašykite atsakymą.'
+export const answerInvalid = 'Pasirinkite vieną iš pateiktų atsakymų.'
 export const answerTooLong = 'Atsakymas negali būti ilgesnis nei 100 simbolių.'
 export const evidenceRequired = 'Įrašykite įrodymą.'
 export const evidenceTooLong = 'Įrodymas negali būti ilgesnis nei 500 simbolių.'

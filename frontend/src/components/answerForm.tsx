@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from 'react'
 import { submitAnswer, type SubmitAnswerResult } from '../api/submissionApi'
 import { HttpStatus } from '../helpers/httpStatus'
 import {
+  answerInvalid,
   answerLabel,
   answerRequired,
   answerTooLong,
@@ -31,14 +32,15 @@ type Props = {
   onDirtyChange: (dirty: boolean) => void
 }
 
-function pick(codes: string[] | undefined, required: string, tooLong: string): string | undefined {
+function pick(codes: string[] | undefined, required: string, tooLong: string, invalid?: string): string | undefined {
   if (!codes || codes.length === 0) return undefined
+  if (invalid && codes.includes('Invalid')) return invalid
   return codes.includes('TooLong') ? tooLong : required
 }
 
 function getServerErrors(errors: Record<string, string[]> | undefined): SubmissionFormErrors {
   const result: SubmissionFormErrors = {}
-  const answer = pick(errors?.answer, answerRequired, answerTooLong)
+  const answer = pick(errors?.answer, answerRequired, answerTooLong, answerInvalid)
   const evidence = pick(errors?.evidence, evidenceRequired, evidenceTooLong)
   if (answer) result.answer = answer
   if (evidence) result.evidence = evidence
