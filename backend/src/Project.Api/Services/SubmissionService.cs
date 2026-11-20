@@ -29,18 +29,22 @@ public class SubmissionService : ISubmissionService
             return SubmissionResult.Failed(access == StudentTaskDetailsOutcome.Locked ? SubmissionOutcome.Locked : SubmissionOutcome.NotFound);
         }
 
+        // Any second submission is "already submitted", whatever the answer is (VT-015)
+        var alreadySubmitted = await _dbContext.Submissions
+            .AnyAsync(s => s.ClassTaskId == task.Id && s.StudentId == studentId, cancellationToken);
+
+        if (alreadySubmitted)
+        {
+            return SubmissionResult.Failed(SubmissionOutcome.AlreadySubmitted);
+        }
+
         // A task with options accepts only one of them; a task without options accepts the typed answer
         if (task.Options is { Length: > 0 } options && !options.Contains(request.Answer))
         {
             return SubmissionResult.Failed(SubmissionOutcome.InvalidAnswer);
         }
 
-        var alreadySubmitted = await _dbContext.Submissions
-            .AnyAsync(s => s.ClassTaskId == task.Id && s.StudentId == studentId, cancellationToken);
-
-        return alreadySubmitted
-            ? SubmissionResult.Failed(SubmissionOutcome.AlreadySubmitted)
-            : await SaveAsync(studentId, task.Id, request, cancellationToken);
+        return await SaveAsync(studentId, task.Id, request, cancellationToken);
     }
 
     private async Task<SubmissionResult> SaveAsync(string studentId, Guid taskId, CreateSubmissionRequest request, CancellationToken cancellationToken)

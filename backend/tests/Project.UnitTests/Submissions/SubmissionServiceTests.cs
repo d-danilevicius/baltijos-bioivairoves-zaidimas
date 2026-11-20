@@ -83,6 +83,22 @@ public class SubmissionServiceTests
     }
 
     [Fact]
+    public async Task CreateAsync_WhenTaskIsAlreadySubmittedAndAnswerIsNotAnOption_ReturnsAlreadySubmitted()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var taskId = await AddTaskAsync(db, classId, 1);
+        await CreateAsync(db, StudentId, taskId, "A", "Pirmas įrodymas");
+
+        var result = await CreateAsync(db, StudentId, taskId, "C", "Antras įrodymas");
+
+        Assert.Equal(SubmissionOutcome.AlreadySubmitted, result.Outcome);
+        Assert.Equal("A", (await db.Submissions.SingleAsync()).Answer);
+    }
+
+    [Fact]
     public async Task CreateAsync_WhenAnotherStudentSubmittedTheSameTask_SavesTheSubmission()
     {
         using var factory = await TestServiceFactory.CreateAsync();
