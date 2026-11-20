@@ -1,0 +1,19 @@
+export const answerLabel = 'Atsakymas'
+export const answerChoiceTitle = 'Pasirinkite atsakymą'
+export const evidenceLabel = 'Įrodymas'
+export const submitButton = 'Pateikti atsakymą'
+export const submitNote = 'Pateikto atsakymo pakeisti nebus galima.'
+export const retryButton = 'Bandyti dar kartą'
+
+export const answerRequired = 'Pasirinkite arba įrašykite atsakymą.'
+export const answerInvalid = 'Pasirinkite vieną iš pateiktų atsakymų.'
+export const answerTooLong = 'Atsakymas negali būti ilgesnis nei 100 simbolių.'
+export const evidenceRequired = 'Įrašykite įrodymą.'
+export const evidenceTooLong = 'Įrodymas negali būti ilgesnis nei 500 simbolių.'
+export const saveFailed = 'Nepavyko išsaugoti. Bandykite dar kartą.'
+
+export const submittedLabel = 'Mokinio pateikti duomenys'
+
+export const leaveMessage = 'Išeiti iš užduoties? Neišsiųstas atsakymas nebus išsaugotas.'
+export const leaveConfirm = 'Išeiti'
+export const leaveCancel = 'Likti'

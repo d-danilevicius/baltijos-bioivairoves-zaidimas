@@ -14,29 +14,13 @@ public class StudentTaskDetailsService : IStudentTaskDetailsService
 
     public async Task<StudentTaskDetailsResult> GetAsync(string studentId, Guid taskId, CancellationToken cancellationToken)
     {
-        var classId = await _dbContext.FindCurrentClassIdAsync(studentId, cancellationToken);
-
-        // A task of another class is "not found", so the existence of other classes' tasks is not revealed
-        var task = classId is null
-            ? null
-            : await _dbContext.ClassTasks
-                .AsNoTracking()
-                .FirstOrDefaultAsync(t => t.Id == taskId && t.ClassId == classId, cancellationToken);
+        var (outcome, task) = await _dbContext.FindTaskForStudentAsync(studentId, taskId, cancellationToken);
 
         if (task is null)
         {
-            return StudentTaskDetailsResult.NotFound();
-        }
-
-        var groupsWithTasks = await _dbContext.ClassTasks
-            .Where(t => t.ClassId == classId)
-            .Select(t => t.DifficultyGroup)
-            .Distinct()
-            .ToListAsync(cancellationToken);
-
-        if (!TaskGroupUnlocking.IsUnlocked(task.DifficultyGroup, groupsWithTasks))
-        {
-            return StudentTaskDetailsResult.Locked();
+            return outcome == StudentTaskDetailsOutcome.Locked
+                ? StudentTaskDetailsResult.Locked()
+                : StudentTaskDetailsResult.NotFound();
         }
 
         // A teacher task has no observation
@@ -46,6 +30,13 @@ public class StudentTaskDetailsService : IStudentTaskDetailsService
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.Id == task.ObservationId, cancellationToken);
 
-        return StudentTaskDetailsResult.Found(task.ToDetails(observation));
+        var submission = await _dbContext.Submissions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.ClassTaskId == task.Id && s.StudentId == studentId, cancellationToken);
+
+        var details = task.ToDetails(observation);
+        details.Submission = submission?.ToResponse(task.Id);
+
+        return StudentTaskDetailsResult.Found(details);
     }
 }

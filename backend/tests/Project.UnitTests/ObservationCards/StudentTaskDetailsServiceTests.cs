@@ -159,6 +159,67 @@ public class StudentTaskDetailsServiceTests
         Assert.Equal(StudentTaskDetailsOutcome.NotFound, result.Outcome);
     }
 
+    [Fact]
+    public async Task GetAsync_ForSubmittedTask_ReturnsTheStudentsSubmission()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var taskId = await AddTaskAsync(db, classId, 1);
+        await AddSubmissionAsync(db, taskId, StudentId, "A", "Mačiau prie ežero.");
+
+        var result = await new StudentTaskDetailsService(db).GetAsync(StudentId, taskId, CancellationToken.None);
+
+        var submission = result.Task!.Submission!;
+        Assert.Equal("A", submission.Answer);
+        Assert.Equal("Mačiau prie ežero.", submission.Evidence);
+        Assert.Equal("Mokinio pateikti duomenys", submission.Label);
+    }
+
+    [Fact]
+    public async Task GetAsync_ForTaskThatIsNotSubmitted_ReturnsNoSubmission()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var taskId = await AddTaskAsync(db, classId, 1);
+
+        var result = await new StudentTaskDetailsService(db).GetAsync(StudentId, taskId, CancellationToken.None);
+
+        Assert.Null(result.Task!.Submission);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenAnotherStudentSubmittedTheTask_DoesNotReturnTheirSubmission()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var taskId = await AddTaskAsync(db, classId, 1);
+        await AddSubmissionAsync(db, taskId, "another-student", "B", "Kito mokinio įrodymas");
+
+        var result = await new StudentTaskDetailsService(db).GetAsync(StudentId, taskId, CancellationToken.None);
+
+        Assert.Null(result.Task!.Submission);
+    }
+
+    private static async Task AddSubmissionAsync(ApplicationDbContext db, Guid taskId, string studentId, string answer, string evidence)
+    {
+        db.Submissions.Add(new Submission
+        {
+            Id = Guid.NewGuid(),
+            ClassTaskId = taskId,
+            StudentId = studentId,
+            Answer = answer,
+            Evidence = evidence,
+            SubmittedAtUtc = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync();
+    }
+
     private static async Task<Guid> AddClassWithMemberAsync(
         ApplicationDbContext db,
         string studentId,

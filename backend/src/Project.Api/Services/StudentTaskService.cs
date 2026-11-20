@@ -32,7 +32,13 @@ public class StudentTaskService : IStudentTaskService
             .ThenBy(t => t.Id)
             .ToListAsync(cancellationToken);
 
-        var groups = BuildGroups(tasks);
+        var doneTaskIds = await _dbContext.Submissions
+            .AsNoTracking()
+            .Where(s => s.StudentId == studentId && s.ClassTaskId != null)
+            .Select(s => s.ClassTaskId!.Value)
+            .ToListAsync(cancellationToken);
+
+        var groups = BuildGroups(tasks, doneTaskIds.ToHashSet());
 
         return new StudentTaskListResponse
         {
@@ -42,7 +48,7 @@ public class StudentTaskService : IStudentTaskService
         };
     }
 
-    private static List<StudentTaskGroupResponse> BuildGroups(List<ClassTask> tasks)
+    private static List<StudentTaskGroupResponse> BuildGroups(List<ClassTask> tasks, HashSet<Guid> doneTaskIds)
     {
         var groupsWithTasks = tasks.Select(t => t.DifficultyGroup).Distinct().ToList();
 
@@ -55,24 +61,25 @@ public class StudentTaskService : IStudentTaskService
                 {
                     Group = group.Key,
                     IsUnlocked = isUnlocked,
-                    Tasks = group.Select(t => ToStudentTask(t, isUnlocked)).ToList()
+                    Tasks = group.Select(t => ToStudentTask(t, isUnlocked, doneTaskIds.Contains(t.Id))).ToList()
                 };
             })
             .ToList();
     }
 
-    private static StudentTaskResponse ToStudentTask(ClassTask task, bool isUnlocked) => new()
+    private static StudentTaskResponse ToStudentTask(ClassTask task, bool isUnlocked, bool isDone) => new()
     {
         Id = task.Id,
         Type = task.Type,
         Label = task.ToLabel(),
-        Status = isUnlocked ? StudentTaskStatus.NotDone : StudentTaskStatus.Locked
+        Status = !isUnlocked ? StudentTaskStatus.Locked : isDone ? StudentTaskStatus.Done : StudentTaskStatus.NotDone
     };
 
-    // Until feature 014 adds the status "done", the first task of the first unlocked group is the one to continue from (FR-049)
+    // The first task that is not done in an unlocked group is the one to continue from (FR-049)
     private static Guid? FindTaskToContinue(List<StudentTaskGroupResponse> groups) => groups
         .Where(g => g.IsUnlocked)
         .SelectMany(g => g.Tasks)
+        .Where(t => t.Status == StudentTaskStatus.NotDone)
         .Select(t => (Guid?)t.Id)
         .FirstOrDefault();
 }

@@ -98,7 +98,7 @@ Each journey must identify the starting point, user goal, individual steps, and 
 
 - **Steps:** Visitor → Registration (E02), chooses the role “Mokinys” (Student) → Login (E03) → Task list (E04), no class, joining is suggested → Join a class (E05), enters the code → Task list (E04), sees the class tasks → Task (E06), reads the warning and the observation card, submits the answer and evidence → Task result (E07).
 
-- **Final state:** the points are saved, the task list shows “Atlikta” (Done) and the earned points next to the task; when the share of points set by VT-014 is reached, the next difficulty group is unlocked.
+- **Final state:** the points are saved, the task list shows “Padaryta” (Done) and the earned points next to the task; when the share of points set by VT-014 is reached, the next difficulty group is unlocked.
 
 **Journey 2. A teacher prepares a class and tasks about the school surroundings**
 
@@ -686,7 +686,7 @@ Accessibility decisions made here should later be reflected in the implementatio
 
 6.  **Errors not by colour only.** An error is written as text next to the field and marked with the sign “⚠”, so that a person who cannot distinguish colours can see it too (NFR-013).
 
-7.  **Information not by colour only.** The task status is written in words („Atlikta“ (Done), „Neatlikta“ (Not done), „Užrakinta“ (Locked)), points are shown as numbers, for example „30 iš 50“ (30 of 50), and the labels „Patvirtintas GBIF stebėjimas“ (Confirmed GBIF observation), „Mokytojo užduotis“ (Teacher task) and „Mokinio pateikti duomenys“ (Student-submitted data) are written as text.
+7.  **Information not by colour only.** The task status is written in words („Padaryta“ (Done), „Nepadaryta“ (Not done), „Užrakinta“ (Locked)), points are shown as numbers, for example „30 iš 50“ (30 of 50), and the labels „Patvirtintas GBIF stebėjimas“ (Confirmed GBIF observation), „Mokytojo užduotis“ (Teacher task) and „Mokinio pateikti duomenys“ (Student-submitted data) are written as text.
 
 8.  **Sufficient contrast.** The text clearly differs from the background (contrast of at least 4.5:1, NFR-010).
 

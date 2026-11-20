@@ -84,6 +84,26 @@ describe('StudentTasksPage', () => {
     expect(screen.getAllByText(taskTypeLabels.TeacherTask)).toHaveLength(2)
   })
 
+  it('shows the done status of a submitted task', async () => {
+    const doneList: StudentTaskList = {
+      hasClass: true,
+      continueTaskId: null,
+      groups: [
+        {
+          group: 1,
+          isUnlocked: true,
+          tasks: [{ id: firstTaskId, type: 'RecogniseSpeciesGroup', label: 'GBIF', status: 'Done' }],
+        },
+      ],
+    }
+    vi.mocked(getMyTasks).mockResolvedValue({ status: 200, body: doneList })
+    renderPage()
+
+    expect(await screen.findByText(studentStatusLabels.Done)).toBeInTheDocument()
+    expect(screen.getByText(studentStatusLabels.Done)).toHaveTextContent('Padaryta')
+    expect(screen.queryByText(studentStatusLabels.NotDone)).not.toBeInTheDocument()
+  })
+
   it('shows the lock message and the locked status in a locked group', async () => {
     vi.mocked(getMyTasks).mockResolvedValue({ status: 200, body: taskList })
     renderPage()

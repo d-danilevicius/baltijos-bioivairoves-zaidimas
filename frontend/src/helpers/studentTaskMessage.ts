@@ -9,5 +9,6 @@ export const continueButton = 'Tęsti'
 
 export const studentStatusLabels: Record<StudentTaskStatus, string> = {
   NotDone: 'Nepadaryta',
+  Done: 'Padaryta',
   Locked: 'Užrakinta',
 }
