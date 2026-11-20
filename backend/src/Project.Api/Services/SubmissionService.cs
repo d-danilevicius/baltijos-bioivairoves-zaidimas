@@ -9,6 +9,7 @@ namespace Project.Api.Services;
 public class SubmissionService : ISubmissionService
 {
     private const string StudentTaskIndexName = "IX_Submissions_ClassTaskId_StudentId";
+    private const string TaskForeignKeyName = "FK_Submissions_ClassTasks_ClassTaskId";
 
     private readonly ApplicationDbContext _dbContext;
     private readonly TimeProvider _timeProvider;
@@ -65,9 +66,17 @@ public class SubmissionService : ISubmissionService
             // Two requests of the same student arrived at the same time; the first one is kept
             return SubmissionResult.Failed(SubmissionOutcome.AlreadySubmitted);
         }
+        catch (DbUpdateException exception) when (IsTaskDeletedMeanwhile(exception))
+        {
+            // The teacher deleted the task after it was read and before the submission was saved
+            return SubmissionResult.Failed(SubmissionOutcome.NotFound);
+        }
 
         return SubmissionResult.Created(submission.ToResponse(taskId));
     }
+
+    private static bool IsTaskDeletedMeanwhile(DbUpdateException exception) =>
+        exception.GetBaseException() is PostgresException { SqlState: PostgresErrorCodes.ForeignKeyViolation, ConstraintName: TaskForeignKeyName };
 
     private static bool IsStudentTaskCollision(DbUpdateException exception) =>
         exception.GetBaseException() is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: StudentTaskIndexName };
