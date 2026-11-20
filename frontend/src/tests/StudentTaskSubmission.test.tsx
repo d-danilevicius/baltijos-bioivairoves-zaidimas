@@ -99,6 +99,32 @@ describe('StudentTaskPage submission', () => {
     expect(screen.queryByText(submittedLabel)).not.toBeInTheDocument()
   })
 
+  it('hides the previous task and its form while the task of the new address is loading', async () => {
+    let resolveSecond: (value: Awaited<ReturnType<typeof getMyTask>>) => void = () => {}
+    vi.mocked(getMyTask).mockImplementation((id) =>
+      id === 'task-1'
+        ? Promise.resolve({ status: 200, body: openTask })
+        : new Promise((resolve) => {
+            resolveSecond = resolve
+          }),
+    )
+    vi.mocked(submitAnswer).mockResolvedValue({ status: HttpStatus.Created, body: saved })
+    const router = renderPage()
+    await screen.findByRole('button', { name: submitButton })
+
+    await act(() => router.navigate('/tasks/task-2'))
+
+    expect(screen.getByRole('status')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: submitButton })).not.toBeInTheDocument()
+    expect(screen.queryByText(openTask.question)).not.toBeInTheDocument()
+
+    await act(async () => resolveSecond({ status: 200, body: { ...openTask, id: 'task-2' } }))
+    await fillAndSubmit()
+
+    expect(submitAnswer).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(submitAnswer).mock.calls[0][0]).toBe('task-2')
+  })
+
   it('shows the saved answer with the label instead of the form when the task is already submitted', async () => {
     vi.mocked(getMyTask).mockResolvedValue({ status: 200, body: doneTask })
     renderPage()
