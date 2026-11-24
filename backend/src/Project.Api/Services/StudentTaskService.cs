@@ -32,13 +32,10 @@ public class StudentTaskService : IStudentTaskService
             .ThenBy(t => t.Id)
             .ToListAsync(cancellationToken);
 
-        var doneTaskIds = await _dbContext.Submissions
-            .AsNoTracking()
-            .Where(s => s.StudentId == studentId && s.ClassTaskId != null)
-            .Select(s => s.ClassTaskId!.Value)
-            .ToListAsync(cancellationToken);
+        var pointsByTask = await _dbContext.LoadPointsByTaskAsync(studentId, cancellationToken);
+        var progress = StudentProgress.Create(tasks.Select(t => (t.Id, t.DifficultyGroup)), pointsByTask);
 
-        var groups = BuildGroups(tasks, doneTaskIds.ToHashSet());
+        var groups = BuildGroups(tasks, pointsByTask, progress);
 
         return new StudentTaskListResponse
         {
@@ -48,32 +45,41 @@ public class StudentTaskService : IStudentTaskService
         };
     }
 
-    private static List<StudentTaskGroupResponse> BuildGroups(List<ClassTask> tasks, HashSet<Guid> doneTaskIds)
+    private static List<StudentTaskGroupResponse> BuildGroups(
+        List<ClassTask> tasks,
+        Dictionary<Guid, int> pointsByTask,
+        StudentProgress progress)
     {
-        var groupsWithTasks = tasks.Select(t => t.DifficultyGroup).Distinct().ToList();
-
         return tasks
             .GroupBy(t => t.DifficultyGroup)
             .Select(group =>
             {
-                var isUnlocked = TaskGroupUnlocking.IsUnlocked(group.Key, groupsWithTasks);
+                var isUnlocked = progress.IsUnlocked(group.Key);
                 return new StudentTaskGroupResponse
                 {
                     Group = group.Key,
                     IsUnlocked = isUnlocked,
-                    Tasks = group.Select(t => ToStudentTask(t, isUnlocked, doneTaskIds.Contains(t.Id))).ToList()
+                    Points = progress.Points(group.Key),
+                    MaxPoints = progress.MaxPoints(group.Key),
+                    Tasks = group.Select(t => ToStudentTask(t, isUnlocked, pointsByTask)).ToList()
                 };
             })
             .ToList();
     }
 
-    private static StudentTaskResponse ToStudentTask(ClassTask task, bool isUnlocked, bool isDone) => new()
+    private static StudentTaskResponse ToStudentTask(ClassTask task, bool isUnlocked, Dictionary<Guid, int> pointsByTask)
     {
-        Id = task.Id,
-        Type = task.Type,
-        Label = task.ToLabel(),
-        Status = !isUnlocked ? StudentTaskStatus.Locked : isDone ? StudentTaskStatus.Done : StudentTaskStatus.NotDone
-    };
+        int? points = pointsByTask.TryGetValue(task.Id, out var earned) ? earned : null;
+
+        return new StudentTaskResponse
+        {
+            Id = task.Id,
+            Type = task.Type,
+            Label = task.ToLabel(),
+            Status = !isUnlocked ? StudentTaskStatus.Locked : points is null ? StudentTaskStatus.NotDone : StudentTaskStatus.Done,
+            Points = points
+        };
+    }
 
     // The first task that is not done in an unlocked group is the one to continue from (FR-049)
     private static Guid? FindTaskToContinue(List<StudentTaskGroupResponse> groups) => groups
