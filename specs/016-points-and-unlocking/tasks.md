@@ -35,6 +35,6 @@
 ## Verification
 
 - [x] T019 Run `dotnet build backend/Project.slnx`, `dotnet test backend/Project.slnx`, `dotnet format` check, `npm run lint`, `npm run format:check` (only on the changed files), `npm test` and `npm run build`
-- [ ] T020 Open E04 and E07 in the browser (a correct and an incorrect answer, the points, the correct answer, the unlock message, “Kita užduotis”, “Į užduočių sąrašą”, a locked group before and after 60 %, the task list with points) and take the screenshots
+- [x] T020 Open E04 and E07 in the browser (a correct and an incorrect answer, the points, the correct answer, the unlock message, “Kita užduotis”, “Į užduočių sąrašą”, a locked group before and after 60 %, the task list with points) and take the screenshots
 - [x] T021 Update README (the points rule, the unlocking rule, the new response fields and the migration) and `docs/architecture.md` if the endpoint description changes, and check the OpenAPI document
 - [ ] T022 Review `git diff` and open the Pull Request with screenshots and the separate AI review evidence
