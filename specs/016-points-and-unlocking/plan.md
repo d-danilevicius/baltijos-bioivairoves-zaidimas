@@ -2,7 +2,7 @@
 
 **Feature:** `specs/016-points-and-unlocking/spec.md`
 **Branch:** `016-points-and-unlocking`
-**Status:** draft
+**Status:** implemented (Pull Request #41, merged into `main`)
 **Depends on features:** 003-access-control, 012-student-task-list, 013-observation-card, 014-task-completion
 
 ## Summary
@@ -88,3 +88,10 @@ When a student submits an answer, the server compares it with the correct answer
 - **8. Simplicity:** complies. No new library, table or endpoint; one column, one new class `StudentProgress` instead of the old static rule, one hook.
 
 **No exceptions. The plan complies with the constitution.**
+
+## Known Limitations
+
+- Two concurrent submissions of different tasks of one student can repeat or skip the message about the unlocked group; the access to the groups is always correct, because it is calculated from the saved points.
+- NFR-015 must also be checked in the production environment.
+- NFR-018 must also be checked with a real connection loss scenario.
+- Loading `StudentProgress` again for each request can be optimised in the future.
