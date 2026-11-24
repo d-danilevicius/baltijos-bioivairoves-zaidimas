@@ -31,12 +31,16 @@ const taskList: StudentTaskList = {
     {
       group: 1,
       isUnlocked: true,
-      tasks: [{ id: firstTaskId, type: 'RecogniseSpeciesGroup', label: 'GBIF', status: 'NotDone' }],
+      points: 0,
+      maxPoints: 10,
+      tasks: [{ id: firstTaskId, type: 'RecogniseSpeciesGroup', label: 'GBIF', status: 'NotDone', points: null }],
     },
     {
       group: 2,
       isUnlocked: false,
-      tasks: [{ id: 'task-2', type: 'TeacherTask', label: 'Mokytojo užduotis', status: 'Locked' }],
+      points: 0,
+      maxPoints: 20,
+      tasks: [{ id: 'task-2', type: 'TeacherTask', label: 'Mokytojo užduotis', status: 'Locked', points: null }],
     },
   ],
 }
@@ -92,7 +96,9 @@ describe('StudentTasksPage', () => {
         {
           group: 1,
           isUnlocked: true,
-          tasks: [{ id: firstTaskId, type: 'RecogniseSpeciesGroup', label: 'GBIF', status: 'Done' }],
+          points: 10,
+          maxPoints: 10,
+          tasks: [{ id: firstTaskId, type: 'RecogniseSpeciesGroup', label: 'GBIF', status: 'Done', points: 10 }],
         },
       ],
     }
@@ -102,6 +108,36 @@ describe('StudentTasksPage', () => {
     expect(await screen.findByText(studentStatusLabels.Done)).toBeInTheDocument()
     expect(screen.getByText(studentStatusLabels.Done)).toHaveTextContent('Padaryta')
     expect(screen.queryByText(studentStatusLabels.NotDone)).not.toBeInTheDocument()
+  })
+
+  it('shows the points of the done tasks and of the group as text', async () => {
+    const pointsList: StudentTaskList = {
+      hasClass: true,
+      continueTaskId: 'task-4',
+      groups: [
+        {
+          group: 1,
+          isUnlocked: true,
+          points: 30,
+          maxPoints: 50,
+          tasks: [
+            { id: 'task-1', type: 'RecogniseSpeciesGroup', label: 'GBIF', status: 'Done', points: 10 },
+            { id: 'task-2', type: 'TeacherTask', label: 'Mokytojo užduotis', status: 'Done', points: 0 },
+            { id: 'task-3', type: 'CommonSpecies', label: 'GBIF', status: 'Done', points: 20 },
+            { id: 'task-4', type: 'CommonSpecies', label: 'GBIF', status: 'NotDone', points: null },
+          ],
+        },
+      ],
+    }
+    vi.mocked(getMyTasks).mockResolvedValue({ status: 200, body: pointsList })
+    renderPage()
+
+    expect(await screen.findByText('30 iš 50')).toBeInTheDocument()
+    expect(screen.getByText('10 tšk.')).toBeInTheDocument()
+    expect(screen.getByText('0 tšk.')).toBeInTheDocument()
+    expect(screen.getByText('20 tšk.')).toBeInTheDocument()
+    expect(screen.getAllByText(studentStatusLabels.Done)).toHaveLength(3)
+    expect(screen.getAllByText(/tšk\./)).toHaveLength(3)
   })
 
   it('shows the lock message and the locked status in a locked group', async () => {
