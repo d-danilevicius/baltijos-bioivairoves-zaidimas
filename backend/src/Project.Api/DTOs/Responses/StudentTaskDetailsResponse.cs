@@ -2,7 +2,8 @@ using Project.Api.Entities;
 
 namespace Project.Api.DTOs.Responses;
 
-// One task as the student sees it; it never contains the correct answer
+// One task as the student sees it; the correct answer is not sent before the student submits the task,
+// after that it is only inside the student's own submission
 public class StudentTaskDetailsResponse
 {
     public Guid Id { get; set; }
