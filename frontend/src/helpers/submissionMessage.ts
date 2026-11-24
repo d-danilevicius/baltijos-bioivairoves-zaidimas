@@ -13,6 +13,12 @@ export const evidenceTooLong = 'Įrodymas negali būti ilgesnis nei 500 simboli�
 export const saveFailed = 'Nepavyko išsaugoti. Bandykite dar kartą.'
 
 export const submittedLabel = 'Mokinio pateikti duomenys'
+export const correctAnswerLabel = 'Teisingas atsakymas'
+export const nextTaskButton = 'Kita užduotis'
+export const toTaskListButton = 'Į užduočių sąrašą'
+
+export const pointsMessage = (points: number) => `Gavote ${points} taškų.`
+export const unlockedGroupMessage = (group: number) => `Atrakinta ${group} sudėtingumo grupė.`
 
 export const leaveMessage = 'Išeiti iš užduoties? Neišsiųstas atsakymas nebus išsaugotas.'
 export const leaveConfirm = 'Išeiti'
