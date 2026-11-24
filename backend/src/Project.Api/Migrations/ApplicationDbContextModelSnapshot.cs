@@ -483,6 +483,9 @@ namespace Project.Api.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<int>("Points")
+                        .HasColumnType("integer");
+
                     b.Property<string>("StudentId")
                         .IsRequired()
                         .HasColumnType("text");
