@@ -1,12 +1,13 @@
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider, useLocation } from 'react-router-dom'
-import { getMyTask } from '../api/studentTaskApi'
+import { getMyTask, getMyTasks } from '../api/studentTaskApi'
 import { submitAnswer } from '../api/submissionApi'
 import { HttpStatus } from '../helpers/httpStatus'
 import { markSessionStarted } from '../helpers/sessionMarker'
 import { accessDenied, pageNotFound, sessionExpired } from '../helpers/stateMessage'
 import {
+  correctAnswerLabel,
   evidenceLabel,
   leaveCancel,
   leaveConfirm,
@@ -28,6 +29,9 @@ const saved: Submission = {
   evidence: 'Mačiau prie miško',
   label: submittedLabel,
   submittedAtUtc: '2026-11-19T10:00:00Z',
+  points: 0,
+  correctAnswer: 'Pilkoji pelėda',
+  unlockedGroup: null,
 }
 
 const openTask: StudentTaskDetails = {
@@ -72,6 +76,11 @@ describe('StudentTaskPage submission', () => {
   beforeEach(() => {
     vi.mocked(getMyTask).mockReset()
     vi.mocked(submitAnswer).mockReset()
+    vi.mocked(getMyTasks).mockReset()
+    vi.mocked(getMyTasks).mockResolvedValue({
+      status: 200,
+      body: { hasClass: true, groups: [], continueTaskId: null },
+    })
   })
 
   afterEach(() => {
@@ -136,6 +145,32 @@ describe('StudentTaskPage submission', () => {
     expect(screen.queryByRole('radio')).not.toBeInTheDocument()
   })
 
+  it('shows the points, the correct answer and the unlocked group after a successful submit', async () => {
+    vi.mocked(getMyTask).mockResolvedValue({ status: 200, body: openTask })
+    vi.mocked(submitAnswer).mockResolvedValue({
+      status: HttpStatus.Created,
+      body: { ...saved, points: 10, correctAnswer: 'Paprastoji lapė', unlockedGroup: 2 },
+    })
+    renderPage()
+    await fillAndSubmit()
+
+    expect(await screen.findByText('Gavote 10 taškų.')).toBeInTheDocument()
+    expect(screen.getByText(correctAnswerLabel)).toBeInTheDocument()
+    expect(screen.getByText('Atrakinta 2 sudėtingumo grupė.')).toBeInTheDocument()
+  })
+
+  it('shows the saved points and the correct answer when a submitted task is opened again', async () => {
+    vi.mocked(getMyTask).mockResolvedValue({
+      status: 200,
+      body: { ...doneTask, submission: { ...saved, points: 20, correctAnswer: 'Pilkoji pelėda' } },
+    })
+    renderPage()
+
+    expect(await screen.findByText('Gavote 20 taškų.')).toBeInTheDocument()
+    expect(screen.getByText('Pilkoji pelėda')).toBeInTheDocument()
+    expect(screen.queryByText(/Atrakinta/)).not.toBeInTheDocument()
+  })
+
   it('shows the submitted data with the label and hides the form after a successful submit', async () => {
     vi.mocked(getMyTask).mockResolvedValue({ status: 200, body: openTask })
     vi.mocked(submitAnswer).mockResolvedValue({ status: HttpStatus.Created, body: saved })
@@ -191,6 +226,11 @@ describe('StudentTaskPage leave dialog', () => {
   beforeEach(() => {
     vi.mocked(getMyTask).mockReset()
     vi.mocked(submitAnswer).mockReset()
+    vi.mocked(getMyTasks).mockReset()
+    vi.mocked(getMyTasks).mockResolvedValue({
+      status: 200,
+      body: { hasClass: true, groups: [], continueTaskId: null },
+    })
   })
 
   async function leaveToTasks() {

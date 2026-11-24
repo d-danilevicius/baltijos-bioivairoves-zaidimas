@@ -29,6 +29,9 @@ const saved: Submission = {
   evidence: 'Mačiau ant stogo',
   label: 'Mokinio pateikti duomenys',
   submittedAtUtc: '2026-11-19T10:00:00Z',
+  points: 10,
+  correctAnswer: 'Žvirblis',
+  unlockedGroup: null,
 }
 
 function renderForm(choices: string[] = []) {
