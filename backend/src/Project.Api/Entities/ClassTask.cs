@@ -24,4 +24,13 @@ public class ClassTask
     public string[]? Options { get; set; }
 
     public Guid? ObservationId { get; set; }
+
+    // The only place of the points of a difficulty group (VT-016)
+    public static int PointsOfGroup(int group) => 10 * group;
+
+    // Full points of the group for a correct answer, otherwise 0; letter case and outer spaces are ignored (VT-018)
+    public int PointsFor(string answer) =>
+        string.Equals(answer.Trim(), CorrectAnswer.Trim(), StringComparison.OrdinalIgnoreCase)
+            ? PointsOfGroup(DifficultyGroup)
+            : 0;
 }
