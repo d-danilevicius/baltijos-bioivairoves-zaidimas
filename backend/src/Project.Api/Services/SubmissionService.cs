@@ -44,18 +44,29 @@ public class SubmissionService : ISubmissionService
             return SubmissionResult.Failed(SubmissionOutcome.InvalidAnswer);
         }
 
-        return await SaveAsync(studentId, task.Id, request, cancellationToken);
+        // The points are calculated by the server and saved together with the answer (VT-016, NFR-018)
+        var points = task.PointsFor(request.Answer);
+        var progress = await _dbContext.LoadStudentProgressAsync(studentId, task.ClassId, cancellationToken);
+
+        return await SaveAsync(studentId, task, request, points, progress.GroupUnlockedBy(task.Id, points), cancellationToken);
     }
 
-    private async Task<SubmissionResult> SaveAsync(string studentId, Guid taskId, CreateSubmissionRequest request, CancellationToken cancellationToken)
+    private async Task<SubmissionResult> SaveAsync(
+        string studentId,
+        ClassTask task,
+        CreateSubmissionRequest request,
+        int points,
+        int? unlockedGroup,
+        CancellationToken cancellationToken)
     {
         var submission = new Submission
         {
             Id = Guid.NewGuid(),
-            ClassTaskId = taskId,
+            ClassTaskId = task.Id,
             StudentId = studentId,
             Answer = request.Answer,
             Evidence = request.Evidence,
+            Points = points,
             SubmittedAtUtc = _timeProvider.GetUtcNow().UtcDateTime
         };
 
@@ -76,7 +87,7 @@ public class SubmissionService : ISubmissionService
             return SubmissionResult.Failed(SubmissionOutcome.NotFound);
         }
 
-        return SubmissionResult.Created(submission.ToResponse(taskId));
+        return SubmissionResult.Created(submission.ToResponse(task, unlockedGroup));
     }
 
     private static bool IsTaskDeletedMeanwhile(DbUpdateException exception) =>

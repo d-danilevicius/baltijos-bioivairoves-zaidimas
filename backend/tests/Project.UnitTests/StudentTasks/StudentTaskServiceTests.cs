@@ -300,14 +300,166 @@ public class StudentTaskServiceTests
     }
 
     [Fact]
-    public void StudentTaskResponse_HasOnlyIdentifierTypeLabelAndStatus()
+    public async Task GetAsync_ForDoneTask_ReturnsItsPointsAndNoPointsForTasksNotDone()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var doneTaskId = await AddTaskAsync(db, classId, 1, question: "A");
+        var openTaskId = await AddTaskAsync(db, classId, 1, question: "B");
+        await AddSubmissionAsync(db, doneTaskId, StudentId, 10);
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        var tasks = result.Groups.Single().Tasks;
+        Assert.Equal(10, tasks.Single(t => t.Id == doneTaskId).Points);
+        Assert.Null(tasks.Single(t => t.Id == openTaskId).Points);
+    }
+
+    [Fact]
+    public async Task GetAsync_ForDoneTaskWithIncorrectAnswer_ReturnsZeroPoints()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var taskId = await AddTaskAsync(db, classId, 1);
+        await AddSubmissionAsync(db, taskId, StudentId, 0);
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        var task = result.Groups.Single().Tasks.Single();
+        Assert.Equal(StudentTaskStatus.Done, task.Status);
+        Assert.Equal(0, task.Points);
+    }
+
+    [Fact]
+    public async Task GetAsync_ForGroup_ReturnsTheEarnedAndTheMaximumPoints()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var firstGroupTaskIds = await AddTasksAsync(db, classId, 1, 5);
+        await AddTaskAsync(db, classId, 2);
+        await AddSubmissionAsync(db, firstGroupTaskIds[0], StudentId, 10);
+        await AddSubmissionAsync(db, firstGroupTaskIds[1], StudentId, 10);
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        var groupOne = result.Groups.Single(g => g.Group == 1);
+        Assert.Equal(20, groupOne.Points);
+        Assert.Equal(50, groupOne.MaxPoints);
+        var groupTwo = result.Groups.Single(g => g.Group == 2);
+        Assert.Equal(0, groupTwo.Points);
+        Assert.Equal(20, groupTwo.MaxPoints);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenPreviousGroupHasSixtyPercent_UnlocksTheNextGroup()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var firstGroupTaskIds = await AddTasksAsync(db, classId, 1, 5);
+        await AddTaskAsync(db, classId, 2);
+        foreach (var taskId in firstGroupTaskIds.Take(3))
+        {
+            await AddSubmissionAsync(db, taskId, StudentId, 10);
+        }
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        var groupTwo = result.Groups.Single(g => g.Group == 2);
+        Assert.True(groupTwo.IsUnlocked);
+        Assert.All(groupTwo.Tasks, t => Assert.Equal(StudentTaskStatus.NotDone, t.Status));
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenPreviousGroupHasLessThanSixtyPercent_KeepsTheNextGroupLocked()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var firstGroupTaskIds = await AddTasksAsync(db, classId, 1, 5);
+        await AddTaskAsync(db, classId, 2);
+        foreach (var taskId in firstGroupTaskIds.Take(3))
+        {
+            await AddSubmissionAsync(db, taskId, StudentId, taskId == firstGroupTaskIds[2] ? 0 : 10);
+        }
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        var groupTwo = result.Groups.Single(g => g.Group == 2);
+        Assert.False(groupTwo.IsUnlocked);
+        Assert.All(groupTwo.Tasks, t => Assert.Equal(StudentTaskStatus.Locked, t.Status));
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenGroupOneIsEarned_ContinuesFromTheFirstTaskOfGroupTwo()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var firstGroupTaskId = await AddTaskAsync(db, classId, 1);
+        var secondGroupTaskId = await AddTaskAsync(db, classId, 2);
+        await AddSubmissionAsync(db, firstGroupTaskId, StudentId, 10);
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        Assert.Equal(secondGroupTaskId, result.ContinueTaskId);
+    }
+
+    [Fact]
+    public async Task GetAsync_DoesNotUseThePointsOfAnotherStudent()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        var firstGroupTaskIds = await AddTasksAsync(db, classId, 1, 5);
+        await AddTaskAsync(db, classId, 2);
+        foreach (var taskId in firstGroupTaskIds)
+        {
+            await AddSubmissionAsync(db, taskId, "another-student", 10);
+        }
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        Assert.Equal(0, result.Groups.Single(g => g.Group == 1).Points);
+        Assert.False(result.Groups.Single(g => g.Group == 2).IsUnlocked);
+    }
+
+    [Fact]
+    public async Task GetAsync_DoesNotCountTheSubmissionOfADeletedTask()
+    {
+        using var factory = await TestServiceFactory.CreateAsync();
+        using var scope = factory.ServiceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var classId = await AddClassWithMemberAsync(db, StudentId);
+        await AddTaskAsync(db, classId, 1);
+        await AddTaskAsync(db, classId, 2);
+        await AddSubmissionAsync(db, null, StudentId, 10);
+
+        var result = await new StudentTaskService(db).GetAsync(StudentId, CancellationToken.None);
+
+        Assert.Equal(0, result.Groups.Single(g => g.Group == 1).Points);
+        Assert.False(result.Groups.Single(g => g.Group == 2).IsUnlocked);
+    }
+
+    [Fact]
+    public void StudentTaskResponse_HasOnlyIdentifierTypeLabelStatusAndPoints()
     {
         var properties = typeof(StudentTaskResponse).GetProperties().Select(p => p.Name);
 
-        Assert.Equal(new[] { "Id", "Label", "Status", "Type" }, properties.OrderBy(name => name));
+        Assert.Equal(new[] { "Id", "Label", "Points", "Status", "Type" }, properties.OrderBy(name => name));
     }
 
-    private static async Task AddSubmissionAsync(ApplicationDbContext db, Guid taskId, string studentId)
+    private static async Task AddSubmissionAsync(ApplicationDbContext db, Guid? taskId, string studentId, int points = 0)
     {
         db.Submissions.Add(new Submission
         {
@@ -316,6 +468,7 @@ public class StudentTaskServiceTests
             StudentId = studentId,
             Answer = "Answer",
             Evidence = "Evidence",
+            Points = points,
             SubmittedAtUtc = DateTime.UtcNow
         });
         await db.SaveChangesAsync();
@@ -339,6 +492,17 @@ public class StudentTaskServiceTests
         });
         await db.SaveChangesAsync();
         return schoolClass.Id;
+    }
+
+    private static async Task<List<Guid>> AddTasksAsync(ApplicationDbContext db, Guid classId, int group, int count)
+    {
+        var taskIds = new List<Guid>();
+        for (var i = 0; i < count; i++)
+        {
+            taskIds.Add(await AddTaskAsync(db, classId, group));
+        }
+
+        return taskIds;
     }
 
     private static async Task<Guid> AddTaskAsync(

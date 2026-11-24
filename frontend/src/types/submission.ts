@@ -5,6 +5,10 @@ export interface Submission {
   evidence: string
   label: string
   submittedAtUtc: string
+  points: number
+  correctAnswer: string
+  // The number of the group that this submission unlocked; only in the answer to the submission itself
+  unlockedGroup?: number | null
 }
 
 export interface SubmissionRequest {

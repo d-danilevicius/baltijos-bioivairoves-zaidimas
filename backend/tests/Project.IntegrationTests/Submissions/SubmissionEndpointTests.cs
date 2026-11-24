@@ -293,7 +293,7 @@ public class SubmissionEndpointTests : IClassFixture<GbifApiFixture>
     }
 
     [Fact]
-    public async Task GetMyTask_AfterSubmitting_ReturnsTheSubmissionAndNotTheCorrectAnswer()
+    public async Task GetMyTask_AfterSubmitting_ReturnsTheSubmissionWithPointsAndTheCorrectAnswer()
     {
         var (_, student, classId) = await CreateClassWithStudentAsync();
         var taskId = await AddTaskWithOptionsAsync(classId);
@@ -305,6 +305,7 @@ public class SubmissionEndpointTests : IClassFixture<GbifApiFixture>
         var submission = json.GetProperty("submission");
         Assert.Equal("B", submission.GetProperty("answer").GetString());
         Assert.Equal("Mokinio pateikti duomenys", submission.GetProperty("label").GetString());
-        Assert.DoesNotContain("correctAnswer", await response.Content.ReadAsStringAsync());
+        Assert.Equal(0, submission.GetProperty("points").GetInt32());
+        Assert.Equal("A", submission.GetProperty("correctAnswer").GetString());
     }
 }

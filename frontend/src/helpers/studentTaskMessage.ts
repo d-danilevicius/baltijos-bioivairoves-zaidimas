@@ -7,6 +7,9 @@ export const noTasksForStudent = 'Mokytojas dar nesukūrė užduočių.'
 export const lockedGroupMessage = 'Atrakinama surinkus 60 % ankstesnės grupės taškų.'
 export const continueButton = 'Tęsti'
 
+export const taskPointsText = (points: number) => `${points} tšk.`
+export const groupPointsText = (points: number, maxPoints: number) => `${points} iš ${maxPoints}`
+
 export const studentStatusLabels: Record<StudentTaskStatus, string> = {
   NotDone: 'Nepadaryta',
   Done: 'Padaryta',

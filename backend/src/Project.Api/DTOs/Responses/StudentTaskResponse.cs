@@ -11,4 +11,7 @@ public class StudentTaskResponse
     public required string Label { get; set; }
 
     public StudentTaskStatus Status { get; set; }
+
+    // Empty until the student submits the task
+    public int? Points { get; set; }
 }

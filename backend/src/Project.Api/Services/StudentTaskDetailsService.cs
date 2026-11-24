@@ -35,7 +35,7 @@ public class StudentTaskDetailsService : IStudentTaskDetailsService
             .FirstOrDefaultAsync(s => s.ClassTaskId == task.Id && s.StudentId == studentId, cancellationToken);
 
         var details = task.ToDetails(observation);
-        details.Submission = submission?.ToResponse(task.Id);
+        details.Submission = submission?.ToResponse(task);
 
         return StudentTaskDetailsResult.Found(details);
     }

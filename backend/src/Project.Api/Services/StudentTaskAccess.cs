@@ -28,14 +28,42 @@ public static class StudentTaskAccess
             return (StudentTaskDetailsOutcome.NotFound, null);
         }
 
-        var groupsWithTasks = await dbContext.ClassTasks
-            .Where(t => t.ClassId == classId)
-            .Select(t => t.DifficultyGroup)
-            .Distinct()
-            .ToListAsync(cancellationToken);
+        var progress = await dbContext.LoadStudentProgressAsync(studentId, task.ClassId, cancellationToken);
 
-        return TaskGroupUnlocking.IsUnlocked(task.DifficultyGroup, groupsWithTasks)
+        return progress.IsUnlocked(task.DifficultyGroup)
             ? (StudentTaskDetailsOutcome.Found, task)
             : (StudentTaskDetailsOutcome.Locked, null);
+    }
+
+    // The points of the student by task; the tasks of other classes are dropped later by StudentProgress
+    public static async Task<Dictionary<Guid, int>> LoadPointsByTaskAsync(
+        this ApplicationDbContext dbContext,
+        string studentId,
+        CancellationToken cancellationToken)
+    {
+        var submissions = await dbContext.Submissions
+            .AsNoTracking()
+            .Where(s => s.StudentId == studentId && s.ClassTaskId != null)
+            .Select(s => new { TaskId = s.ClassTaskId!.Value, s.Points })
+            .ToListAsync(cancellationToken);
+
+        return submissions.ToDictionary(s => s.TaskId, s => s.Points);
+    }
+
+    public static async Task<StudentProgress> LoadStudentProgressAsync(
+        this ApplicationDbContext dbContext,
+        string studentId,
+        Guid classId,
+        CancellationToken cancellationToken)
+    {
+        var tasks = await dbContext.ClassTasks
+            .AsNoTracking()
+            .Where(t => t.ClassId == classId)
+            .Select(t => new { t.Id, t.DifficultyGroup })
+            .ToListAsync(cancellationToken);
+
+        var points = await dbContext.LoadPointsByTaskAsync(studentId, cancellationToken);
+
+        return StudentProgress.Create(tasks.Select(t => (t.Id, t.DifficultyGroup)), points);
     }
 }

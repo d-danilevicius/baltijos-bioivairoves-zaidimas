@@ -14,5 +14,8 @@ public class Submission
 
     public required string Evidence { get; set; }
 
+    // Set by the server when the answer is saved: 0 or the points of the task's group (VT-016)
+    public int Points { get; set; }
+
     public DateTime SubmittedAtUtc { get; set; }
 }

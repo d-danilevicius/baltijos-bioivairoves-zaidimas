@@ -7,11 +7,14 @@ export interface StudentTask {
   type: TaskType
   label: string
   status: StudentTaskStatus
+  points: number | null
 }
 
 export interface StudentTaskGroup {
   group: number
   isUnlocked: boolean
+  points: number
+  maxPoints: number
   tasks: StudentTask[]
 }
 
