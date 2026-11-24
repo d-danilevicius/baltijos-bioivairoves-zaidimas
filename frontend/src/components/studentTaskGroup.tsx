@@ -1,6 +1,6 @@
 import { taskTypeLabels } from '../helpers/gbifTaskMessage'
 import { groupLabel } from '../helpers/groupLabel'
-import { lockedGroupMessage, studentStatusLabels } from '../helpers/studentTaskMessage'
+import { groupPointsText, lockedGroupMessage, studentStatusLabels, taskPointsText } from '../helpers/studentTaskMessage'
 import type { StudentTaskGroup as StudentTaskGroupData } from '../types/studentTask'
 
 type Props = {
@@ -15,6 +15,7 @@ export default function StudentTaskGroup({ group }: Props) {
       <h2 id={headingId} className="mb-1 text-lg font-semibold">
         {groupLabel(group.group)}
       </h2>
+      <p className="mb-1">{groupPointsText(group.points, group.maxPoints)}</p>
       {!group.isUnlocked && <p className="mb-2">{lockedGroupMessage}</p>}
       <ul>
         {group.tasks.map((task) => (
@@ -22,6 +23,7 @@ export default function StudentTaskGroup({ group }: Props) {
             <span>{taskTypeLabels[task.type]}</span>
             <span>{task.label}</span>
             <span>{studentStatusLabels[task.status]}</span>
+            {task.points !== null && <span>{taskPointsText(task.points)}</span>}
           </li>
         ))}
       </ul>
